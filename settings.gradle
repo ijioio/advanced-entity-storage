@@ -1,0 +1,5 @@
+rootProject.name = 'advanced-entity-storage'
+include('aes-annotation')
+include('aes-core')
+include('aes-processor')
+include('aes-sandbox')

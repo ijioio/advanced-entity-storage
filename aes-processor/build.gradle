@@ -1,0 +1,23 @@
+plugins {
+    id 'java'
+	id 'com.github.johnrengelman.shadow' version '7.1.2'    
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(8)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation project(':aes-annotation')
+	implementation group: 'com.squareup', name: 'javapoet', version: '1.13.0'
+}
+
+shadowJar {
+   archiveClassifier.set('')
+}
