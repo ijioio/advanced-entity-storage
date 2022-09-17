@@ -1,4 +1,4 @@
-package com.ijioio.aes.test;
+package com.ijioio.aes.sandbox;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;

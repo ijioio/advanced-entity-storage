@@ -19,7 +19,7 @@ import javax.lang.model.util.SimpleAnnotationValueVisitor8;
 
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.annotation.processor.exception.EntityPropertyIllegalStateException;
-import com.ijioio.aes.annotation.processor.exception.EntityTypeIllegalStateException;
+import com.ijioio.aes.annotation.processor.exception.EntityIllegalStateException;
 import com.ijioio.aes.annotation.processor.exception.ProcessorException;
 import com.ijioio.aes.annotation.processor.util.TextUtil;
 import com.ijioio.aes.annotation.processor.util.TypeUtil;
@@ -72,7 +72,7 @@ public class EntityMetadata {
 				}, null);
 
 				if (!pattern.matcher(name).matches()) {
-					throw new EntityTypeIllegalStateException(
+					throw new EntityIllegalStateException(
 							String.format("name should be a valid class name identifier"),
 							MessageContext.of(context.getElement(), context.getAnnotationMirror(), value));
 				}
@@ -89,7 +89,7 @@ public class EntityMetadata {
 				}, null);
 
 				if (!pattern.matcher(parent).matches()) {
-					throw new EntityTypeIllegalStateException(
+					throw new EntityIllegalStateException(
 							String.format("parent should be a valid class name identifier"),
 							MessageContext.of(context.getElement(), context.getAnnotationMirror(), value));
 				}
