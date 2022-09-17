@@ -6,6 +6,7 @@ import com.ijioio.aes.annotation.Type;
 
 @Entity( //
 		name = BookingPrototype.NAME, //
+		interfaces = { Number.class }, //
 		properties = { //
 				@EntityProperty(name = "number", type = @Type(name = Type.STRING)), //
 				@EntityProperty(name = "pnr", type = @Type(name = Type.STRING)), //
