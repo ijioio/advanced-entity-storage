@@ -42,6 +42,8 @@ public class EntityMetadata {
 
 	private String parent;
 
+	private final List<String> interfaces = new ArrayList<>();
+
 	private final Map<String, EntityPropertyMetadata> properties = new LinkedHashMap<>();
 
 	private EntityMetadata(ProcessorContext context) throws ProcessorException {
@@ -58,7 +60,7 @@ public class EntityMetadata {
 
 			if (key.getSimpleName().contentEquals("name")) {
 
-				name = value.accept(ProcessorUtil.stringVisitor, null);
+				name = ProcessorUtil.stringVisitor.visit(value);
 
 				if (!ProcessorUtil.isJavaIdentifier(name)) {
 					throw new EntityIllegalStateException(String.format("name should be a valid class name identifier"),
@@ -67,7 +69,7 @@ public class EntityMetadata {
 
 			} else if (key.getSimpleName().contentEquals("parent")) {
 
-				parent = value.accept(ProcessorUtil.stringVisitor, null);
+				parent = ProcessorUtil.stringVisitor.visit(value);
 
 				if (!ProcessorUtil.isJavaIdentifier(parent)) {
 					throw new EntityIllegalStateException(
@@ -77,13 +79,13 @@ public class EntityMetadata {
 
 			} else if (key.getSimpleName().contentEquals("properties")) {
 
-				List<? extends AnnotationValue> annotationValues = value.accept(ProcessorUtil.arrayVisitor, null);
+				List<? extends AnnotationValue> annotationValues = ProcessorUtil.arrayVisitor.visit(value);
 
 				properties.clear();
 
 				for (AnnotationValue annotationValue : annotationValues) {
 
-					AnnotationMirror annotationMirror = annotationValue.accept(ProcessorUtil.annotationVisitor, null);
+					AnnotationMirror annotationMirror = ProcessorUtil.annotationVisitor.visit(annotationValue);
 
 					EntityPropertyMetadata property = EntityPropertyMetadata
 							.of(context.withAnnotationMirror(annotationMirror));
@@ -236,6 +238,7 @@ public class EntityMetadata {
 
 	@Override
 	public String toString() {
-		return "EntityMetadata [name=" + name + ", parent=" + parent + ", properties=" + properties + "]";
+		return "EntityMetadata [name=" + name + ", parent=" + parent + ", interfaces=" + interfaces + ", properties="
+				+ properties + "]";
 	}
 }

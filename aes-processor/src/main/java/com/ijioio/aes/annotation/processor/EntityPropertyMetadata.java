@@ -42,23 +42,23 @@ public class EntityPropertyMetadata {
 
 			if (key.getSimpleName().contentEquals("name")) {
 
-				name = value.accept(ProcessorUtil.stringVisitor, null);
+				name = ProcessorUtil.stringVisitor.visit(value);
 
 			} else if (key.getSimpleName().contentEquals("type")) {
 
-				AnnotationMirror annotationMirror = value.accept(ProcessorUtil.annotationVisitor, null);
+				AnnotationMirror annotationMirror = ProcessorUtil.annotationVisitor.visit(value);
 
 				type = TypeMetadata.of(context.withAnnotationMirror(annotationMirror));
 
 			} else if (key.getSimpleName().contentEquals("parameters")) {
 
-				List<? extends AnnotationValue> annotationValues = value.accept(ProcessorUtil.arrayVisitor, null);
+				List<? extends AnnotationValue> annotationValues = ProcessorUtil.arrayVisitor.visit(value);
 
 				parameters.clear();
 
 				for (AnnotationValue annotationValue : annotationValues) {
 
-					AnnotationMirror annotationMirror = annotationValue.accept(ProcessorUtil.annotationVisitor, null);
+					AnnotationMirror annotationMirror = ProcessorUtil.annotationVisitor.visit(annotationValue);
 
 					TypeMetadata type = TypeMetadata.of(context.withAnnotationMirror(annotationMirror));
 

@@ -37,13 +37,13 @@ public class TypeMetadata {
 
 			if (key.getSimpleName().contentEquals("name")) {
 
-				name = value.accept(ProcessorUtil.stringVisitor, null);
+				name = ProcessorUtil.stringVisitor.visit(value);
 
 				// TODO: check on valid identifiers and constants?
 
 			} else if (key.getSimpleName().contentEquals("reference")) {
 
-				reference = value.accept(ProcessorUtil.booleanVisitor, null).booleanValue();
+				reference = ProcessorUtil.booleanVisitor.visit(value).booleanValue();
 			}
 		}
 
