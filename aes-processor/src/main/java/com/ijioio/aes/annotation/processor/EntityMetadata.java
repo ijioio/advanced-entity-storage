@@ -8,19 +8,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.util.SimpleAnnotationValueVisitor8;
 
 import com.ijioio.aes.annotation.Type;
-import com.ijioio.aes.annotation.processor.exception.EntityPropertyIllegalStateException;
 import com.ijioio.aes.annotation.processor.exception.EntityIllegalStateException;
+import com.ijioio.aes.annotation.processor.exception.EntityPropertyIllegalStateException;
 import com.ijioio.aes.annotation.processor.exception.ProcessorException;
+import com.ijioio.aes.annotation.processor.util.ProcessorUtil;
 import com.ijioio.aes.annotation.processor.util.TextUtil;
 import com.ijioio.aes.annotation.processor.util.TypeUtil;
 import com.squareup.javapoet.ClassName;
@@ -36,9 +35,6 @@ public class EntityMetadata {
 	public static EntityMetadata of(ProcessorContext context) throws ProcessorException {
 		return new EntityMetadata(context);
 	}
-
-	private static final Pattern pattern = Pattern.compile("\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*"
-			+ "(\\.\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*)*");
 
 	private final ProcessorContext context;
 
@@ -62,33 +58,18 @@ public class EntityMetadata {
 
 			if (key.getSimpleName().contentEquals("name")) {
 
-				name = value.accept(new SimpleAnnotationValueVisitor8<String, Void>() {
+				name = value.accept(ProcessorUtil.stringVisitor, null);
 
-					@Override
-					public String visitString(String s, Void p) {
-						return s;
-					}
-
-				}, null);
-
-				if (!pattern.matcher(name).matches()) {
-					throw new EntityIllegalStateException(
-							String.format("name should be a valid class name identifier"),
+				if (!ProcessorUtil.isJavaIdentifier(name)) {
+					throw new EntityIllegalStateException(String.format("name should be a valid class name identifier"),
 							MessageContext.of(context.getElement(), context.getAnnotationMirror(), value));
 				}
 
 			} else if (key.getSimpleName().contentEquals("parent")) {
 
-				parent = value.accept(new SimpleAnnotationValueVisitor8<String, Void>() {
+				parent = value.accept(ProcessorUtil.stringVisitor, null);
 
-					@Override
-					public String visitString(String s, Void p) {
-						return s;
-					}
-
-				}, null);
-
-				if (!pattern.matcher(parent).matches()) {
+				if (!ProcessorUtil.isJavaIdentifier(parent)) {
 					throw new EntityIllegalStateException(
 							String.format("parent should be a valid class name identifier"),
 							MessageContext.of(context.getElement(), context.getAnnotationMirror(), value));
@@ -96,30 +77,13 @@ public class EntityMetadata {
 
 			} else if (key.getSimpleName().contentEquals("properties")) {
 
-				List<? extends AnnotationValue> annotationValues = value
-						.accept(new SimpleAnnotationValueVisitor8<List<? extends AnnotationValue>, Void>() {
-
-							@Override
-							public List<? extends AnnotationValue> visitArray(List<? extends AnnotationValue> vals,
-									Void p) {
-								return vals;
-							}
-
-						}, null);
+				List<? extends AnnotationValue> annotationValues = value.accept(ProcessorUtil.arrayVisitor, null);
 
 				properties.clear();
 
 				for (AnnotationValue annotationValue : annotationValues) {
 
-					AnnotationMirror annotationMirror = annotationValue
-							.accept(new SimpleAnnotationValueVisitor8<AnnotationMirror, Void>() {
-
-								@Override
-								public AnnotationMirror visitAnnotation(AnnotationMirror a, Void p) {
-									return a;
-								}
-
-							}, null);
+					AnnotationMirror annotationMirror = annotationValue.accept(ProcessorUtil.annotationVisitor, null);
 
 					EntityPropertyMetadata property = EntityPropertyMetadata
 							.of(context.withAnnotationMirror(annotationMirror));
@@ -135,10 +99,18 @@ public class EntityMetadata {
 			}
 		}
 
-		// TODO: check on mandatory!
-
 		if (TextUtil.isBlank(parent)) {
 			parent = TypeUtil.BASE_ENTITY_TYPE_NAME;
+		}
+
+		if (TextUtil.isBlank(name)) {
+			throw new EntityPropertyIllegalStateException(String.format("Name of the entity is not defined"),
+					MessageContext.of(context.getElement(), context.getAnnotationMirror(), null));
+		}
+
+		if (TextUtil.isBlank(parent)) {
+			throw new EntityPropertyIllegalStateException(String.format("Parent of the entity is not defined"),
+					MessageContext.of(context.getElement(), context.getAnnotationMirror(), null));
 		}
 	}
 

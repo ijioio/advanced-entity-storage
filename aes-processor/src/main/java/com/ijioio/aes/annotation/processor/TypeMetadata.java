@@ -5,9 +5,11 @@ import java.util.Map.Entry;
 
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.util.SimpleAnnotationValueVisitor8;
 
 import com.ijioio.aes.annotation.processor.exception.ProcessorException;
+import com.ijioio.aes.annotation.processor.exception.TypeIllegalStateException;
+import com.ijioio.aes.annotation.processor.util.ProcessorUtil;
+import com.ijioio.aes.annotation.processor.util.TextUtil;
 
 public class TypeMetadata {
 
@@ -35,26 +37,19 @@ public class TypeMetadata {
 
 			if (key.getSimpleName().contentEquals("name")) {
 
-				name = value.accept(new SimpleAnnotationValueVisitor8<String, Void>() {
+				name = value.accept(ProcessorUtil.stringVisitor, null);
 
-					@Override
-					public String visitString(String s, Void p) {
-						return s;
-					}
-
-				}, null);
+				// TODO: check on valid identifiers and constants?
 
 			} else if (key.getSimpleName().contentEquals("reference")) {
 
-				reference = value.accept(new SimpleAnnotationValueVisitor8<Boolean, Void>() {
-
-					@Override
-					public Boolean visitBoolean(boolean b, Void p) {
-						return Boolean.valueOf(b);
-					}
-
-				}, null).booleanValue();
+				reference = value.accept(ProcessorUtil.booleanVisitor, null).booleanValue();
 			}
+		}
+
+		if (TextUtil.isBlank(name)) {
+			throw new TypeIllegalStateException(String.format("Name of the type is not defined"),
+					MessageContext.of(context.getElement(), context.getAnnotationMirror(), null));
 		}
 	}
 
