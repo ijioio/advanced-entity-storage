@@ -2,16 +2,16 @@ package com.ijioio.aes.annotation.processor.exception;
 
 import com.ijioio.aes.annotation.processor.MessageContext;
 
-public class EntityTypeIllegalStateException extends ProcessorException {
+public class TypeIllegalStateException extends ProcessorException {
 
-	private static final long serialVersionUID = -3866026527128977914L;
+	private static final long serialVersionUID = -3684414439797512813L;
 
 	/**
 	 * Constructs a new exception with the specified details.
 	 *
 	 * @param message with the details of the exception
 	 */
-	public EntityTypeIllegalStateException(String message) {
+	public TypeIllegalStateException(String message) {
 		super(message);
 	}
 
@@ -21,7 +21,7 @@ public class EntityTypeIllegalStateException extends ProcessorException {
 	 * @param message with the details of the exception
 	 * @param context defining an exception position
 	 */
-	public EntityTypeIllegalStateException(String message, MessageContext context) {
+	public TypeIllegalStateException(String message, MessageContext context) {
 		super(message, context);
 	}
 }

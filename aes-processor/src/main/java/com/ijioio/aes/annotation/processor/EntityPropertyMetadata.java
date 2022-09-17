@@ -8,9 +8,11 @@ import java.util.Map.Entry;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.util.SimpleAnnotationValueVisitor8;
 
+import com.ijioio.aes.annotation.processor.exception.EntityPropertyIllegalStateException;
 import com.ijioio.aes.annotation.processor.exception.ProcessorException;
+import com.ijioio.aes.annotation.processor.util.ProcessorUtil;
+import com.ijioio.aes.annotation.processor.util.TextUtil;
 
 public class EntityPropertyMetadata {
 
@@ -40,61 +42,39 @@ public class EntityPropertyMetadata {
 
 			if (key.getSimpleName().contentEquals("name")) {
 
-				name = value.accept(new SimpleAnnotationValueVisitor8<String, Void>() {
-
-					@Override
-					public String visitString(String s, Void p) {
-						return s;
-					}
-
-				}, null);
+				name = ProcessorUtil.stringVisitor.visit(value);
 
 			} else if (key.getSimpleName().contentEquals("type")) {
 
-				AnnotationMirror annotationMirror = value
-						.accept(new SimpleAnnotationValueVisitor8<AnnotationMirror, Void>() {
-
-							@Override
-							public AnnotationMirror visitAnnotation(AnnotationMirror a, Void p) {
-								return a;
-							}
-
-						}, null);
+				AnnotationMirror annotationMirror = ProcessorUtil.annotationVisitor.visit(value);
 
 				type = TypeMetadata.of(context.withAnnotationMirror(annotationMirror));
 
 			} else if (key.getSimpleName().contentEquals("parameters")) {
 
-				List<? extends AnnotationValue> annotationValues = value
-						.accept(new SimpleAnnotationValueVisitor8<List<? extends AnnotationValue>, Void>() {
-
-							@Override
-							public List<? extends AnnotationValue> visitArray(List<? extends AnnotationValue> vals,
-									Void p) {
-								return vals;
-							}
-
-						}, null);
+				List<? extends AnnotationValue> annotationValues = ProcessorUtil.arrayVisitor.visit(value);
 
 				parameters.clear();
 
 				for (AnnotationValue annotationValue : annotationValues) {
 
-					AnnotationMirror annotationMirror = annotationValue
-							.accept(new SimpleAnnotationValueVisitor8<AnnotationMirror, Void>() {
-
-								@Override
-								public AnnotationMirror visitAnnotation(AnnotationMirror a, Void p) {
-									return a;
-								}
-
-							}, null);
+					AnnotationMirror annotationMirror = ProcessorUtil.annotationVisitor.visit(annotationValue);
 
 					TypeMetadata type = TypeMetadata.of(context.withAnnotationMirror(annotationMirror));
 
 					parameters.add(type);
 				}
 			}
+		}
+
+		if (TextUtil.isBlank(name)) {
+			throw new EntityPropertyIllegalStateException(String.format("Name of the entity property is not defined"),
+					MessageContext.of(context.getElement(), context.getAnnotationMirror(), null));
+		}
+
+		if (type == null) {
+			throw new EntityPropertyIllegalStateException(String.format("Type of the entity property is not defined"),
+					MessageContext.of(context.getElement(), context.getAnnotationMirror(), null));
 		}
 	}
 
