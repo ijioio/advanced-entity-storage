@@ -9,6 +9,7 @@ import com.ijioio.aes.annotation.Type;
 		interfaces = { Number.class }, //
 		properties = { //
 				@EntityProperty(name = "number", type = @Type(name = Type.STRING)), //
+				@EntityProperty(name = "status", type = @Type(name = BookingStatus.NAME)), //
 				@EntityProperty(name = "pnr", type = @Type(name = Type.STRING)), //
 				@EntityProperty(name = "agent", type = @Type(name = PersonPrototype.NAME, reference = true)), //
 				@EntityProperty(name = "passengers", type = @Type(name = Type.LIST), parameters = @Type(name = PersonPrototype.NAME, reference = true)), //
