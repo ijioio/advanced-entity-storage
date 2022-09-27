@@ -33,10 +33,7 @@ public @interface Type {
 
 	public static final String MAP = "MAP";
 
-	public static final String REFERENCE = "REFERENCE";
-
 	public String name();
 
 	public boolean reference() default false;
-
 }

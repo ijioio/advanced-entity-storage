@@ -5,6 +5,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,10 +27,13 @@ import com.ijioio.aes.annotation.processor.exception.CodeGenerationException;
 import com.ijioio.aes.annotation.processor.exception.ProcessorException;
 import com.ijioio.aes.annotation.processor.util.TextUtil;
 import com.ijioio.aes.annotation.processor.util.TypeUtil;
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
@@ -113,6 +117,9 @@ public class EntityProcessor extends AbstractProcessor {
 						.addStatement("return $L", property.getName()).build());
 			}
 
+			methods.add(generateWrite(entity));
+			methods.add(generateRead(entity));
+
 			ClassName className = ClassName.bestGuess(entity.getName());
 			ClassName parentClassName = ClassName.bestGuess(entity.getParent());
 			List<ClassName> interfaceNames = entity.getInterfaces().stream().map(item -> ClassName.bestGuess(item))
@@ -134,6 +141,82 @@ public class EntityProcessor extends AbstractProcessor {
 			throw new CodeGenerationException(
 					String.format("Failed to generate code for %s: %s", entity.getName(), e.getMessage()));
 		}
+	}
+
+	public MethodSpec generateWrite(EntityMetadata entity) {
+
+		CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
+
+		codeBlockBuilder.addStatement("$T<$T, $T> writers = new $T<>(super.getWriters(context, handler))", Map.class,
+				String.class, ClassName.bestGuess(TypeUtil.SERIALIZATION_WRITER_TYPE_NAME), LinkedHashMap.class);
+
+		Collection<EntityPropertyMetadata> properties = entity.getProperties().values();
+
+		for (EntityPropertyMetadata property : properties) {
+			codeBlockBuilder.addStatement("writers.put($S, () -> handler.write(context, $S, $L))", property.getName(),
+					property.getName(), property.getName());
+		}
+
+		codeBlockBuilder.addStatement("return writers");
+
+		List<AnnotationSpec> annotations = new ArrayList<>();
+
+		annotations.add(AnnotationSpec.builder(ClassName.get(Override.class)).build());
+
+		List<ParameterSpec> parameters = new ArrayList<>();
+
+		parameters.add(ParameterSpec.builder(ClassName.bestGuess(TypeUtil.SERIALIZATION_CONTEXT_TYPE_NAME), "context")
+				.build());
+		parameters.add(ParameterSpec.builder(ClassName.bestGuess(TypeUtil.SERIALIZATION_HANDLER_TYPE_NAME), "handler")
+				.build());
+
+		CodeBlock codeBlock = codeBlockBuilder.build();
+
+		MethodSpec method = MethodSpec.methodBuilder("getWriters").addAnnotations(annotations)
+				.addModifiers(Modifier.PUBLIC)
+				.returns(ParameterizedTypeName.get(ClassName.get(Map.class), ClassName.get(String.class),
+						ClassName.bestGuess(TypeUtil.SERIALIZATION_WRITER_TYPE_NAME)))
+				.addParameters(parameters).addCode(codeBlock).build();
+
+		return method;
+	}
+
+	public MethodSpec generateRead(EntityMetadata entity) {
+
+		CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
+
+		codeBlockBuilder.addStatement("$T<$T, $T> readers = new $T<>(super.getReaders(context, handler))", Map.class,
+				String.class, ClassName.bestGuess(TypeUtil.SERIALIZATION_READER_TYPE_NAME), LinkedHashMap.class);
+
+		Collection<EntityPropertyMetadata> properties = entity.getProperties().values();
+
+		for (EntityPropertyMetadata property : properties) {
+			codeBlockBuilder.addStatement("readers.put($S, () -> $L = handler.read(context, $L))", property.getName(),
+					property.getName(), property.getName());
+		}
+
+		codeBlockBuilder.addStatement("return readers");
+
+		List<AnnotationSpec> annotations = new ArrayList<>();
+
+		annotations.add(AnnotationSpec.builder(ClassName.get(Override.class)).build());
+
+		List<ParameterSpec> parameters = new ArrayList<>();
+
+		parameters.add(ParameterSpec.builder(ClassName.bestGuess(TypeUtil.SERIALIZATION_CONTEXT_TYPE_NAME), "context")
+				.build());
+		parameters.add(ParameterSpec.builder(ClassName.bestGuess(TypeUtil.SERIALIZATION_HANDLER_TYPE_NAME), "handler")
+				.build());
+
+		CodeBlock codeBlock = codeBlockBuilder.build();
+
+		MethodSpec method = MethodSpec.methodBuilder("getReaders").addAnnotations(annotations)
+				.addModifiers(Modifier.PUBLIC)
+				.returns(ParameterizedTypeName.get(ClassName.get(Map.class), ClassName.get(String.class),
+						ClassName.bestGuess(TypeUtil.SERIALIZATION_READER_TYPE_NAME)))
+				.addParameters(parameters).addCode(codeBlock).build();
+
+		return method;
 	}
 
 	private TypeName getType(TypeMetadata type, List<TypeMetadata> parameters) {
@@ -166,16 +249,14 @@ public class EntityProcessor extends AbstractProcessor {
 			typeName = TypeName.FLOAT;
 		} else if (name.equals(Type.DOUBLE)) {
 			typeName = TypeName.DOUBLE;
-		} else if (name.equals(Type.STRING)) {
+		} else if (name.equals(Type.STRING) || name.equals(String.class.getName())) {
 			typeName = ClassName.get(String.class);
-		} else if (name.equals(Type.LIST)) {
+		} else if (name.equals(Type.LIST) || name.equals(List.class.getName())) {
 			typeName = ClassName.get(List.class);
-		} else if (name.equals(Type.SET)) {
+		} else if (name.equals(Type.SET) || name.equals(Set.class.getName())) {
 			typeName = ClassName.get(Set.class);
-		} else if (name.equals(Type.MAP)) {
+		} else if (name.equals(Type.MAP) || name.equals(Map.class.getName())) {
 			typeName = ClassName.get(Map.class);
-		} else if (name.equals(Type.REFERENCE)) {
-			typeName = ClassName.bestGuess(TypeUtil.ENTITY_REFERENCE_TYPE_NAME);
 		} else {
 			typeName = ClassName.bestGuess(name);
 		}
