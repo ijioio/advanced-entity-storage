@@ -20,4 +20,5 @@ dependencies {
 	implementation project(':aes-annotation')
 	implementation project(':aes-core')
 	implementation group: 'javax.persistence', name: 'persistence-api', version: '1.0.2'
+	testImplementation group: 'junit', name: 'junit', version: '4.12'
 }
