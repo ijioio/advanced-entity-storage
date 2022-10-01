@@ -539,7 +539,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 						}
 
 					} else {
-						// TODO: skip!
+						handler.skipElement(reader);
 					}
 				}
 
@@ -610,15 +610,11 @@ public class XmlSerializationHandler implements SerializationHandler {
 						while (reader.nextTag() != XMLStreamConstants.END_ELEMENT) {
 
 							if (reader.getName().getLocalPart().equals("key")) {
-
 								key = handler.read(context, (Object) null);
-
 							} else if (reader.getName().getLocalPart().equals("value")) {
-
 								value = handler.read(context, (Object) null);
-
 							} else {
-								// TODO: skip!
+								handler.skipElement(reader);
 							}
 						}
 
@@ -627,7 +623,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 						}
 
 					} else {
-						// TODO: skip!
+						handler.skipElement(reader);
 					}
 				}
 
@@ -750,6 +746,32 @@ public class XmlSerializationHandler implements SerializationHandler {
 		});
 
 		return !type.equals(Void.class) ? (Class<T>) type : null;
+	}
+
+	public void skipElement(final XMLStreamReader reader) throws XMLStreamException {
+
+		int count = 0;
+
+		while (reader.hasNext()) {
+
+			int event = reader.next();
+
+			if (event == XMLStreamConstants.START_ELEMENT) {
+
+				count++;
+
+			} else if (event == XMLStreamConstants.END_ELEMENT) {
+
+				if (count == 0) {
+					return;
+				}
+
+				count--;
+
+			} else if (event == XMLStreamConstants.END_DOCUMENT) {
+				throw new XMLStreamException("unexpected end of document");
+			}
+		}
 	}
 
 	@Override
@@ -942,6 +964,8 @@ public class XmlSerializationHandler implements SerializationHandler {
 
 				if (serializationReader != null) {
 					serializationReader.read();
+				} else {
+					skipElement(reader);
 				}
 			}
 
