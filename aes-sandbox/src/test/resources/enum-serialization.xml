@@ -1,0 +1,4 @@
+<object class="com.ijioio.test.model.EnumSerialization">
+    <id>enum-serialization</id>
+    <valueEnum class="java.time.Month">JANUARY</valueEnum>
+</object>
