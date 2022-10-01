@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,6 +16,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.XMLEvent;
 
+import com.ijioio.aes.core.XSerializable;
 import com.ijioio.aes.core.serialization.SerializationContext;
 import com.ijioio.aes.core.serialization.SerializationException;
 import com.ijioio.aes.core.serialization.SerializationHandler;
@@ -62,6 +64,52 @@ public class XmlSerializationHandler implements SerializationHandler {
 			try {
 
 				return Boolean.valueOf(reader.getElementText());
+
+			} catch (XMLStreamException e) {
+				throw new SerializationException(e);
+			}
+		};
+	};
+
+	private static final XmlSerializationValueHandler<Character> HANDLER_CHARACTER = new XmlSerializationValueHandler<Character>() {
+
+		@Override
+		public Class<Character> getType() {
+			return Character.class;
+		}
+
+		@Override
+		public void write(XmlSerializationContext context, XmlSerializationHandler handler, String name,
+				Character value) throws SerializationException {
+
+			if (value == null) {
+				return;
+			}
+
+			XMLStreamWriter writer = context.getWriter();
+
+			try {
+
+				writer.writeStartElement(name);
+				writeAttributes(writer, context.getAttributes());
+				writer.writeCharacters(String.valueOf(value.charValue()));
+				writer.writeEndElement();
+
+			} catch (XMLStreamException e) {
+				throw new SerializationException(e);
+			}
+		}
+
+		@Override
+		public Character read(XmlSerializationContext context, XmlSerializationHandler handler, Class<Character> type,
+				Character value) throws SerializationException {
+
+			XMLStreamReader reader = context.getReader();
+
+			try {
+
+				// TODO: make it safe!
+				return Character.valueOf(reader.getElementText().charAt(0));
 
 			} catch (XMLStreamException e) {
 				throw new SerializationException(e);
@@ -242,52 +290,6 @@ public class XmlSerializationHandler implements SerializationHandler {
 			try {
 
 				return Long.valueOf(reader.getElementText());
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		};
-	};
-
-	private static final XmlSerializationValueHandler<Character> HANDLER_CHARACTER = new XmlSerializationValueHandler<Character>() {
-
-		@Override
-		public Class<Character> getType() {
-			return Character.class;
-		}
-
-		@Override
-		public void write(XmlSerializationContext context, XmlSerializationHandler handler, String name,
-				Character value) throws SerializationException {
-
-			if (value == null) {
-				return;
-			}
-
-			XMLStreamWriter writer = context.getWriter();
-
-			try {
-
-				writer.writeStartElement(name);
-				writeAttributes(writer, context.getAttributes());
-				writer.writeCharacters(String.valueOf(value.charValue()));
-				writer.writeEndElement();
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		}
-
-		@Override
-		public Character read(XmlSerializationContext context, XmlSerializationHandler handler, Class<Character> type,
-				Character value) throws SerializationException {
-
-			XMLStreamReader reader = context.getReader();
-
-			try {
-
-				// TODO: make it safe!
-				return Character.valueOf(reader.getElementText().charAt(0));
 
 			} catch (XMLStreamException e) {
 				throw new SerializationException(e);
@@ -535,12 +537,150 @@ public class XmlSerializationHandler implements SerializationHandler {
 						if (item != null) {
 							collection.add(item);
 						}
+
+					} else {
+						// TODO: skip!
 					}
 				}
 
 				return collection;
 
 			} catch (XMLStreamException e) {
+				throw new SerializationException(e);
+			}
+		};
+	};
+
+	@SuppressWarnings("rawtypes")
+	private static final XmlSerializationValueHandler<Map> HANDLER_MAP = new XmlSerializationValueHandler<Map>() {
+
+		@Override
+		public Class<Map> getType() {
+			return Map.class;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public void write(XmlSerializationContext context, XmlSerializationHandler handler, String name, Map values)
+				throws SerializationException {
+
+			if (values == null) {
+				return;
+			}
+
+			XMLStreamWriter writer = context.getWriter();
+
+			try {
+
+				writer.writeStartElement(name);
+				writeAttributes(writer, context.getAttributes());
+
+				for (Entry<Object, Object> entry : ((Map<Object, Object>) values).entrySet()) {
+
+					writer.writeStartElement("entry");
+					handler.write(context, "key", entry.getKey());
+					handler.write(context, "value", entry.getValue());
+					writer.writeEndElement();
+				}
+
+				writer.writeEndElement();
+
+			} catch (XMLStreamException e) {
+				throw new SerializationException(e);
+			}
+		}
+
+		@Override
+		public Map read(XmlSerializationContext context, XmlSerializationHandler handler, Class<Map> type, Map values)
+				throws SerializationException {
+
+			XMLStreamReader reader = context.getReader();
+
+			try {
+
+				Map<Object, Object> map = new LinkedHashMap<>();
+
+				while (reader.nextTag() != XMLStreamConstants.END_ELEMENT) {
+
+					if (reader.getName().getLocalPart().equals("entry")) {
+
+						Object key = null;
+						Object value = null;
+
+						while (reader.nextTag() != XMLStreamConstants.END_ELEMENT) {
+
+							if (reader.getName().getLocalPart().equals("key")) {
+
+								key = handler.read(context, (Object) null);
+
+							} else if (reader.getName().getLocalPart().equals("value")) {
+
+								value = handler.read(context, (Object) null);
+
+							} else {
+								// TODO: skip!
+							}
+						}
+
+						if (key != null && value != null) {
+							map.put(key, value);
+						}
+
+					} else {
+						// TODO: skip!
+					}
+				}
+
+				return map;
+
+			} catch (XMLStreamException e) {
+				throw new SerializationException(e);
+			}
+		};
+	};
+
+	private static final XmlSerializationValueHandler<XSerializable> HANDLER_XSERIALIZABLE = new XmlSerializationValueHandler<XSerializable>() {
+
+		@Override
+		public Class<XSerializable> getType() {
+			return XSerializable.class;
+		}
+
+		@Override
+		public void write(XmlSerializationContext context, XmlSerializationHandler handler, String name,
+				XSerializable value) throws SerializationException {
+
+			if (value == null) {
+				return;
+			}
+
+			XMLStreamWriter writer = context.getWriter();
+
+			try {
+
+				writer.writeStartElement(name);
+				writeAttributes(writer, context.getAttributes());
+				value.write(context, handler);
+				writer.writeEndElement();
+
+			} catch (XMLStreamException e) {
+				throw new SerializationException(e);
+			}
+		}
+
+		@Override
+		public XSerializable read(XmlSerializationContext context, XmlSerializationHandler handler,
+				Class<XSerializable> type, XSerializable value) throws SerializationException {
+
+			try {
+
+				XSerializable result = type.newInstance();
+
+				result.read(context, handler);
+
+				return result;
+
+			} catch (IllegalAccessException | InstantiationException e) {
 				throw new SerializationException(e);
 			}
 		};
@@ -553,16 +693,18 @@ public class XmlSerializationHandler implements SerializationHandler {
 	public XmlSerializationHandler() {
 
 		registerValueHandler(HANDLER_BOOLEAN);
+		registerValueHandler(HANDLER_CHARACTER);
 		registerValueHandler(HANDLER_BYTE);
 		registerValueHandler(HANDLER_SHORT);
 		registerValueHandler(HANDLER_INTEGER);
 		registerValueHandler(HANDLER_LONG);
-		registerValueHandler(HANDLER_CHARACTER);
 		registerValueHandler(HANDLER_FLOAT);
 		registerValueHandler(HANDLER_DOUBLE);
 		registerValueHandler(HANDLER_STRING);
 		registerValueHandler(HANDLER_ENUM);
 		registerValueHandler(HANDLER_COLLECTION);
+		registerValueHandler(HANDLER_MAP);
+		registerValueHandler(HANDLER_XSERIALIZABLE);
 	}
 
 	public <T> void registerValueHandler(XmlSerializationValueHandler<T> handler) {
@@ -576,6 +718,10 @@ public class XmlSerializationHandler implements SerializationHandler {
 
 	private Class<?> getNormalizeType(Class<?> type) {
 
+		if (Enum.class.isAssignableFrom(type)) {
+			return Enum.class;
+		}
+
 		if (Collection.class.isAssignableFrom(type)) {
 			return Collection.class;
 		}
@@ -584,8 +730,8 @@ public class XmlSerializationHandler implements SerializationHandler {
 			return Map.class;
 		}
 
-		if (Enum.class.isAssignableFrom(type)) {
-			return Enum.class;
+		if (XSerializable.class.isAssignableFrom(type)) {
+			return XSerializable.class;
 		}
 
 		return type;
@@ -612,6 +758,11 @@ public class XmlSerializationHandler implements SerializationHandler {
 	}
 
 	@Override
+	public void write(SerializationContext context, String name, char value) throws SerializationException {
+		write(context, name, Character.valueOf(value), false);
+	}
+
+	@Override
 	public void write(SerializationContext context, String name, byte value) throws SerializationException {
 		write(context, name, Byte.valueOf(value), false);
 	}
@@ -629,11 +780,6 @@ public class XmlSerializationHandler implements SerializationHandler {
 	@Override
 	public void write(SerializationContext context, String name, long value) throws SerializationException {
 		write(context, name, Long.valueOf(value), false);
-	}
-
-	@Override
-	public void write(SerializationContext context, String name, char value) throws SerializationException {
-		write(context, name, Character.valueOf(value), false);
 	}
 
 	@Override
@@ -675,13 +821,13 @@ public class XmlSerializationHandler implements SerializationHandler {
 
 		if (handler != null) {
 
+			attributes.clear();
+
 			if (detailed) {
 				attributes.put("class", type.getName());
 			}
 
 			handler.write((XmlSerializationContext) context, this, name, value);
-
-			// TODO: clean up attributes?
 
 		} else {
 			throw new SerializationException(String.format("type %s is not supported", type));
@@ -706,6 +852,11 @@ public class XmlSerializationHandler implements SerializationHandler {
 	}
 
 	@Override
+	public char read(SerializationContext context, char value) throws SerializationException {
+		return read(context, Character.valueOf(value), Character.class).charValue();
+	}
+
+	@Override
 	public byte read(SerializationContext context, byte value) throws SerializationException {
 		return read(context, Byte.valueOf(value), Byte.class).byteValue();
 	}
@@ -723,11 +874,6 @@ public class XmlSerializationHandler implements SerializationHandler {
 	@Override
 	public long read(SerializationContext context, long value) throws SerializationException {
 		return read(context, Long.valueOf(value), Long.class).longValue();
-	}
-
-	@Override
-	public char read(SerializationContext context, char value) throws SerializationException {
-		return read(context, Character.valueOf(value), Character.class).charValue();
 	}
 
 	@Override
@@ -790,7 +936,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 
 			while (reader.nextTag() != XMLEvent.END_ELEMENT) {
 
-				System.out.println("read -> " + reader.getLocalName());
+//				System.out.println("read -> " + reader.getLocalName());
 
 				SerializationReader serializationReader = readers.get(reader.getName().getLocalPart());
 
