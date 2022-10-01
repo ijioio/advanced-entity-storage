@@ -6,6 +6,8 @@ public interface SerializationHandler {
 
 	public void write(SerializationContext context, String name, boolean value) throws SerializationException;
 
+	public void write(SerializationContext context, String name, char value) throws SerializationException;
+
 	public void write(SerializationContext context, String name, byte value) throws SerializationException;
 
 	public void write(SerializationContext context, String name, short value) throws SerializationException;
@@ -13,8 +15,6 @@ public interface SerializationHandler {
 	public void write(SerializationContext context, String name, int value) throws SerializationException;
 
 	public void write(SerializationContext context, String name, long value) throws SerializationException;
-
-	public void write(SerializationContext context, String name, char value) throws SerializationException;
 
 	public void write(SerializationContext context, String name, float value) throws SerializationException;
 
@@ -29,6 +29,8 @@ public interface SerializationHandler {
 
 	public boolean read(SerializationContext context, boolean value) throws SerializationException;
 
+	public char read(SerializationContext context, char value) throws SerializationException;
+
 	public byte read(SerializationContext context, byte value) throws SerializationException;
 
 	public short read(SerializationContext context, short value) throws SerializationException;
@@ -36,8 +38,6 @@ public interface SerializationHandler {
 	public int read(SerializationContext context, int value) throws SerializationException;
 
 	public long read(SerializationContext context, long value) throws SerializationException;
-
-	public char read(SerializationContext context, char value) throws SerializationException;
 
 	public float read(SerializationContext context, float value) throws SerializationException;
 

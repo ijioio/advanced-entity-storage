@@ -11,6 +11,8 @@ public @interface Type {
 
 	public static final String BOOLEAN = "BOOLEAN";
 
+	public static final String CHAR = "CHAR";
+
 	public static final String BYTE = "BYTE";
 
 	public static final String SHORT = "SHORT";
@@ -18,8 +20,6 @@ public @interface Type {
 	public static final String INT = "INT";
 
 	public static final String LONG = "LONG";
-
-	public static final String CHAR = "CHAR";
 
 	public static final String FLOAT = "FLOAT";
 
