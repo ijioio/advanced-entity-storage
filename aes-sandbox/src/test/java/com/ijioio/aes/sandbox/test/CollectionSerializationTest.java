@@ -1,5 +1,6 @@
 package com.ijioio.aes.sandbox.test;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Month;
@@ -32,7 +33,6 @@ public class CollectionSerializationTest {
 					@EntityProperty(name = "valueObjectSet", type = @Type(name = Type.SET), parameters = @Type(name = "java.lang.Object")) //
 			} //
 	)
-
 	public static interface CollectionSerializationPrototype {
 
 		public static final String NAME = "com.ijioio.test.model.CollectionSerialization";
@@ -68,9 +68,10 @@ public class CollectionSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		Files.writeString(Paths.get("c://deleteme/collection-serialization.xml"), actual);
-		String expected = Files
-				.readString(Paths.get(getClass().getClassLoader().getResource("collection-serialization.xml").toURI()));
+		String expected = new String(
+				Files.readAllBytes(
+						Paths.get(getClass().getClassLoader().getResource("collection-serialization.xml").toURI())),
+				StandardCharsets.UTF_8);
 
 		Assertions.assertEquals(expected, actual);
 	}
@@ -80,8 +81,10 @@ public class CollectionSerializationTest {
 
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
-		CollectionSerialization actual = XmlUtil.read(handler, CollectionSerialization.class, Files.readString(
-				Paths.get(getClass().getClassLoader().getResource("collection-serialization.xml").toURI())));
+		CollectionSerialization actual = XmlUtil.read(handler, CollectionSerialization.class, new String(
+				Files.readAllBytes(
+						Paths.get(getClass().getClassLoader().getResource("collection-serialization.xml").toURI())),
+				StandardCharsets.UTF_8));
 		CollectionSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());

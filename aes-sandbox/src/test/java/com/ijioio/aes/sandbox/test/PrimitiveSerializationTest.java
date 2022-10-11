@@ -1,5 +1,6 @@
 package com.ijioio.aes.sandbox.test;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -29,7 +30,6 @@ public class PrimitiveSerializationTest {
 					@EntityProperty(name = "valueDouble", type = @Type(name = Type.DOUBLE)) //
 			} //
 	)
-
 	public static interface PrimitiveSerializationPrototype {
 
 		public static final String NAME = "com.ijioio.test.model.PrimitiveSerialization";
@@ -59,8 +59,10 @@ public class PrimitiveSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		String expected = Files
-				.readString(Paths.get(getClass().getClassLoader().getResource("primitive-serialization.xml").toURI()));
+		String expected = new String(
+				Files.readAllBytes(
+						Paths.get(getClass().getClassLoader().getResource("primitive-serialization.xml").toURI())),
+				StandardCharsets.UTF_8);
 
 		Assertions.assertEquals(expected, actual);
 	}
@@ -70,8 +72,10 @@ public class PrimitiveSerializationTest {
 
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
-		PrimitiveSerialization actual = XmlUtil.read(handler, PrimitiveSerialization.class, Files
-				.readString(Paths.get(getClass().getClassLoader().getResource("primitive-serialization.xml").toURI())));
+		PrimitiveSerialization actual = XmlUtil.read(handler, PrimitiveSerialization.class, new String(
+				Files.readAllBytes(
+						Paths.get(getClass().getClassLoader().getResource("primitive-serialization.xml").toURI())),
+				StandardCharsets.UTF_8));
 		PrimitiveSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());
