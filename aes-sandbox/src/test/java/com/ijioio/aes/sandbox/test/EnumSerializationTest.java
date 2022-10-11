@@ -1,6 +1,8 @@
 package com.ijioio.aes.sandbox.test;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Month;
 
@@ -23,16 +25,19 @@ public class EnumSerializationTest {
 					@EntityProperty(name = "valueEnum", type = @Type(name = "java.time.Month")) //
 			} //
 	)
-
 	public static interface EnumSerializationPrototype {
 
 		public static final String NAME = "com.ijioio.test.model.EnumSerialization";
 	}
 
+	private Path path;
+
 	private EnumSerialization model;
 
 	@BeforeEach
-	public void before() {
+	public void before() throws Exception {
+
+		path = Paths.get(getClass().getClassLoader().getResource("enum-serialization.xml").toURI());
 
 		model = new EnumSerialization();
 
@@ -46,8 +51,7 @@ public class EnumSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		String expected = Files
-				.readString(Paths.get(getClass().getClassLoader().getResource("enum-serialization.xml").toURI()));
+		String expected = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
 
 		Assertions.assertEquals(expected, actual);
 	}
@@ -58,7 +62,7 @@ public class EnumSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		EnumSerialization actual = XmlUtil.read(handler, EnumSerialization.class,
-				Files.readString(Paths.get(getClass().getClassLoader().getResource("enum-serialization.xml").toURI())));
+				new String(Files.readAllBytes(path), StandardCharsets.UTF_8));
 		EnumSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());
