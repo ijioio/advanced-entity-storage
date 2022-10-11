@@ -2,6 +2,7 @@ package com.ijioio.aes.sandbox.test;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Assertions;
@@ -35,10 +36,14 @@ public class PrimitiveSerializationTest {
 		public static final String NAME = "com.ijioio.test.model.PrimitiveSerialization";
 	}
 
+	private Path path;
+
 	private PrimitiveSerialization model;
 
 	@BeforeEach
-	public void before() {
+	public void before() throws Exception {
+
+		path = Paths.get(getClass().getClassLoader().getResource("primitive-serialization.xml").toURI());
 
 		model = new PrimitiveSerialization();
 
@@ -59,10 +64,7 @@ public class PrimitiveSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		String expected = new String(
-				Files.readAllBytes(
-						Paths.get(getClass().getClassLoader().getResource("primitive-serialization.xml").toURI())),
-				StandardCharsets.UTF_8);
+		String expected = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
 
 		Assertions.assertEquals(expected, actual);
 	}
@@ -72,10 +74,8 @@ public class PrimitiveSerializationTest {
 
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
-		PrimitiveSerialization actual = XmlUtil.read(handler, PrimitiveSerialization.class, new String(
-				Files.readAllBytes(
-						Paths.get(getClass().getClassLoader().getResource("primitive-serialization.xml").toURI())),
-				StandardCharsets.UTF_8));
+		PrimitiveSerialization actual = XmlUtil.read(handler, PrimitiveSerialization.class,
+				new String(Files.readAllBytes(path), StandardCharsets.UTF_8));
 		PrimitiveSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());

@@ -2,6 +2,7 @@ package com.ijioio.aes.sandbox.test;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,10 +39,14 @@ public class SkipSerializationTest {
 		public static final String NAME = "com.ijioio.test.model.SkipSerialization";
 	}
 
+	private Path path;
+
 	private SkipSerialization model;
 
 	@BeforeEach
-	public void before() {
+	public void before() throws Exception {
+
+		path = Paths.get(getClass().getClassLoader().getResource("skip-serialization.xml").toURI());
 
 		ArrayList<String> stringList = new ArrayList<>(Arrays.asList("value1", "value2"));
 		Set<String> stringSet = new LinkedHashSet<>(Arrays.asList("value1", "value2"));
@@ -65,10 +70,7 @@ public class SkipSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		SkipSerialization actual = XmlUtil.read(handler, SkipSerialization.class,
-				new String(
-						Files.readAllBytes(
-								Paths.get(getClass().getClassLoader().getResource("skip-serialization.xml").toURI())),
-						StandardCharsets.UTF_8));
+				new String(Files.readAllBytes(path), StandardCharsets.UTF_8));
 		SkipSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());

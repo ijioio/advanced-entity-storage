@@ -2,6 +2,7 @@ package com.ijioio.aes.sandbox.test;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Month;
 import java.util.LinkedHashMap;
@@ -36,10 +37,14 @@ public class MapSerializationTest {
 		public static final String NAME = "com.ijioio.test.model.MapSerialization";
 	}
 
+	private Path path;
+
 	private MapSerialization model;
 
 	@BeforeEach
-	public void before() {
+	public void before() throws Exception {
+
+		path = Paths.get(getClass().getClassLoader().getResource("map-serialization.xml").toURI());
 
 		Map<String, String> stringMap = new LinkedHashMap<>();
 
@@ -72,9 +77,7 @@ public class MapSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		String expected = new String(
-				Files.readAllBytes(Paths.get(getClass().getClassLoader().getResource("map-serialization.xml").toURI())),
-				StandardCharsets.UTF_8);
+		String expected = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
 
 		Assertions.assertEquals(expected, actual);
 	}
@@ -85,10 +88,7 @@ public class MapSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		MapSerialization actual = XmlUtil.read(handler, MapSerialization.class,
-				new String(
-						Files.readAllBytes(
-								Paths.get(getClass().getClassLoader().getResource("map-serialization.xml").toURI())),
-						StandardCharsets.UTF_8));
+				new String(Files.readAllBytes(path), StandardCharsets.UTF_8));
 		MapSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());

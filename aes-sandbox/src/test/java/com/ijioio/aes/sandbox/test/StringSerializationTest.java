@@ -2,6 +2,7 @@ package com.ijioio.aes.sandbox.test;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Assertions;
@@ -28,10 +29,14 @@ public class StringSerializationTest {
 		public static final String NAME = "com.ijioio.test.model.StringSerialization";
 	}
 
+	private Path path;
+
 	private StringSerialization model;
 
 	@BeforeEach
-	public void before() {
+	public void before() throws Exception {
+
+		path = Paths.get(getClass().getClassLoader().getResource("string-serialization.xml").toURI());
 
 		model = new StringSerialization();
 
@@ -45,10 +50,7 @@ public class StringSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		String expected = new String(
-				Files.readAllBytes(
-						Paths.get(getClass().getClassLoader().getResource("string-serialization.xml").toURI())),
-				StandardCharsets.UTF_8);
+		String expected = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
 
 		Assertions.assertEquals(expected, actual);
 	}
@@ -59,10 +61,7 @@ public class StringSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		StringSerialization actual = XmlUtil.read(handler, StringSerialization.class,
-				new String(
-						Files.readAllBytes(
-								Paths.get(getClass().getClassLoader().getResource("string-serialization.xml").toURI())),
-						StandardCharsets.UTF_8));
+				new String(Files.readAllBytes(path), StandardCharsets.UTF_8));
 		StringSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());
