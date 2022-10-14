@@ -261,21 +261,21 @@ public class EntityProcessor extends AbstractProcessor {
 
 		TypeName typeName;
 
-		if (name.equals(Type.BOOLEAN)) {
+		if (name.equals(Type.BOOLEAN) || name.equals(boolean.class.getName())) {
 			typeName = TypeName.BOOLEAN;
-		} else if (name.equals(Type.BYTE)) {
-			typeName = TypeName.BYTE;
-		} else if (name.equals(Type.SHORT)) {
-			typeName = TypeName.SHORT;
-		} else if (name.equals(Type.INT)) {
-			typeName = TypeName.INT;
-		} else if (name.equals(Type.LONG)) {
-			typeName = TypeName.LONG;
-		} else if (name.equals(Type.CHAR)) {
+		} else if (name.equals(Type.CHAR) || name.equals(char.class.getName())) {
 			typeName = TypeName.CHAR;
-		} else if (name.equals(Type.FLOAT)) {
+		} else if (name.equals(Type.BYTE) || name.equals(byte.class.getName())) {
+			typeName = TypeName.BYTE;
+		} else if (name.equals(Type.SHORT) || name.equals(short.class.getName())) {
+			typeName = TypeName.SHORT;
+		} else if (name.equals(Type.INT) || name.equals(int.class.getName())) {
+			typeName = TypeName.INT;
+		} else if (name.equals(Type.LONG) || name.equals(long.class.getName())) {
+			typeName = TypeName.LONG;
+		} else if (name.equals(Type.FLOAT) || name.equals(float.class.getName())) {
 			typeName = TypeName.FLOAT;
-		} else if (name.equals(Type.DOUBLE)) {
+		} else if (name.equals(Type.DOUBLE) || name.equals(double.class.getName())) {
 			typeName = TypeName.DOUBLE;
 		} else if (name.equals(Type.STRING) || name.equals(String.class.getName())) {
 			typeName = ClassName.get(String.class);
@@ -309,19 +309,19 @@ public class EntityProcessor extends AbstractProcessor {
 
 		if (name.equals(Type.BOOLEAN) || name.equals(boolean.class.getName())) {
 			typeName = TypeName.BOOLEAN;
-		} else if (name.equals(Type.BYTE)) {
-			typeName = TypeName.BYTE;
-		} else if (name.equals(Type.SHORT)) {
-			typeName = TypeName.SHORT;
-		} else if (name.equals(Type.INT)) {
-			typeName = TypeName.INT;
-		} else if (name.equals(Type.LONG)) {
-			typeName = TypeName.LONG;
-		} else if (name.equals(Type.CHAR)) {
+		} else if (name.equals(Type.CHAR) || name.equals(char.class.getName())) {
 			typeName = TypeName.CHAR;
-		} else if (name.equals(Type.FLOAT)) {
+		} else if (name.equals(Type.BYTE) || name.equals(byte.class.getName())) {
+			typeName = TypeName.BYTE;
+		} else if (name.equals(Type.SHORT) || name.equals(short.class.getName())) {
+			typeName = TypeName.SHORT;
+		} else if (name.equals(Type.INT) || name.equals(int.class.getName())) {
+			typeName = TypeName.INT;
+		} else if (name.equals(Type.LONG) || name.equals(long.class.getName())) {
+			typeName = TypeName.LONG;
+		} else if (name.equals(Type.FLOAT) || name.equals(float.class.getName())) {
 			typeName = TypeName.FLOAT;
-		} else if (name.equals(Type.DOUBLE)) {
+		} else if (name.equals(Type.DOUBLE) || name.equals(double.class.getName())) {
 			typeName = TypeName.DOUBLE;
 		} else if (name.equals(Type.STRING) || name.equals(String.class.getName())) {
 			typeName = ClassName.get(String.class);

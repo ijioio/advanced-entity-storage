@@ -1,5 +1,5 @@
-<object class="com.ijioio.test.model.MapFinalSerialization">
-    <id>map-final-serialization</id>
+<object class="com.ijioio.test.model.MapExplicitSerialization">
+    <id>map-explicit-serialization</id>
     <valueStringMap class="java.util.LinkedHashMap">
         <entry>
             <key class="java.lang.String">key1</key>

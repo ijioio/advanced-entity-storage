@@ -1,5 +1,5 @@
-<object class="com.ijioio.test.model.PrimitiveSerialization">
-    <id>primitive-serialization</id>
+<object class="com.ijioio.test.model.PrimitiveExplicitSerialization">
+    <id>primitive-explicit-serialization</id>
     <valueBoolean>true</valueBoolean>
     <valueChar>a</valueChar>
     <valueByte>10</valueByte>

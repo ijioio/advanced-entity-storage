@@ -1,5 +1,5 @@
-<object class="com.ijioio.test.model.CollectionSerialization">
-    <id>collection-serialization</id>
+<object class="com.ijioio.test.model.CollectionExplicitSerialization">
+    <id>collection-explicit-serialization</id>
     <valueStringList class="java.util.ArrayList">
         <item class="java.lang.String">value1</item>
         <item class="java.lang.String">value2</item>

@@ -14,40 +14,40 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
-import com.ijioio.test.model.PrimitiveSerialization;
+import com.ijioio.test.model.PrimitiveExplicitSerialization;
 
-public class PrimitiveSerializationTest {
+public class PrimitiveExplicitSerializationTest {
 
 	@Entity( //
-			name = PrimitiveSerializationPrototype.NAME, //
+			name = PrimitiveExplicitSerializationPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueBoolean", type = @Type(name = Type.BOOLEAN)), //
-					@EntityProperty(name = "valueChar", type = @Type(name = Type.CHAR)), //
-					@EntityProperty(name = "valueByte", type = @Type(name = Type.BYTE)), //
-					@EntityProperty(name = "valueShort", type = @Type(name = Type.SHORT)), //
-					@EntityProperty(name = "valueInt", type = @Type(name = Type.INT)), //
-					@EntityProperty(name = "valueLong", type = @Type(name = Type.LONG)), //
-					@EntityProperty(name = "valueFloat", type = @Type(name = Type.FLOAT)), //
-					@EntityProperty(name = "valueDouble", type = @Type(name = Type.DOUBLE)) //
+					@EntityProperty(name = "valueBoolean", type = @Type(name = "boolean")), //
+					@EntityProperty(name = "valueChar", type = @Type(name = "char")), //
+					@EntityProperty(name = "valueByte", type = @Type(name = "byte")), //
+					@EntityProperty(name = "valueShort", type = @Type(name = "short")), //
+					@EntityProperty(name = "valueInt", type = @Type(name = "int")), //
+					@EntityProperty(name = "valueLong", type = @Type(name = "long")), //
+					@EntityProperty(name = "valueFloat", type = @Type(name = "float")), //
+					@EntityProperty(name = "valueDouble", type = @Type(name = "double")) //
 			} //
 	)
-	public static interface PrimitiveSerializationPrototype {
+	public static interface PrimitiveExplicitSerializationPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.PrimitiveSerialization";
+		public static final String NAME = "com.ijioio.test.model.PrimitiveExplicitSerialization";
 	}
 
 	private Path path;
 
-	private PrimitiveSerialization model;
+	private PrimitiveExplicitSerialization model;
 
 	@BeforeEach
 	public void before() throws Exception {
 
-		path = Paths.get(getClass().getClassLoader().getResource("primitive-serialization.xml").toURI());
+		path = Paths.get(getClass().getClassLoader().getResource("primitive-explicit-serialization.xml").toURI());
 
-		model = new PrimitiveSerialization();
+		model = new PrimitiveExplicitSerialization();
 
-		model.setId("primitive-serialization");
+		model.setId("primitive-explicit-serialization");
 		model.setValueBoolean(true);
 		model.setValueByte((byte) 10);
 		model.setValueShort((short) 20);
@@ -74,9 +74,9 @@ public class PrimitiveSerializationTest {
 
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
-		PrimitiveSerialization actual = XmlUtil.read(handler, PrimitiveSerialization.class,
+		PrimitiveExplicitSerialization actual = XmlUtil.read(handler, PrimitiveExplicitSerialization.class,
 				new String(Files.readAllBytes(path), StandardCharsets.UTF_8));
-		PrimitiveSerialization expected = model;
+		PrimitiveExplicitSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());
 		Assertions.assertEquals(expected.isValueBoolean(), actual.isValueBoolean());
