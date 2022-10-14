@@ -1,14 +1,18 @@
 package com.ijioio.aes.annotation.processor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.VariableElement;
 
+import com.ijioio.aes.annotation.EntityProperty.Attribute;
 import com.ijioio.aes.annotation.processor.exception.EntityPropertyIllegalStateException;
 import com.ijioio.aes.annotation.processor.exception.ProcessorException;
 import com.ijioio.aes.annotation.processor.util.ProcessorUtil;
@@ -27,6 +31,8 @@ public class EntityPropertyMetadata {
 	private TypeMetadata type;
 
 	private final List<TypeMetadata> parameters = new ArrayList<>();
+
+	private final Set<Attribute> attributes = new HashSet<>();
 
 	private EntityPropertyMetadata(ProcessorContext context) throws ProcessorException {
 
@@ -64,6 +70,19 @@ public class EntityPropertyMetadata {
 
 					parameters.add(type);
 				}
+
+			} else if (key.getSimpleName().contentEquals("attributes")) {
+
+				List<? extends AnnotationValue> annotationValues = ProcessorUtil.arrayVisitor.visit(value);
+
+				attributes.clear();
+
+				for (AnnotationValue annotationValue : annotationValues) {
+
+					VariableElement variableElement = ProcessorUtil.enumVisitor.visit(annotationValue);
+
+					attributes.add(Attribute.valueOf(variableElement.getSimpleName().toString()));
+				}
 			}
 		}
 
@@ -94,8 +113,13 @@ public class EntityPropertyMetadata {
 		return parameters;
 	}
 
+	public boolean isFinal() {
+		return attributes.contains(Attribute.FINAL);
+	}
+
 	@Override
 	public String toString() {
-		return "EntityPropertyMetadata [name=" + name + ", type=" + type + ", parameters=" + parameters + "]";
+		return "EntityPropertyMetadata [name=" + name + ", type=" + type + ", parameters=" + parameters
+				+ ", attributes=" + attributes + "]";
 	}
 }
