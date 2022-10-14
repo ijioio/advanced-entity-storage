@@ -127,9 +127,16 @@ public class EntityProcessor extends AbstractProcessor {
 									.addStatement("this.$L = $L", property.getName(), property.getName()).build());
 				}
 
-				methods.add(MethodSpec.methodBuilder(String.format("get%s", TextUtil.capitalize(property.getName())))
-						.addModifiers(Modifier.PUBLIC).returns(propertyType)
-						.addStatement("return $L", property.getName()).build());
+				if (propertyType == TypeName.BOOLEAN) {
+					methods.add(MethodSpec.methodBuilder(String.format("is%s", TextUtil.capitalize(property.getName())))
+							.addModifiers(Modifier.PUBLIC).returns(propertyType)
+							.addStatement("return $L", property.getName()).build());
+				} else {
+					methods.add(
+							MethodSpec.methodBuilder(String.format("get%s", TextUtil.capitalize(property.getName())))
+									.addModifiers(Modifier.PUBLIC).returns(propertyType)
+									.addStatement("return $L", property.getName()).build());
+				}
 			}
 
 			methods.add(generateWrite(entity));

@@ -79,7 +79,7 @@ public class PrimitiveSerializationTest {
 		PrimitiveSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());
-		Assertions.assertEquals(expected.getValueBoolean(), actual.getValueBoolean());
+		Assertions.assertEquals(expected.isValueBoolean(), actual.isValueBoolean());
 		Assertions.assertEquals(expected.getValueChar(), actual.getValueChar());
 		Assertions.assertEquals(expected.getValueByte(), actual.getValueByte());
 		Assertions.assertEquals(expected.getValueShort(), actual.getValueShort());
