@@ -8,6 +8,7 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.AnnotationValueVisitor;
 import javax.lang.model.element.ElementVisitor;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVisitor;
@@ -54,6 +55,14 @@ public class ProcessorUtil {
 
 		@Override
 		public TypeMirror visitType(TypeMirror value, Void parameter) {
+			return value;
+		};
+	};
+
+	public static final AnnotationValueVisitor<VariableElement, Void> enumVisitor = new SimpleAnnotationValueVisitor8<VariableElement, Void>() {
+
+		@Override
+		public VariableElement visitEnumConstant(VariableElement value, Void parameter) {
 			return value;
 		};
 	};
