@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -107,11 +108,25 @@ public class EntityProcessor extends AbstractProcessor {
 
 				FieldSpec.builder(propertyType, property.getName()).addModifiers(Modifier.PRIVATE).build();
 
-				fields.add(FieldSpec.builder(propertyType, property.getName()).addModifiers(Modifier.PRIVATE).build());
+				if (property.isFinal()) {
 
-				methods.add(MethodSpec.methodBuilder(String.format("set%s", TextUtil.capitalize(property.getName())))
-						.addModifiers(Modifier.PUBLIC).addParameter(propertyType, property.getName())
-						.addStatement("this.$L = $L", property.getName(), property.getName()).build());
+					TypeName propertyActualType = getActualType(property.getType(), property.getParameters());
+
+					fields.add(FieldSpec.builder(propertyType, property.getName())
+							.addModifiers(Modifier.PRIVATE, Modifier.FINAL).initializer("new $T()", propertyActualType)
+							.build());
+
+				} else {
+
+					fields.add(
+							FieldSpec.builder(propertyType, property.getName()).addModifiers(Modifier.PRIVATE).build());
+
+					methods.add(
+							MethodSpec.methodBuilder(String.format("set%s", TextUtil.capitalize(property.getName())))
+									.addModifiers(Modifier.PUBLIC).addParameter(propertyType, property.getName())
+									.addStatement("this.$L = $L", property.getName(), property.getName()).build());
+				}
+
 				methods.add(MethodSpec.methodBuilder(String.format("get%s", TextUtil.capitalize(property.getName())))
 						.addModifiers(Modifier.PUBLIC).returns(propertyType)
 						.addStatement("return $L", property.getName()).build());
@@ -191,8 +206,14 @@ public class EntityProcessor extends AbstractProcessor {
 		Collection<EntityPropertyMetadata> properties = entity.getProperties().values();
 
 		for (EntityPropertyMetadata property : properties) {
-			codeBlockBuilder.addStatement("readers.put($S, () -> $L = handler.read(context, $L))", property.getName(),
-					property.getName(), property.getName());
+
+			if (property.isFinal()) {
+				codeBlockBuilder.addStatement("readers.put($S, () -> handler.read(context, $L))", property.getName(),
+						property.getName());
+			} else {
+				codeBlockBuilder.addStatement("readers.put($S, () -> $L = handler.read(context, $L))",
+						property.getName(), property.getName(), property.getName());
+			}
 		}
 
 		codeBlockBuilder.addStatement("return readers");
@@ -257,6 +278,52 @@ public class EntityProcessor extends AbstractProcessor {
 			typeName = ClassName.get(Set.class);
 		} else if (name.equals(Type.MAP) || name.equals(Map.class.getName())) {
 			typeName = ClassName.get(Map.class);
+		} else {
+			typeName = ClassName.bestGuess(name);
+		}
+
+		return reference ? ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.ENTITY_REFERENCE_TYPE_NAME), typeName)
+				: typeName;
+	}
+
+	private TypeName getActualType(TypeMetadata type, List<TypeMetadata> parameters) {
+
+		if (parameters.size() > 0) {
+			return ParameterizedTypeName.get((ClassName) getActualType(type.getName(), false), parameters.stream()
+					.map(item -> getType(item.getName(), item.isReference())).toArray(size -> new TypeName[size]));
+		}
+
+		return getActualType(type.getName(), type.isReference());
+	}
+
+	private TypeName getActualType(String name, boolean reference) {
+
+		TypeName typeName;
+
+		if (name.equals(Type.BOOLEAN) || name.equals(boolean.class.getName())) {
+			typeName = TypeName.BOOLEAN;
+		} else if (name.equals(Type.BYTE)) {
+			typeName = TypeName.BYTE;
+		} else if (name.equals(Type.SHORT)) {
+			typeName = TypeName.SHORT;
+		} else if (name.equals(Type.INT)) {
+			typeName = TypeName.INT;
+		} else if (name.equals(Type.LONG)) {
+			typeName = TypeName.LONG;
+		} else if (name.equals(Type.CHAR)) {
+			typeName = TypeName.CHAR;
+		} else if (name.equals(Type.FLOAT)) {
+			typeName = TypeName.FLOAT;
+		} else if (name.equals(Type.DOUBLE)) {
+			typeName = TypeName.DOUBLE;
+		} else if (name.equals(Type.STRING) || name.equals(String.class.getName())) {
+			typeName = ClassName.get(String.class);
+		} else if (name.equals(Type.LIST) || name.equals(List.class.getName())) {
+			typeName = ClassName.get(ArrayList.class);
+		} else if (name.equals(Type.SET) || name.equals(Set.class.getName())) {
+			typeName = ClassName.get(LinkedHashSet.class);
+		} else if (name.equals(Type.MAP) || name.equals(Map.class.getName())) {
+			typeName = ClassName.get(LinkedHashMap.class);
 		} else {
 			typeName = ClassName.bestGuess(name);
 		}

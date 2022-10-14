@@ -526,7 +526,11 @@ public class XmlSerializationHandler implements SerializationHandler {
 
 			try {
 
-				Collection<Object> collection = List.class.isAssignableFrom(type) ? new ArrayList<>() : new HashSet<>();
+				@SuppressWarnings("unchecked")
+				Collection<Object> collection = value != null ? (Collection<Object>) value
+						: List.class.isAssignableFrom(type) ? new ArrayList<>() : new HashSet<>();
+
+				collection.clear();
 
 				while (reader.nextTag() != XMLStreamConstants.END_ELEMENT) {
 
@@ -598,7 +602,10 @@ public class XmlSerializationHandler implements SerializationHandler {
 
 			try {
 
-				Map<Object, Object> map = new LinkedHashMap<>();
+				@SuppressWarnings("unchecked")
+				Map<Object, Object> map = values != null ? (Map<Object, Object>) values : new LinkedHashMap<>();
+
+				map.clear();
 
 				while (reader.nextTag() != XMLStreamConstants.END_ELEMENT) {
 
