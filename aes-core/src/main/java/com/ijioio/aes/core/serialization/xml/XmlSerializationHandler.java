@@ -518,6 +518,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 			}
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public Collection read(XmlSerializationContext context, XmlSerializationHandler handler, Class<Collection> type,
 				Collection value) throws SerializationException {
@@ -526,7 +527,10 @@ public class XmlSerializationHandler implements SerializationHandler {
 
 			try {
 
-				Collection<Object> collection = List.class.isAssignableFrom(type) ? new ArrayList<>() : new HashSet<>();
+				Collection collection = value != null ? value
+						: List.class.isAssignableFrom(type) ? new ArrayList<>() : new HashSet<>();
+
+				collection.clear();
 
 				while (reader.nextTag() != XMLStreamConstants.END_ELEMENT) {
 
@@ -590,6 +594,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 			}
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public Map read(XmlSerializationContext context, XmlSerializationHandler handler, Class<Map> type, Map values)
 				throws SerializationException {
@@ -598,7 +603,9 @@ public class XmlSerializationHandler implements SerializationHandler {
 
 			try {
 
-				Map<Object, Object> map = new LinkedHashMap<>();
+				Map map = values != null ? values : new LinkedHashMap<>();
+
+				map.clear();
 
 				while (reader.nextTag() != XMLStreamConstants.END_ELEMENT) {
 
