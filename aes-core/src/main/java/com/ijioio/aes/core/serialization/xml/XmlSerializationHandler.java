@@ -1,5 +1,8 @@
 package com.ijioio.aes.core.serialization.xml;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -436,6 +439,54 @@ public class XmlSerializationHandler implements SerializationHandler {
 		};
 	};
 
+	private static final XmlSerializationValueHandler<LocalDateTime> HANDLER_LOCAL_DATE_TIME = new XmlSerializationValueHandler<LocalDateTime>() {
+
+		private final DateTimeFormatter formatter = new DateTimeFormatterBuilder().parseCaseInsensitive()
+				.append(DateTimeFormatter.ISO_LOCAL_DATE_TIME).toFormatter();
+
+		@Override
+		public Class<LocalDateTime> getType() {
+			return LocalDateTime.class;
+		}
+
+		@Override
+		public void write(XmlSerializationContext context, XmlSerializationHandler handler, String name,
+				LocalDateTime value) throws SerializationException {
+
+			if (value == null) {
+				return;
+			}
+
+			XMLStreamWriter writer = context.getWriter();
+
+			try {
+
+				writer.writeStartElement(name);
+				writeAttributes(writer, context.getAttributes());
+				writer.writeCharacters(formatter.format(value));
+				writer.writeEndElement();
+
+			} catch (XMLStreamException e) {
+				throw new SerializationException(e);
+			}
+		}
+
+		@Override
+		public LocalDateTime read(XmlSerializationContext context, XmlSerializationHandler handler,
+				Class<LocalDateTime> type, LocalDateTime value) throws SerializationException {
+
+			XMLStreamReader reader = context.getReader();
+
+			try {
+
+				return LocalDateTime.parse(reader.getElementText(), formatter);
+
+			} catch (XMLStreamException e) {
+				throw new SerializationException(e);
+			}
+		};
+	};
+
 	@SuppressWarnings("rawtypes")
 	private static final XmlSerializationValueHandler<Enum> HANDLER_ENUM = new XmlSerializationValueHandler<Enum>() {
 
@@ -704,6 +755,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 		registerValueHandler(HANDLER_FLOAT);
 		registerValueHandler(HANDLER_DOUBLE);
 		registerValueHandler(HANDLER_STRING);
+		registerValueHandler(HANDLER_LOCAL_DATE_TIME);
 		registerValueHandler(HANDLER_ENUM);
 		registerValueHandler(HANDLER_COLLECTION);
 		registerValueHandler(HANDLER_MAP);
@@ -827,6 +879,11 @@ public class XmlSerializationHandler implements SerializationHandler {
 	}
 
 	@Override
+	public void write(SerializationContext context, String name, LocalDateTime value) throws SerializationException {
+		write(context, name, value, false);
+	}
+
+	@Override
 	public <T> void write(SerializationContext context, String name, T value) throws SerializationException {
 		write(context, name, value, true);
 	}
@@ -918,6 +975,11 @@ public class XmlSerializationHandler implements SerializationHandler {
 	@Override
 	public String read(SerializationContext context, String value) throws SerializationException {
 		return read(context, value, String.class);
+	}
+
+	@Override
+	public LocalDateTime read(SerializationContext context, LocalDateTime value) throws SerializationException {
+		return read(context, value, LocalDateTime.class);
 	}
 
 	@Override
