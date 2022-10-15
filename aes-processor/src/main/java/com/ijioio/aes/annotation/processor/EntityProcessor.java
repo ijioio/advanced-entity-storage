@@ -2,6 +2,7 @@ package com.ijioio.aes.annotation.processor;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -279,6 +280,8 @@ public class EntityProcessor extends AbstractProcessor {
 			typeName = TypeName.DOUBLE;
 		} else if (name.equals(Type.STRING) || name.equals(String.class.getName())) {
 			typeName = ClassName.get(String.class);
+		} else if (name.equals(Type.LOCAL_DATE_TIME) || name.equals(LocalDateTime.class.getName())) {
+			typeName = ClassName.get(LocalDateTime.class);
 		} else if (name.equals(Type.LIST) || name.equals(List.class.getName())) {
 			typeName = ClassName.get(List.class);
 		} else if (name.equals(Type.SET) || name.equals(Set.class.getName())) {
@@ -325,6 +328,8 @@ public class EntityProcessor extends AbstractProcessor {
 			typeName = TypeName.DOUBLE;
 		} else if (name.equals(Type.STRING) || name.equals(String.class.getName())) {
 			typeName = ClassName.get(String.class);
+		} else if (name.equals(Type.LOCAL_DATE_TIME) || name.equals(LocalDateTime.class.getName())) {
+			typeName = ClassName.get(LocalDateTime.class);
 		} else if (name.equals(Type.LIST) || name.equals(List.class.getName())) {
 			typeName = ClassName.get(ArrayList.class);
 		} else if (name.equals(Type.SET) || name.equals(Set.class.getName())) {
