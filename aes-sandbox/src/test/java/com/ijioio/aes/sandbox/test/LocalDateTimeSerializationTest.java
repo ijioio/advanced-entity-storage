@@ -53,7 +53,6 @@ public class LocalDateTimeSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		Files.writeString(Paths.get("c://deleteme/local-date-time-serialization.xml"), actual);
 		String expected = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n"));
 
 		Assertions.assertEquals(expected, actual);

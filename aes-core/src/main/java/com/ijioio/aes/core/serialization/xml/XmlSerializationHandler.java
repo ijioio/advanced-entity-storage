@@ -1,8 +1,9 @@
 package com.ijioio.aes.core.serialization.xml;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -439,10 +440,97 @@ public class XmlSerializationHandler implements SerializationHandler {
 		};
 	};
 
-	private static final XmlSerializationValueHandler<LocalDateTime> HANDLER_LOCAL_DATE_TIME = new XmlSerializationValueHandler<LocalDateTime>() {
+	private static final XmlSerializationValueHandler<LocalDate> HANDLER_LOCAL_DATE = new XmlSerializationValueHandler<LocalDate>() {
 
-		private final DateTimeFormatter formatter = new DateTimeFormatterBuilder().parseCaseInsensitive()
-				.append(DateTimeFormatter.ISO_LOCAL_DATE_TIME).toFormatter();
+		@Override
+		public Class<LocalDate> getType() {
+			return LocalDate.class;
+		}
+
+		@Override
+		public void write(XmlSerializationContext context, XmlSerializationHandler handler, String name,
+				LocalDate value) throws SerializationException {
+
+			if (value == null) {
+				return;
+			}
+
+			XMLStreamWriter writer = context.getWriter();
+
+			try {
+
+				writer.writeStartElement(name);
+				writeAttributes(writer, context.getAttributes());
+				writer.writeCharacters(DateTimeFormatter.ISO_LOCAL_DATE.format(value));
+				writer.writeEndElement();
+
+			} catch (XMLStreamException e) {
+				throw new SerializationException(e);
+			}
+		}
+
+		@Override
+		public LocalDate read(XmlSerializationContext context, XmlSerializationHandler handler, Class<LocalDate> type,
+				LocalDate value) throws SerializationException {
+
+			XMLStreamReader reader = context.getReader();
+
+			try {
+
+				return LocalDate.parse(reader.getElementText(), DateTimeFormatter.ISO_LOCAL_DATE);
+
+			} catch (XMLStreamException e) {
+				throw new SerializationException(e);
+			}
+		};
+	};
+
+	private static final XmlSerializationValueHandler<LocalTime> HANDLER_LOCAL_TIME = new XmlSerializationValueHandler<LocalTime>() {
+
+		@Override
+		public Class<LocalTime> getType() {
+			return LocalTime.class;
+		}
+
+		@Override
+		public void write(XmlSerializationContext context, XmlSerializationHandler handler, String name,
+				LocalTime value) throws SerializationException {
+
+			if (value == null) {
+				return;
+			}
+
+			XMLStreamWriter writer = context.getWriter();
+
+			try {
+
+				writer.writeStartElement(name);
+				writeAttributes(writer, context.getAttributes());
+				writer.writeCharacters(DateTimeFormatter.ISO_LOCAL_TIME.format(value));
+				writer.writeEndElement();
+
+			} catch (XMLStreamException e) {
+				throw new SerializationException(e);
+			}
+		}
+
+		@Override
+		public LocalTime read(XmlSerializationContext context, XmlSerializationHandler handler, Class<LocalTime> type,
+				LocalTime value) throws SerializationException {
+
+			XMLStreamReader reader = context.getReader();
+
+			try {
+
+				return LocalTime.parse(reader.getElementText(), DateTimeFormatter.ISO_LOCAL_TIME);
+
+			} catch (XMLStreamException e) {
+				throw new SerializationException(e);
+			}
+		};
+	};
+
+	private static final XmlSerializationValueHandler<LocalDateTime> HANDLER_LOCAL_DATE_TIME = new XmlSerializationValueHandler<LocalDateTime>() {
 
 		@Override
 		public Class<LocalDateTime> getType() {
@@ -463,7 +551,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 
 				writer.writeStartElement(name);
 				writeAttributes(writer, context.getAttributes());
-				writer.writeCharacters(formatter.format(value));
+				writer.writeCharacters(DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(value));
 				writer.writeEndElement();
 
 			} catch (XMLStreamException e) {
@@ -479,7 +567,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 
 			try {
 
-				return LocalDateTime.parse(reader.getElementText(), formatter);
+				return LocalDateTime.parse(reader.getElementText(), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
 			} catch (XMLStreamException e) {
 				throw new SerializationException(e);
@@ -755,6 +843,8 @@ public class XmlSerializationHandler implements SerializationHandler {
 		registerValueHandler(HANDLER_FLOAT);
 		registerValueHandler(HANDLER_DOUBLE);
 		registerValueHandler(HANDLER_STRING);
+		registerValueHandler(HANDLER_LOCAL_DATE);
+		registerValueHandler(HANDLER_LOCAL_TIME);
 		registerValueHandler(HANDLER_LOCAL_DATE_TIME);
 		registerValueHandler(HANDLER_ENUM);
 		registerValueHandler(HANDLER_COLLECTION);
@@ -879,6 +969,16 @@ public class XmlSerializationHandler implements SerializationHandler {
 	}
 
 	@Override
+	public void write(SerializationContext context, String name, LocalDate value) throws SerializationException {
+		write(context, name, value, false);
+	}
+
+	@Override
+	public void write(SerializationContext context, String name, LocalTime value) throws SerializationException {
+		write(context, name, value, false);
+	}
+
+	@Override
 	public void write(SerializationContext context, String name, LocalDateTime value) throws SerializationException {
 		write(context, name, value, false);
 	}
@@ -975,6 +1075,16 @@ public class XmlSerializationHandler implements SerializationHandler {
 	@Override
 	public String read(SerializationContext context, String value) throws SerializationException {
 		return read(context, value, String.class);
+	}
+
+	@Override
+	public LocalDate read(SerializationContext context, LocalDate value) throws SerializationException {
+		return read(context, value, LocalDate.class);
+	}
+
+	@Override
+	public LocalTime read(SerializationContext context, LocalTime value) throws SerializationException {
+		return read(context, value, LocalTime.class);
 	}
 
 	@Override
