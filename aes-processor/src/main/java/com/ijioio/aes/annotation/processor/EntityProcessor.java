@@ -2,7 +2,9 @@ package com.ijioio.aes.annotation.processor;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -111,11 +113,12 @@ public class EntityProcessor extends AbstractProcessor {
 
 				if (property.isFinal()) {
 
-					TypeName propertyActualType = getActualType(property.getType(), property.getParameters());
+					TypeName propertyImplementationType = getImplementationType(property.getType(),
+							property.getParameters());
 
 					fields.add(FieldSpec.builder(propertyType, property.getName())
-							.addModifiers(Modifier.PRIVATE, Modifier.FINAL).initializer("new $T()", propertyActualType)
-							.build());
+							.addModifiers(Modifier.PRIVATE, Modifier.FINAL)
+							.initializer("new $T()", propertyImplementationType).build());
 
 				} else {
 
@@ -282,6 +285,10 @@ public class EntityProcessor extends AbstractProcessor {
 			typeName = ClassName.get(String.class);
 		} else if (name.equals(Type.LOCAL_DATE_TIME) || name.equals(LocalDateTime.class.getName())) {
 			typeName = ClassName.get(LocalDateTime.class);
+		} else if (name.equals(Type.LOCAL_DATE) || name.equals(LocalDate.class.getName())) {
+			typeName = ClassName.get(LocalDate.class);
+		} else if (name.equals(Type.LOCAL_TIME) || name.equals(LocalTime.class.getName())) {
+			typeName = ClassName.get(LocalTime.class);
 		} else if (name.equals(Type.LIST) || name.equals(List.class.getName())) {
 			typeName = ClassName.get(List.class);
 		} else if (name.equals(Type.SET) || name.equals(Set.class.getName())) {
@@ -296,17 +303,18 @@ public class EntityProcessor extends AbstractProcessor {
 				: typeName;
 	}
 
-	private TypeName getActualType(TypeMetadata type, List<TypeMetadata> parameters) {
+	private TypeName getImplementationType(TypeMetadata type, List<TypeMetadata> parameters) {
 
 		if (parameters.size() > 0) {
-			return ParameterizedTypeName.get((ClassName) getActualType(type.getName(), false), parameters.stream()
-					.map(item -> getType(item.getName(), item.isReference())).toArray(size -> new TypeName[size]));
+			return ParameterizedTypeName.get((ClassName) getImplementationType(type.getName(), false),
+					parameters.stream().map(item -> getType(item.getName(), item.isReference()))
+							.toArray(size -> new TypeName[size]));
 		}
 
-		return getActualType(type.getName(), type.isReference());
+		return getImplementationType(type.getName(), type.isReference());
 	}
 
-	private TypeName getActualType(String name, boolean reference) {
+	private TypeName getImplementationType(String name, boolean reference) {
 
 		TypeName typeName;
 
@@ -328,6 +336,10 @@ public class EntityProcessor extends AbstractProcessor {
 			typeName = TypeName.DOUBLE;
 		} else if (name.equals(Type.STRING) || name.equals(String.class.getName())) {
 			typeName = ClassName.get(String.class);
+		} else if (name.equals(Type.LOCAL_DATE) || name.equals(LocalDate.class.getName())) {
+			typeName = ClassName.get(LocalDate.class);
+		} else if (name.equals(Type.LOCAL_TIME) || name.equals(LocalTime.class.getName())) {
+			typeName = ClassName.get(LocalTime.class);
 		} else if (name.equals(Type.LOCAL_DATE_TIME) || name.equals(LocalDateTime.class.getName())) {
 			typeName = ClassName.get(LocalDateTime.class);
 		} else if (name.equals(Type.LIST) || name.equals(List.class.getName())) {

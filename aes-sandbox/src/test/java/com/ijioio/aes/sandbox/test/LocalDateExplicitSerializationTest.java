@@ -4,7 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.Month;
 import java.util.stream.Collectors;
 
@@ -17,34 +17,34 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
-import com.ijioio.test.model.LocalDateTimeExplicitSerialization;
+import com.ijioio.test.model.LocalDateExplicitSerialization;
 
-public class LocalDateTimeExplicitSerializationTest {
+public class LocalDateExplicitSerializationTest {
 
 	@Entity( //
-			name = LocalDateTimeExplicitSerializationPrototype.NAME, //
+			name = LocalDateExplicitSerializationPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueLocalDateTime", type = @Type(name = "java.time.LocalDateTime")) //
+					@EntityProperty(name = "valueLocalDate", type = @Type(name = "java.time.LocalDate")) //
 			} //
 	)
-	public static interface LocalDateTimeExplicitSerializationPrototype {
+	public static interface LocalDateExplicitSerializationPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.LocalDateTimeExplicitSerialization";
+		public static final String NAME = "com.ijioio.test.model.LocalDateExplicitSerialization";
 	}
 
 	private Path path;
 
-	private LocalDateTimeExplicitSerialization model;
+	private LocalDateExplicitSerialization model;
 
 	@BeforeEach
 	public void before() throws Exception {
 
-		path = Paths.get(getClass().getClassLoader().getResource("local-date-time-explicit-serialization.xml").toURI());
+		path = Paths.get(getClass().getClassLoader().getResource("local-date-explicit-serialization.xml").toURI());
 
-		model = new LocalDateTimeExplicitSerialization();
+		model = new LocalDateExplicitSerialization();
 
-		model.setId("local-date-time-explicit-serialization");
-		model.setValueLocalDateTime(LocalDateTime.of(2022, Month.AUGUST, 22, 14, 25, 40, 123456789));
+		model.setId("local-date-explicit-serialization");
+		model.setValueLocalDate(LocalDate.of(2022, Month.AUGUST, 22));
 	}
 
 	@Test
@@ -63,11 +63,11 @@ public class LocalDateTimeExplicitSerializationTest {
 
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
-		LocalDateTimeExplicitSerialization actual = XmlUtil.read(handler, LocalDateTimeExplicitSerialization.class,
+		LocalDateExplicitSerialization actual = XmlUtil.read(handler, LocalDateExplicitSerialization.class,
 				Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n")));
-		LocalDateTimeExplicitSerialization expected = model;
+		LocalDateExplicitSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());
-		Assertions.assertEquals(expected.getValueLocalDateTime(), actual.getValueLocalDateTime());
+		Assertions.assertEquals(expected.getValueLocalDate(), actual.getValueLocalDate());
 	}
 }

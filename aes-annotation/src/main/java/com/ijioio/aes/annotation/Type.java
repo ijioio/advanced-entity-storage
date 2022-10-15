@@ -27,6 +27,10 @@ public @interface Type {
 
 	public static final String STRING = "STRING";
 
+	public static final String LOCAL_DATE = "LOCAL_DATE";
+
+	public static final String LOCAL_TIME = "LOCAL_TIME";
+
 	public static final String LOCAL_DATE_TIME = "LOCAL_DATE_TIME";
 
 	public static final String LIST = "LIST";
