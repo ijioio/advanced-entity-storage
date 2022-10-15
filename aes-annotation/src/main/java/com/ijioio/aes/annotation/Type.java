@@ -27,6 +27,8 @@ public @interface Type {
 
 	public static final String STRING = "STRING";
 
+	public static final String INSTANT = "INSTANT";
+
 	public static final String LOCAL_DATE = "LOCAL_DATE";
 
 	public static final String LOCAL_TIME = "LOCAL_TIME";

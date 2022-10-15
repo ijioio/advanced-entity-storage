@@ -1,5 +1,6 @@
 package com.ijioio.aes.core.serialization;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -24,6 +25,8 @@ public interface SerializationHandler {
 	public void write(SerializationContext context, String name, double value) throws SerializationException;
 
 	public void write(SerializationContext context, String name, String value) throws SerializationException;
+
+	public void write(SerializationContext context, String name, Instant value) throws SerializationException;
 
 	public void write(SerializationContext context, String name, LocalDate value) throws SerializationException;
 
@@ -53,6 +56,8 @@ public interface SerializationHandler {
 	public double read(SerializationContext context, double value) throws SerializationException;
 
 	public String read(SerializationContext context, String value) throws SerializationException;
+
+	public Instant read(SerializationContext context, Instant value) throws SerializationException;
 
 	public LocalDate read(SerializationContext context, LocalDate value) throws SerializationException;
 

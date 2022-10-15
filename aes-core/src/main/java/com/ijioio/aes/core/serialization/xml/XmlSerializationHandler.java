@@ -1,5 +1,6 @@
 package com.ijioio.aes.core.serialization.xml;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -440,6 +441,51 @@ public class XmlSerializationHandler implements SerializationHandler {
 		};
 	};
 
+	private static final XmlSerializationValueHandler<Instant> HANDLER_INSTANT = new XmlSerializationValueHandler<Instant>() {
+
+		@Override
+		public Class<Instant> getType() {
+			return Instant.class;
+		}
+
+		@Override
+		public void write(XmlSerializationContext context, XmlSerializationHandler handler, String name, Instant value)
+				throws SerializationException {
+
+			if (value == null) {
+				return;
+			}
+
+			XMLStreamWriter writer = context.getWriter();
+
+			try {
+
+				writer.writeStartElement(name);
+				writeAttributes(writer, context.getAttributes());
+				writer.writeCharacters(DateTimeFormatter.ISO_INSTANT.format(value));
+				writer.writeEndElement();
+
+			} catch (XMLStreamException e) {
+				throw new SerializationException(e);
+			}
+		}
+
+		@Override
+		public Instant read(XmlSerializationContext context, XmlSerializationHandler handler, Class<Instant> type,
+				Instant value) throws SerializationException {
+
+			XMLStreamReader reader = context.getReader();
+
+			try {
+
+				return Instant.parse(reader.getElementText());
+
+			} catch (XMLStreamException e) {
+				throw new SerializationException(e);
+			}
+		};
+	};
+
 	private static final XmlSerializationValueHandler<LocalDate> HANDLER_LOCAL_DATE = new XmlSerializationValueHandler<LocalDate>() {
 
 		@Override
@@ -843,6 +889,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 		registerValueHandler(HANDLER_FLOAT);
 		registerValueHandler(HANDLER_DOUBLE);
 		registerValueHandler(HANDLER_STRING);
+		registerValueHandler(HANDLER_INSTANT);
 		registerValueHandler(HANDLER_LOCAL_DATE);
 		registerValueHandler(HANDLER_LOCAL_TIME);
 		registerValueHandler(HANDLER_LOCAL_DATE_TIME);
@@ -969,6 +1016,11 @@ public class XmlSerializationHandler implements SerializationHandler {
 	}
 
 	@Override
+	public void write(SerializationContext context, String name, Instant value) throws SerializationException {
+		write(context, name, value, false);
+	}
+
+	@Override
 	public void write(SerializationContext context, String name, LocalDate value) throws SerializationException {
 		write(context, name, value, false);
 	}
@@ -1075,6 +1127,11 @@ public class XmlSerializationHandler implements SerializationHandler {
 	@Override
 	public String read(SerializationContext context, String value) throws SerializationException {
 		return read(context, value, String.class);
+	}
+
+	@Override
+	public Instant read(SerializationContext context, Instant value) throws SerializationException {
+		return read(context, value, Instant.class);
 	}
 
 	@Override
