@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -70,7 +71,7 @@ public class SkipSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		SkipSerialization actual = XmlUtil.read(handler, SkipSerialization.class,
-				new String(Files.readAllBytes(path), StandardCharsets.UTF_8));
+				Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n")));
 		SkipSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());

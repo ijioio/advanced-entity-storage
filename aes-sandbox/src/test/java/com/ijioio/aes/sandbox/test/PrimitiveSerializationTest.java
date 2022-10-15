@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,7 +65,7 @@ public class PrimitiveSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		String expected = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+		String expected = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n"));
 
 		Assertions.assertEquals(expected, actual);
 	}
@@ -75,7 +76,7 @@ public class PrimitiveSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		PrimitiveSerialization actual = XmlUtil.read(handler, PrimitiveSerialization.class,
-				new String(Files.readAllBytes(path), StandardCharsets.UTF_8));
+				Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n")));
 		PrimitiveSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());

@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.time.Month;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -77,7 +78,7 @@ public class MapSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		String expected = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+		String expected = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n"));
 
 		Assertions.assertEquals(expected, actual);
 	}
@@ -88,7 +89,7 @@ public class MapSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		MapSerialization actual = XmlUtil.read(handler, MapSerialization.class,
-				new String(Files.readAllBytes(path), StandardCharsets.UTF_8));
+				Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n")));
 		MapSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());

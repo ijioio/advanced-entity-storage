@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,7 +74,7 @@ public class CollectionExplicitSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		String expected = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+		String expected = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n"));
 
 		Assertions.assertEquals(expected, actual);
 	}
@@ -84,7 +85,7 @@ public class CollectionExplicitSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		CollectionExplicitSerialization actual = XmlUtil.read(handler, CollectionExplicitSerialization.class,
-				new String(Files.readAllBytes(path), StandardCharsets.UTF_8));
+				Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n")));
 		CollectionExplicitSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());
