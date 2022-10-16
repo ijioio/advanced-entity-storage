@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import com.ijioio.aes.core.Identity;
 import com.ijioio.aes.core.serialization.SerializationContext;
 
 public class XmlSerializationContext implements SerializationContext {
@@ -24,6 +25,8 @@ public class XmlSerializationContext implements SerializationContext {
 
 	private final Map<String, String> attributes = new HashMap<>();
 
+	private final Map<String, Identity> identities = new HashMap<>();
+
 	private XmlSerializationContext(XMLStreamWriter writer, XMLStreamReader reader) {
 
 		this.writer = writer;
@@ -40,5 +43,9 @@ public class XmlSerializationContext implements SerializationContext {
 
 	public Map<String, String> getAttributes() {
 		return attributes;
+	}
+
+	public Map<String, Identity> getIdentities() {
+		return identities;
 	}
 }

@@ -8,8 +8,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,6 +21,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.XMLEvent;
 
+import com.ijioio.aes.core.Identity;
 import com.ijioio.aes.core.XSerializable;
 import com.ijioio.aes.core.serialization.SerializationContext;
 import com.ijioio.aes.core.serialization.SerializationException;
@@ -713,7 +714,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 			try {
 
 				Collection collection = value != null ? value
-						: List.class.isAssignableFrom(type) ? new ArrayList<>() : new HashSet<>();
+						: List.class.isAssignableFrom(type) ? new ArrayList<>() : new LinkedHashSet<>();
 
 				collection.clear();
 
@@ -908,7 +909,22 @@ public class XmlSerializationHandler implements SerializationHandler {
 		return (XmlSerializationValueHandler<T>) handlers.get(type);
 	}
 
-	private Class<?> getNormalizeType(Class<?> type) {
+	@SuppressWarnings("unchecked")
+	private <T> Class<T> getType(final String name) {
+
+		Class<?> type = types.computeIfAbsent(name, key -> {
+
+			try {
+				return Class.forName(name, true, XmlSerializationHandler.class.getClassLoader());
+			} catch (ClassNotFoundException e) {
+				return Void.class;
+			}
+		});
+
+		return !type.equals(Void.class) ? (Class<T>) type : null;
+	}
+
+	private Class<?> getNormalizedType(Class<?> type) {
 
 		if (Enum.class.isAssignableFrom(type)) {
 			return Enum.class;
@@ -929,44 +945,53 @@ public class XmlSerializationHandler implements SerializationHandler {
 		return type;
 	}
 
-	@SuppressWarnings("unchecked")
-	private <T> Class<T> getType(final String name) {
+	public void writeAttributes(XMLStreamWriter writer, Map<String, String> attributes) throws XMLStreamException {
 
-		Class<?> type = types.computeIfAbsent(name, key -> {
-
-			try {
-				return Class.forName(name, true, XmlSerializationHandler.class.getClassLoader());
-			} catch (ClassNotFoundException e) {
-				return Void.class;
-			}
-		});
-
-		return !type.equals(Void.class) ? (Class<T>) type : null;
+		for (Entry<String, String> entry : attributes.entrySet()) {
+			writer.writeAttribute(entry.getKey(), entry.getValue() != null ? entry.getValue() : "");
+		}
 	}
 
-	public void skipElement(final XMLStreamReader reader) throws XMLStreamException {
+	public Map<String, String> readAttributes(XMLStreamReader reader) {
 
-		int count = 0;
+		Map<String, String> attributes = new HashMap<>();
 
-		while (reader.hasNext()) {
+		for (int i = 0; i < reader.getAttributeCount(); i++) {
+			attributes.put(reader.getAttributeName(i).getLocalPart(), reader.getAttributeValue(i));
+		}
 
-			int event = reader.next();
+		return attributes;
+	}
 
-			if (event == XMLStreamConstants.START_ELEMENT) {
+	public void skipElement(final XMLStreamReader reader) throws SerializationException {
 
-				count++;
+		try {
 
-			} else if (event == XMLStreamConstants.END_ELEMENT) {
+			int count = 0;
 
-				if (count == 0) {
-					return;
+			while (reader.hasNext()) {
+
+				int event = reader.next();
+
+				if (event == XMLStreamConstants.START_ELEMENT) {
+
+					count++;
+
+				} else if (event == XMLStreamConstants.END_ELEMENT) {
+
+					if (count == 0) {
+						return;
+					}
+
+					count--;
+
+				} else if (event == XMLStreamConstants.END_DOCUMENT) {
+					throw new SerializationException("unexpected end of document");
 				}
-
-				count--;
-
-			} else if (event == XMLStreamConstants.END_DOCUMENT) {
-				throw new XMLStreamException("unexpected end of document");
 			}
+
+		} catch (XMLStreamException e) {
+			throw new SerializationException(e);
 		}
 	}
 
@@ -1047,28 +1072,56 @@ public class XmlSerializationHandler implements SerializationHandler {
 			return;
 		}
 
-		Map<String, String> attributes = ((XmlSerializationContext) context).getAttributes();
+		XMLStreamWriter writer = ((XmlSerializationContext) context).getWriter();
 
-		Class<?> type = value.getClass();
+		try {
 
-		XmlSerializationValueHandler<Object> handler = getValueHandler(type.getName());
-
-		if (handler == null) {
-			handler = getValueHandler(getNormalizeType(type).getName());
-		}
-
-		if (handler != null) {
+			Map<String, String> attributes = ((XmlSerializationContext) context).getAttributes();
 
 			attributes.clear();
 
-			if (detailed) {
-				attributes.put("class", type.getName());
+			Class<?> type = value.getClass();
+
+			if (Identity.class.isAssignableFrom(type)) {
+
+				Map<String, Identity> identities = ((XmlSerializationContext) context).getIdentities();
+				Identity identity = (Identity) value;
+
+				if (identities.containsKey(identity.getId())) {
+
+					attributes.put("id", identity.getId());
+					attributes.put("class", type.getName());
+
+					writer.writeEmptyElement(name);
+					writeAttributes(writer, attributes);
+
+					return;
+
+				} else {
+					identities.put(identity.getId(), identity);
+				}
 			}
 
-			handler.write((XmlSerializationContext) context, this, name, value);
+			XmlSerializationValueHandler<Object> handler = getValueHandler(type.getName());
 
-		} else {
-			throw new SerializationException(String.format("type %s is not supported", type));
+			if (handler == null) {
+				handler = getValueHandler(getNormalizedType(type).getName());
+			}
+
+			if (handler != null) {
+
+				if (detailed) {
+					attributes.put("class", type.getName());
+				}
+
+				handler.write((XmlSerializationContext) context, this, name, value);
+
+			} else {
+				throw new SerializationException(String.format("type %s is not supported", type));
+			}
+
+		} catch (XMLStreamException e) {
+			throw new SerializationException(e);
 		}
 	}
 
@@ -1154,7 +1207,9 @@ public class XmlSerializationHandler implements SerializationHandler {
 
 		XMLStreamReader reader = ((XmlSerializationContext) context).getReader();
 
-		String typeName = reader.getAttributeValue(null, "class");
+		Map<String, String> attributes = readAttributes(reader);
+
+		String typeName = attributes.get("class");
 
 		if (typeName == null) {
 			throw new SerializationException("type is not defined");
@@ -1169,16 +1224,44 @@ public class XmlSerializationHandler implements SerializationHandler {
 		return read(context, value, type);
 	}
 
-	private <T> T read(SerializationContext context, T value, Class<T> type) throws SerializationException {
+	@SuppressWarnings("unchecked")
+	protected <T> T read(SerializationContext context, T value, Class<T> type) throws SerializationException {
+
+		XMLStreamReader reader = ((XmlSerializationContext) context).getReader();
+
+		Map<String, String> attributes = readAttributes(reader);
+
+		String id = attributes.get("id");
+
+		if (id != null) {
+
+			Map<String, Identity> identities = ((XmlSerializationContext) context).getIdentities();
+
+			skipElement(reader);
+
+			return (T) identities.get(id);
+		}
 
 		XmlSerializationValueHandler<T> handler = getValueHandler(type.getName());
 
 		if (handler == null) {
-			handler = getValueHandler(getNormalizeType(type).getName());
+			handler = getValueHandler(getNormalizedType(type).getName());
 		}
 
 		if (handler != null) {
-			return handler.read((XmlSerializationContext) context, this, type, value);
+
+			T object = handler.read((XmlSerializationContext) context, this, type, value);
+
+			if (Identity.class.isAssignableFrom(type)) {
+
+				Map<String, Identity> identities = ((XmlSerializationContext) context).getIdentities();
+				Identity identity = (Identity) object;
+
+				identities.put(identity.getId(), identity);
+			}
+
+			return object;
+
 		} else {
 			throw new SerializationException(String.format("type %s is not supported", type));
 		}
