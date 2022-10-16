@@ -8,6 +8,7 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,9 +50,9 @@ public class CollectionSerializationTest {
 
 		path = Paths.get(getClass().getClassLoader().getResource("collection-serialization.xml").toURI());
 
-		ArrayList<String> stringList = new ArrayList<>(Arrays.asList("value1", "value2", "value3"));
-		ArrayList<Month> enumList = new ArrayList<>(Arrays.asList(Month.JANUARY, Month.FEBRUARY, Month.MARCH));
-		ArrayList<Object> objectList = new ArrayList<>(Arrays.asList("value", Month.JANUARY));
+		List<String> stringList = new ArrayList<>(Arrays.asList("value1", "value2", "value3"));
+		List<Month> enumList = new ArrayList<>(Arrays.asList(Month.JANUARY, Month.FEBRUARY, Month.MARCH));
+		List<Object> objectList = new ArrayList<>(Arrays.asList("value", Month.JANUARY));
 
 		Set<String> stringSet = new LinkedHashSet<>(Arrays.asList("value1", "value2", "value3"));
 		Set<Month> enumSet = new LinkedHashSet<>(Arrays.asList(Month.JANUARY, Month.FEBRUARY, Month.MARCH));
