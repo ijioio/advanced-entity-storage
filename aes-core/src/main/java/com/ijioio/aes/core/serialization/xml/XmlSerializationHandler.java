@@ -52,7 +52,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 			try {
 
 				writer.writeStartElement(name);
-				writeAttributes(writer, context.getAttributes());
+				handler.writeAttributes(writer, context.getAttributes());
 				writer.writeCharacters(String.valueOf(value.booleanValue()));
 				writer.writeEndElement();
 
@@ -97,7 +97,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 			try {
 
 				writer.writeStartElement(name);
-				writeAttributes(writer, context.getAttributes());
+				handler.writeAttributes(writer, context.getAttributes());
 				writer.writeCharacters(String.valueOf(value.charValue()));
 				writer.writeEndElement();
 
@@ -143,7 +143,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 			try {
 
 				writer.writeStartElement(name);
-				writeAttributes(writer, context.getAttributes());
+				handler.writeAttributes(writer, context.getAttributes());
 				writer.writeCharacters(String.valueOf(value.byteValue()));
 				writer.writeEndElement();
 
@@ -188,7 +188,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 			try {
 
 				writer.writeStartElement(name);
-				writeAttributes(writer, context.getAttributes());
+				handler.writeAttributes(writer, context.getAttributes());
 				writer.writeCharacters(String.valueOf(value.intValue()));
 				writer.writeEndElement();
 
@@ -233,7 +233,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 			try {
 
 				writer.writeStartElement(name);
-				writeAttributes(writer, context.getAttributes());
+				handler.writeAttributes(writer, context.getAttributes());
 				writer.writeCharacters(String.valueOf(value.shortValue()));
 				writer.writeEndElement();
 
@@ -278,7 +278,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 			try {
 
 				writer.writeStartElement(name);
-				writeAttributes(writer, context.getAttributes());
+				handler.writeAttributes(writer, context.getAttributes());
 				writer.writeCharacters(String.valueOf(value.longValue()));
 				writer.writeEndElement();
 
@@ -323,7 +323,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 			try {
 
 				writer.writeStartElement(name);
-				writeAttributes(writer, context.getAttributes());
+				handler.writeAttributes(writer, context.getAttributes());
 				writer.writeCharacters(String.valueOf(value.floatValue()));
 				writer.writeEndElement();
 
@@ -368,7 +368,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 			try {
 
 				writer.writeStartElement(name);
-				writeAttributes(writer, context.getAttributes());
+				handler.writeAttributes(writer, context.getAttributes());
 				writer.writeCharacters(String.valueOf(value.doubleValue()));
 				writer.writeEndElement();
 
@@ -413,7 +413,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 			try {
 
 				writer.writeStartElement(name);
-				writeAttributes(writer, context.getAttributes());
+				handler.writeAttributes(writer, context.getAttributes());
 
 				if (!TextUtil.isEmpty(value)) {
 					writer.writeCharacters(value);
@@ -462,7 +462,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 			try {
 
 				writer.writeStartElement(name);
-				writeAttributes(writer, context.getAttributes());
+				handler.writeAttributes(writer, context.getAttributes());
 				writer.writeCharacters(DateTimeFormatter.ISO_INSTANT.format(value));
 				writer.writeEndElement();
 
@@ -507,7 +507,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 			try {
 
 				writer.writeStartElement(name);
-				writeAttributes(writer, context.getAttributes());
+				handler.writeAttributes(writer, context.getAttributes());
 				writer.writeCharacters(DateTimeFormatter.ISO_LOCAL_DATE.format(value));
 				writer.writeEndElement();
 
@@ -552,7 +552,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 			try {
 
 				writer.writeStartElement(name);
-				writeAttributes(writer, context.getAttributes());
+				handler.writeAttributes(writer, context.getAttributes());
 				writer.writeCharacters(DateTimeFormatter.ISO_LOCAL_TIME.format(value));
 				writer.writeEndElement();
 
@@ -597,7 +597,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 			try {
 
 				writer.writeStartElement(name);
-				writeAttributes(writer, context.getAttributes());
+				handler.writeAttributes(writer, context.getAttributes());
 				writer.writeCharacters(DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(value));
 				writer.writeEndElement();
 
@@ -643,7 +643,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 			try {
 
 				writer.writeStartElement(name);
-				writeAttributes(writer, context.getAttributes());
+				handler.writeAttributes(writer, context.getAttributes());
 				writer.writeCharacters(value.name());
 				writer.writeEndElement();
 
@@ -691,7 +691,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 			try {
 
 				writer.writeStartElement(name);
-				writeAttributes(writer, context.getAttributes());
+				handler.writeAttributes(writer, context.getAttributes());
 
 				for (Object value : values) {
 					handler.write(context, "item", value);
@@ -763,7 +763,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 			try {
 
 				writer.writeStartElement(name);
-				writeAttributes(writer, context.getAttributes());
+				handler.writeAttributes(writer, context.getAttributes());
 
 				for (Entry<Object, Object> entry : ((Map<Object, Object>) values).entrySet()) {
 
@@ -848,7 +848,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 			try {
 
 				writer.writeStartElement(name);
-				writeAttributes(writer, context.getAttributes());
+				handler.writeAttributes(writer, context.getAttributes());
 				value.write(context, handler);
 				writer.writeEndElement();
 
@@ -945,10 +945,16 @@ public class XmlSerializationHandler implements SerializationHandler {
 		return type;
 	}
 
-	public void writeAttributes(XMLStreamWriter writer, Map<String, String> attributes) throws XMLStreamException {
+	public void writeAttributes(XMLStreamWriter writer, Map<String, String> attributes) throws SerializationException {
 
-		for (Entry<String, String> entry : attributes.entrySet()) {
-			writer.writeAttribute(entry.getKey(), entry.getValue() != null ? entry.getValue() : "");
+		try {
+
+			for (Entry<String, String> entry : attributes.entrySet()) {
+				writer.writeAttribute(entry.getKey(), entry.getValue() != null ? entry.getValue() : "");
+			}
+
+		} catch (XMLStreamException e) {
+			throw new SerializationException(e);
 		}
 	}
 
