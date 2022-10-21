@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -386,6 +387,51 @@ public class XmlSerializationHandler implements SerializationHandler {
 			try {
 
 				return Double.valueOf(reader.getElementText());
+
+			} catch (XMLStreamException e) {
+				throw new SerializationException(e);
+			}
+		};
+	};
+
+	private static final XmlSerializationValueHandler<byte[]> HANDLER_BYTE_ARRAY = new XmlSerializationValueHandler<byte[]>() {
+
+		@Override
+		public Class<byte[]> getType() {
+			return byte[].class;
+		}
+
+		@Override
+		public void write(XmlSerializationContext context, XmlSerializationHandler handler, String name, byte[] value)
+				throws SerializationException {
+
+			if (value == null) {
+				return;
+			}
+
+			XMLStreamWriter writer = context.getWriter();
+
+			try {
+
+				writer.writeStartElement(name);
+				handler.writeAttributes(writer, context.getAttributes());
+				writer.writeCharacters(Base64.getEncoder().encodeToString(value));
+				writer.writeEndElement();
+
+			} catch (XMLStreamException e) {
+				throw new SerializationException(e);
+			}
+		}
+
+		@Override
+		public byte[] read(XmlSerializationContext context, XmlSerializationHandler handler, Class<byte[]> type,
+				byte[] value) throws SerializationException {
+
+			XMLStreamReader reader = context.getReader();
+
+			try {
+
+				return Base64.getDecoder().decode(reader.getElementText());
 
 			} catch (XMLStreamException e) {
 				throw new SerializationException(e);
@@ -889,6 +935,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 		registerValueHandler(HANDLER_LONG);
 		registerValueHandler(HANDLER_FLOAT);
 		registerValueHandler(HANDLER_DOUBLE);
+		registerValueHandler(HANDLER_BYTE_ARRAY);
 		registerValueHandler(HANDLER_STRING);
 		registerValueHandler(HANDLER_INSTANT);
 		registerValueHandler(HANDLER_LOCAL_DATE);
@@ -1042,6 +1089,11 @@ public class XmlSerializationHandler implements SerializationHandler {
 	}
 
 	@Override
+	public void write(SerializationContext context, String name, byte[] value) throws SerializationException {
+		write(context, name, value, false);
+	}
+
+	@Override
 	public void write(SerializationContext context, String name, String value) throws SerializationException {
 		write(context, name, value, false);
 	}
@@ -1181,6 +1233,11 @@ public class XmlSerializationHandler implements SerializationHandler {
 	@Override
 	public double read(SerializationContext context, double value) throws SerializationException {
 		return read(context, Double.valueOf(value), Double.class).doubleValue();
+	}
+
+	@Override
+	public byte[] read(SerializationContext context, byte[] value) throws SerializationException {
+		return read(context, value, byte[].class);
 	}
 
 	@Override

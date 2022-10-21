@@ -33,6 +33,7 @@ import com.ijioio.aes.annotation.processor.exception.ProcessorException;
 import com.ijioio.aes.annotation.processor.util.TextUtil;
 import com.ijioio.aes.annotation.processor.util.TypeUtil;
 import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
@@ -282,6 +283,8 @@ public class EntityProcessor extends AbstractProcessor {
 			typeName = TypeName.FLOAT;
 		} else if (name.equals(Type.DOUBLE) || name.equals(double.class.getName())) {
 			typeName = TypeName.DOUBLE;
+		} else if (name.equals(Type.BYTE_ARRAY) || name.equals(byte[].class.getName())) {
+			typeName = ArrayTypeName.of(TypeName.BYTE);
 		} else if (name.equals(Type.STRING) || name.equals(String.class.getName())) {
 			typeName = ClassName.get(String.class);
 		} else if (name.equals(Type.INSTANT) || name.equals(Instant.class.getName())) {
@@ -337,6 +340,8 @@ public class EntityProcessor extends AbstractProcessor {
 			typeName = TypeName.FLOAT;
 		} else if (name.equals(Type.DOUBLE) || name.equals(double.class.getName())) {
 			typeName = TypeName.DOUBLE;
+		} else if (name.equals(Type.BYTE_ARRAY) || name.equals(byte[].class.getName())) {
+			typeName = ArrayTypeName.of(TypeName.BYTE);
 		} else if (name.equals(Type.STRING) || name.equals(String.class.getName())) {
 			typeName = ClassName.get(String.class);
 		} else if (name.equals(Type.INSTANT) || name.equals(Instant.class.getName())) {

@@ -25,6 +25,8 @@ public @interface Type {
 
 	public static final String DOUBLE = "DOUBLE";
 
+	public static final String BYTE_ARRAY = "BYTE_ARRAY";
+
 	public static final String STRING = "STRING";
 
 	public static final String INSTANT = "INSTANT";
