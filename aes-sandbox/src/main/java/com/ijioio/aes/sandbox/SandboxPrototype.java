@@ -16,6 +16,7 @@ import com.ijioio.aes.annotation.Type;
 				@EntityProperty(name = "valueLong", type = @Type(name = Type.LONG)), //
 				@EntityProperty(name = "valueFloat", type = @Type(name = Type.FLOAT)), //
 				@EntityProperty(name = "valueDouble", type = @Type(name = Type.DOUBLE)), //
+				@EntityProperty(name = "valueByteArray", type = @Type(name = Type.BYTE_ARRAY)), //
 				@EntityProperty(name = "valueString", type = @Type(name = Type.STRING)), //
 				@EntityProperty(name = "valueInstant", type = @Type(name = Type.INSTANT)), //
 				@EntityProperty(name = "valueLocalDate", type = @Type(name = Type.LOCAL_DATE)), //

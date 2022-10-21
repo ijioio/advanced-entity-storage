@@ -24,6 +24,8 @@ public interface SerializationHandler {
 
 	public void write(SerializationContext context, String name, double value) throws SerializationException;
 
+	public void write(SerializationContext context, String name, byte[] value) throws SerializationException;
+
 	public void write(SerializationContext context, String name, String value) throws SerializationException;
 
 	public void write(SerializationContext context, String name, Instant value) throws SerializationException;
@@ -54,6 +56,8 @@ public interface SerializationHandler {
 	public float read(SerializationContext context, float value) throws SerializationException;
 
 	public double read(SerializationContext context, double value) throws SerializationException;
+
+	public byte[] read(SerializationContext context, byte[] value) throws SerializationException;
 
 	public String read(SerializationContext context, String value) throws SerializationException;
 
