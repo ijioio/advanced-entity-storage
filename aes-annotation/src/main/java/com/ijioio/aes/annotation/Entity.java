@@ -15,5 +15,7 @@ public @interface Entity {
 
 	public Class<?>[] interfaces() default {};
 
+	public Attribute[] attributes() default {};
+
 	public EntityProperty[] properties() default {};
 }

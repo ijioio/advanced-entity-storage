@@ -9,11 +9,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.SOURCE)
 public @interface EntityProperty {
 
-	public static enum Attribute {
-
-		FINAL;
-	}
-
 	public String name();
 
 	public Type type();
