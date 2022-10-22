@@ -163,12 +163,11 @@ public class EntityProcessor extends AbstractProcessor {
 
 			List<AnnotationSpec> annotations = new ArrayList<>();
 
+//			annotations.add(AnnotationSpec.builder(tableClassName).addMember("name", "$S", tableName).build());
+
 			TypeSpec type = TypeSpec.classBuilder(className.simpleName()).superclass(parentClassName)
 					.addSuperinterfaces(interfaceNames).addModifiers(modifiers.toArray(new Modifier[modifiers.size()]))
-					.addAnnotations(annotations)
-					// .addAnnotation(AnnotationSpec.builder(tableClassName).addMember("name",
-					// "$S", tableName).build())
-					.addFields(fields).addMethods(methods).build();
+					.addAnnotations(annotations).addFields(fields).addMethods(methods).build();
 
 			JavaFile javaFile = JavaFile.builder(className.packageName(), type).build();
 
