@@ -12,7 +12,8 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 
-import com.ijioio.aes.annotation.EntityProperty.Attribute;
+import com.ijioio.aes.annotation.Attribute;
+import com.ijioio.aes.annotation.processor.exception.EntityIllegalStateException;
 import com.ijioio.aes.annotation.processor.exception.EntityPropertyIllegalStateException;
 import com.ijioio.aes.annotation.processor.exception.ProcessorException;
 import com.ijioio.aes.annotation.processor.util.ProcessorUtil;
@@ -22,6 +23,13 @@ public class EntityPropertyMetadata {
 
 	public static EntityPropertyMetadata of(ProcessorContext context) throws ProcessorException {
 		return new EntityPropertyMetadata(context);
+	}
+
+	private static final Set<Attribute> supportedAttributes = new HashSet<>();
+
+	static {
+
+		supportedAttributes.add(Attribute.FINAL);
 	}
 
 	private final ProcessorContext context;
@@ -81,7 +89,15 @@ public class EntityPropertyMetadata {
 
 					VariableElement variableElement = ProcessorUtil.enumVisitor.visit(annotationValue);
 
-					attributes.add(Attribute.valueOf(variableElement.getSimpleName().toString()));
+					Attribute attribute = Attribute.valueOf(variableElement.getSimpleName().toString());
+
+					if (!supportedAttributes.contains(attribute)) {
+						throw new EntityIllegalStateException(
+								String.format("attribute %s is not allowed for the entity property", attribute),
+								MessageContext.of(context.getElement(), context.getAnnotationMirror(), value));
+					}
+
+					attributes.add(attribute);
 				}
 			}
 		}
