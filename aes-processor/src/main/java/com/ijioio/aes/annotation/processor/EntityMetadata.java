@@ -1,17 +1,21 @@
 package com.ijioio.aes.annotation.processor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 
+import com.ijioio.aes.annotation.Attribute;
 import com.ijioio.aes.annotation.processor.exception.EntityIllegalStateException;
 import com.ijioio.aes.annotation.processor.exception.EntityPropertyIllegalStateException;
 import com.ijioio.aes.annotation.processor.exception.ProcessorException;
@@ -25,6 +29,13 @@ public class EntityMetadata {
 		return new EntityMetadata(context);
 	}
 
+	private static final Set<Attribute> supportedAttributes = new HashSet<>();
+
+	static {
+
+		supportedAttributes.add(Attribute.FINAL);
+	}
+
 	private final ProcessorContext context;
 
 	private String name;
@@ -32,6 +43,8 @@ public class EntityMetadata {
 	private String parent;
 
 	private final List<String> interfaces = new ArrayList<>();
+
+	private final Set<Attribute> attributes = new HashSet<>();
 
 	private final Map<String, EntityPropertyMetadata> properties = new LinkedHashMap<>();
 
@@ -84,6 +97,27 @@ public class EntityMetadata {
 					}
 
 					interfaces.add(typeElement.getQualifiedName().toString());
+				}
+
+			} else if (key.getSimpleName().contentEquals("attributes")) {
+
+				List<? extends AnnotationValue> annotationValues = ProcessorUtil.arrayVisitor.visit(value);
+
+				attributes.clear();
+
+				for (AnnotationValue annotationValue : annotationValues) {
+
+					VariableElement variableElement = ProcessorUtil.enumVisitor.visit(annotationValue);
+
+					Attribute attribute = Attribute.valueOf(variableElement.getSimpleName().toString());
+
+					if (!supportedAttributes.contains(attribute)) {
+						throw new EntityIllegalStateException(
+								String.format("attribute %s is not allowed for the entity", attribute),
+								MessageContext.of(context.getElement(), context.getAnnotationMirror(), value));
+					}
+
+					attributes.add(attribute);
 				}
 
 			} else if (key.getSimpleName().contentEquals("properties")) {
@@ -143,6 +177,10 @@ public class EntityMetadata {
 
 	public Map<String, EntityPropertyMetadata> getProperties() {
 		return properties;
+	}
+
+	public boolean isFinal() {
+		return attributes.contains(Attribute.FINAL);
 	}
 
 	@Override

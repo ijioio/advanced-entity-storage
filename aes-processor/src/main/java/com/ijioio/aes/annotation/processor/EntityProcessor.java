@@ -153,8 +153,19 @@ public class EntityProcessor extends AbstractProcessor {
 			List<ClassName> interfaceNames = entity.getInterfaces().stream().map(item -> ClassName.bestGuess(item))
 					.collect(Collectors.toList());
 
+			List<Modifier> modifiers = new ArrayList<>();
+
+			modifiers.add(Modifier.PUBLIC);
+
+			if (entity.isFinal()) {
+				modifiers.add(Modifier.FINAL);
+			}
+
+			List<AnnotationSpec> annotations = new ArrayList<>();
+
 			TypeSpec type = TypeSpec.classBuilder(className.simpleName()).superclass(parentClassName)
-					.addSuperinterfaces(interfaceNames).addModifiers(Modifier.PUBLIC)
+					.addSuperinterfaces(interfaceNames).addModifiers(modifiers.toArray(new Modifier[modifiers.size()]))
+					.addAnnotations(annotations)
 					// .addAnnotation(AnnotationSpec.builder(tableClassName).addMember("name",
 					// "$S", tableName).build())
 					.addFields(fields).addMethods(methods).build();

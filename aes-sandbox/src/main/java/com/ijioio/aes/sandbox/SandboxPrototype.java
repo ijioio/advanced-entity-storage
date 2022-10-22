@@ -1,12 +1,13 @@
 package com.ijioio.aes.sandbox;
 
+import com.ijioio.aes.annotation.Attribute;
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
-import com.ijioio.aes.annotation.EntityProperty.Attribute;
 import com.ijioio.aes.annotation.Type;
 
 @Entity( //
 		name = SandboxPrototype.NAME, //
+		attributes = Attribute.FINAL, //
 		properties = { //
 				@EntityProperty(name = "valueBoolean", type = @Type(name = Type.BOOLEAN)), //
 				@EntityProperty(name = "valueChar", type = @Type(name = Type.CHAR)), //
