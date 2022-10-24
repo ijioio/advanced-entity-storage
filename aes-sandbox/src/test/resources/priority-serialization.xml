@@ -1,0 +1,27 @@
+<object class="com.ijioio.test.model.PrioritySerialization">
+    <id>priority-serialization</id>
+    <valueXSerializableList class="com.ijioio.aes.sandbox.test.PrioritySerializationTest$XSerializableList">
+        <customItem>value1</customItem>
+        <customItem>value2</customItem>
+        <customItem>value3</customItem>
+    </valueXSerializableList>
+    <valueXSerializableSet class="com.ijioio.aes.sandbox.test.PrioritySerializationTest$XSerializableSet">
+        <customItem>value1</customItem>
+        <customItem>value2</customItem>
+        <customItem>value3</customItem>
+    </valueXSerializableSet>
+    <valueXSerializableMap class="com.ijioio.aes.sandbox.test.PrioritySerializationTest$XSerializableMap">
+        <customEntry>
+            <customKey>key1</customKey>
+            <customValue>value1</customValue>
+        </customEntry>
+        <customEntry>
+            <customKey>key2</customKey>
+            <customValue>value2</customValue>
+        </customEntry>
+        <customEntry>
+            <customKey>key3</customKey>
+            <customValue>value3</customValue>
+        </customEntry>
+    </valueXSerializableMap>
+</object>
