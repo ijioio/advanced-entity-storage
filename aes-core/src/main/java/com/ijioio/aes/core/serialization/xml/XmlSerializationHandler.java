@@ -973,6 +973,10 @@ public class XmlSerializationHandler implements SerializationHandler {
 
 	private Class<?> getNormalizedType(Class<?> type) {
 
+		if (XSerializable.class.isAssignableFrom(type)) {
+			return XSerializable.class;
+		}
+
 		if (Enum.class.isAssignableFrom(type)) {
 			return Enum.class;
 		}
@@ -983,10 +987,6 @@ public class XmlSerializationHandler implements SerializationHandler {
 
 		if (Map.class.isAssignableFrom(type)) {
 			return Map.class;
-		}
-
-		if (XSerializable.class.isAssignableFrom(type)) {
-			return XSerializable.class;
 		}
 
 		return type;
