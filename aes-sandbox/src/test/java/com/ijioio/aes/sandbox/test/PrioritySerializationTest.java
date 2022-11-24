@@ -5,10 +5,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.xml.stream.XMLStreamConstants;
@@ -27,8 +25,6 @@ import com.ijioio.aes.core.XSerializable;
 import com.ijioio.aes.core.serialization.SerializationContext;
 import com.ijioio.aes.core.serialization.SerializationException;
 import com.ijioio.aes.core.serialization.SerializationHandler;
-import com.ijioio.aes.core.serialization.SerializationReader;
-import com.ijioio.aes.core.serialization.SerializationWriter;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationContext;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
@@ -39,16 +35,6 @@ public class PrioritySerializationTest {
 	public static class XSerializableList extends ArrayList<String> implements XSerializable {
 
 		private static final long serialVersionUID = 829086422127798594L;
-
-		@Override
-		public Map<String, SerializationWriter> getWriters(SerializationContext context, SerializationHandler handler) {
-			return Collections.emptyMap();
-		}
-
-		@Override
-		public Map<String, SerializationReader> getReaders(SerializationContext context, SerializationHandler handler) {
-			return Collections.emptyMap();
-		}
 
 		@Override
 		public void write(SerializationContext context, SerializationHandler handler) throws SerializationException {
@@ -96,16 +82,6 @@ public class PrioritySerializationTest {
 		private static final long serialVersionUID = 4675527390057694654L;
 
 		@Override
-		public Map<String, SerializationWriter> getWriters(SerializationContext context, SerializationHandler handler) {
-			return Collections.emptyMap();
-		}
-
-		@Override
-		public Map<String, SerializationReader> getReaders(SerializationContext context, SerializationHandler handler) {
-			return Collections.emptyMap();
-		}
-
-		@Override
 		public void write(SerializationContext context, SerializationHandler handler) throws SerializationException {
 
 			XMLStreamWriter writer = ((XmlSerializationContext) context).getWriter();
@@ -149,16 +125,6 @@ public class PrioritySerializationTest {
 	public static class XSerializableMap extends HashMap<String, String> implements XSerializable {
 
 		private static final long serialVersionUID = 1104595344886510054L;
-
-		@Override
-		public Map<String, SerializationWriter> getWriters(SerializationContext context, SerializationHandler handler) {
-			return Collections.emptyMap();
-		}
-
-		@Override
-		public Map<String, SerializationReader> getReaders(SerializationContext context, SerializationHandler handler) {
-			return Collections.emptyMap();
-		}
 
 		@Override
 		public void write(SerializationContext context, SerializationHandler handler) throws SerializationException {
