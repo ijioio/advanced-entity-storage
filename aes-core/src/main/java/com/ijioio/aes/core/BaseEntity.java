@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.ijioio.aes.core.serialization.SerializationContext;
+import com.ijioio.aes.core.serialization.SerializationException;
 import com.ijioio.aes.core.serialization.SerializationHandler;
 import com.ijioio.aes.core.serialization.SerializationReader;
 import com.ijioio.aes.core.serialization.SerializationWriter;
@@ -14,6 +15,15 @@ import com.ijioio.aes.core.serialization.SerializationWriter;
 public abstract class BaseEntity extends BaseIdentity implements Entity {
 
 	@Override
+	public void write(SerializationContext context, SerializationHandler handler) throws SerializationException {
+		handler.write(context, getWriters(context, handler));
+	}
+
+	@Override
+	public void read(SerializationContext context, SerializationHandler handler) throws SerializationException {
+		handler.read(context, getReaders(context, handler));
+	}
+
 	public Map<String, SerializationWriter> getWriters(SerializationContext context, SerializationHandler handler) {
 
 		Map<String, SerializationWriter> writers = new LinkedHashMap<>();
@@ -23,7 +33,6 @@ public abstract class BaseEntity extends BaseIdentity implements Entity {
 		return writers;
 	}
 
-	@Override
 	public Map<String, SerializationReader> getReaders(SerializationContext context, SerializationHandler handler) {
 
 		Map<String, SerializationReader> readers = new LinkedHashMap<>();
