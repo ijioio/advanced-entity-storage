@@ -12,25 +12,25 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.SerializationContext;
 import com.ijioio.aes.core.serialization.SerializationHandler;
-import com.ijioio.test.model.StringCodegen;
+import com.ijioio.test.model.StringExplicitCodegen;
 
-public class StringCodegenTest extends BaseCodegenTest {
+public class StringExplicitCodegenTest extends BaseCodegenTest {
 
 	@Entity( //
-			name = StringCodegenPrototype.NAME, //
+			name = StringExplicitCodegenPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueString", type = @Type(name = Type.STRING)) //
+					@EntityProperty(name = "valueString", type = @Type(name = "java.lang.String")) //
 			} //
 	)
-	public static interface StringCodegenPrototype {
+	public static interface StringExplicitCodegenPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.StringCodegen";
+		public static final String NAME = "com.ijioio.test.model.StringExplicitCodegen";
 	}
 
 	@Test
 	public void testCodegen() throws Exception {
 
-		Class<StringCodegen> type = StringCodegen.class;
+		Class<StringExplicitCodegen> type = StringExplicitCodegen.class;
 
 		checkFieldExists(type, "valueString", Modifier.PRIVATE, String.class);
 

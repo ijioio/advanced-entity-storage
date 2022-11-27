@@ -1,6 +1,7 @@
 package com.ijioio.aes.sandbox.test.codegen;
 
 import java.lang.reflect.Modifier;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -12,30 +13,30 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.SerializationContext;
 import com.ijioio.aes.core.serialization.SerializationHandler;
-import com.ijioio.test.model.StringCodegen;
+import com.ijioio.test.model.InstantCodegen;
 
-public class StringCodegenTest extends BaseCodegenTest {
+public class InstantCodegenTest extends BaseCodegenTest {
 
 	@Entity( //
-			name = StringCodegenPrototype.NAME, //
+			name = InstantCodegenPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueString", type = @Type(name = Type.STRING)) //
+					@EntityProperty(name = "valueInstant", type = @Type(name = Type.INSTANT)) //
 			} //
 	)
-	public static interface StringCodegenPrototype {
+	public static interface InstantCodegenPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.StringCodegen";
+		public static final String NAME = "com.ijioio.test.model.InstantCodegen";
 	}
 
 	@Test
 	public void testCodegen() throws Exception {
 
-		Class<StringCodegen> type = StringCodegen.class;
+		Class<InstantCodegen> type = InstantCodegen.class;
 
-		checkFieldExists(type, "valueString", Modifier.PRIVATE, String.class);
+		checkFieldExists(type, "valueInstant", Modifier.PRIVATE, Instant.class);
 
-		checkMethodExists(type, "setValueString", Arrays.asList(String.class), Modifier.PUBLIC, void.class);
-		checkMethodExists(type, "getValueString", Collections.emptyList(), Modifier.PUBLIC, String.class);
+		checkMethodExists(type, "setValueInstant", Arrays.asList(Instant.class), Modifier.PUBLIC, void.class);
+		checkMethodExists(type, "getValueInstant", Collections.emptyList(), Modifier.PUBLIC, Instant.class);
 
 		checkMethodExists(type, "getWriters", Arrays.asList(SerializationContext.class, SerializationHandler.class),
 				Modifier.PUBLIC, Map.class);

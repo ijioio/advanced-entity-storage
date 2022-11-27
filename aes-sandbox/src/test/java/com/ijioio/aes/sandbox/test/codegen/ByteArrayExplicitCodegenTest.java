@@ -12,30 +12,30 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.SerializationContext;
 import com.ijioio.aes.core.serialization.SerializationHandler;
-import com.ijioio.test.model.StringCodegen;
+import com.ijioio.test.model.ByteArrayExplicitCodegen;
 
-public class StringCodegenTest extends BaseCodegenTest {
+public class ByteArrayExplicitCodegenTest extends BaseCodegenTest {
 
 	@Entity( //
-			name = StringCodegenPrototype.NAME, //
+			name = ByteArrayExplicitCodegenPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueString", type = @Type(name = Type.STRING)) //
+					@EntityProperty(name = "valueByteArray", type = @Type(name = "[B")) //
 			} //
 	)
-	public static interface StringCodegenPrototype {
+	public static interface ByteArrayExplicitCodegenPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.StringCodegen";
+		public static final String NAME = "com.ijioio.test.model.ByteArrayExplicitCodegen";
 	}
 
 	@Test
 	public void testCodegen() throws Exception {
 
-		Class<StringCodegen> type = StringCodegen.class;
+		Class<ByteArrayExplicitCodegen> type = ByteArrayExplicitCodegen.class;
 
-		checkFieldExists(type, "valueString", Modifier.PRIVATE, String.class);
+		checkFieldExists(type, "valueByteArray", Modifier.PRIVATE, byte[].class);
 
-		checkMethodExists(type, "setValueString", Arrays.asList(String.class), Modifier.PUBLIC, void.class);
-		checkMethodExists(type, "getValueString", Collections.emptyList(), Modifier.PUBLIC, String.class);
+		checkMethodExists(type, "setValueByteArray", Arrays.asList(byte[].class), Modifier.PUBLIC, void.class);
+		checkMethodExists(type, "getValueByteArray", Collections.emptyList(), Modifier.PUBLIC, byte[].class);
 
 		checkMethodExists(type, "getWriters", Arrays.asList(SerializationContext.class, SerializationHandler.class),
 				Modifier.PUBLIC, Map.class);

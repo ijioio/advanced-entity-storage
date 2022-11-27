@@ -1,6 +1,7 @@
 package com.ijioio.aes.sandbox.test.codegen;
 
 import java.lang.reflect.Modifier;
+import java.time.Month;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -12,30 +13,30 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.SerializationContext;
 import com.ijioio.aes.core.serialization.SerializationHandler;
-import com.ijioio.test.model.StringCodegen;
+import com.ijioio.test.model.EnumCodegen;
 
-public class StringCodegenTest extends BaseCodegenTest {
+public class EnumCodegenTest extends BaseCodegenTest {
 
 	@Entity( //
-			name = StringCodegenPrototype.NAME, //
+			name = EnumCodegenPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueString", type = @Type(name = Type.STRING)) //
+					@EntityProperty(name = "valueEnum", type = @Type(name = "java.time.Month")) //
 			} //
 	)
-	public static interface StringCodegenPrototype {
+	public static interface EnumCodegenPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.StringCodegen";
+		public static final String NAME = "com.ijioio.test.model.EnumCodegen";
 	}
 
 	@Test
 	public void testCodegen() throws Exception {
 
-		Class<StringCodegen> type = StringCodegen.class;
+		Class<EnumCodegen> type = EnumCodegen.class;
 
-		checkFieldExists(type, "valueString", Modifier.PRIVATE, String.class);
+		checkFieldExists(type, "valueEnum", Modifier.PRIVATE, Month.class);
 
-		checkMethodExists(type, "setValueString", Arrays.asList(String.class), Modifier.PUBLIC, void.class);
-		checkMethodExists(type, "getValueString", Collections.emptyList(), Modifier.PUBLIC, String.class);
+		checkMethodExists(type, "setValueEnum", Arrays.asList(Month.class), Modifier.PUBLIC, void.class);
+		checkMethodExists(type, "getValueEnum", Collections.emptyList(), Modifier.PUBLIC, Month.class);
 
 		checkMethodExists(type, "getWriters", Arrays.asList(SerializationContext.class, SerializationHandler.class),
 				Modifier.PUBLIC, Map.class);
