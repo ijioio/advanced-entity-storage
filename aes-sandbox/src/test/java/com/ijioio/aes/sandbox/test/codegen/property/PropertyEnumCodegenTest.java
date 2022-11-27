@@ -1,4 +1,4 @@
-package com.ijioio.aes.sandbox.test.codegen;
+package com.ijioio.aes.sandbox.test.codegen.property;
 
 import java.lang.reflect.Modifier;
 import java.time.Month;
@@ -13,25 +13,26 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.SerializationContext;
 import com.ijioio.aes.core.serialization.SerializationHandler;
-import com.ijioio.test.model.EnumCodegen;
+import com.ijioio.aes.sandbox.test.codegen.BaseCodegenTest;
+import com.ijioio.test.model.PropertyEnumCodegen;
 
-public class EnumCodegenTest extends BaseCodegenTest {
+public class PropertyEnumCodegenTest extends BaseCodegenTest {
 
 	@Entity( //
-			name = EnumCodegenPrototype.NAME, //
+			name = PropertyEnumCodegenPrototype.NAME, //
 			properties = { //
 					@EntityProperty(name = "valueEnum", type = @Type(name = "java.time.Month")) //
 			} //
 	)
-	public static interface EnumCodegenPrototype {
+	public static interface PropertyEnumCodegenPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.EnumCodegen";
+		public static final String NAME = "com.ijioio.test.model.PropertyEnumCodegen";
 	}
 
 	@Test
 	public void testCodegen() throws Exception {
 
-		Class<EnumCodegen> type = EnumCodegen.class;
+		Class<PropertyEnumCodegen> type = PropertyEnumCodegen.class;
 
 		checkFieldExists(type, "valueEnum", Modifier.PRIVATE, Month.class);
 

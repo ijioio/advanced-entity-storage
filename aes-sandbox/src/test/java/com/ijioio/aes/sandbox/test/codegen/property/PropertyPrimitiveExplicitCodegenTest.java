@@ -1,4 +1,4 @@
-package com.ijioio.aes.sandbox.test.codegen;
+package com.ijioio.aes.sandbox.test.codegen.property;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -12,12 +12,13 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.SerializationContext;
 import com.ijioio.aes.core.serialization.SerializationHandler;
-import com.ijioio.test.model.PrimitiveExplicitCodegen;
+import com.ijioio.aes.sandbox.test.codegen.BaseCodegenTest;
+import com.ijioio.test.model.PropertyPrimitiveExplicitCodegen;
 
-public class PrimitiveExplicitCodegenTest extends BaseCodegenTest {
+public class PropertyPrimitiveExplicitCodegenTest extends BaseCodegenTest {
 
 	@Entity( //
-			name = PrimitiveExplicitCodegenPrototype.NAME, //
+			name = PropertyPrimitiveExplicitCodegenPrototype.NAME, //
 			properties = { //
 					@EntityProperty(name = "valueBoolean", type = @Type(name = "boolean")), //
 					@EntityProperty(name = "valueChar", type = @Type(name = "char")), //
@@ -29,15 +30,15 @@ public class PrimitiveExplicitCodegenTest extends BaseCodegenTest {
 					@EntityProperty(name = "valueDouble", type = @Type(name = "double")) //
 			} //
 	)
-	public static interface PrimitiveExplicitCodegenPrototype {
+	public static interface PropertyPrimitiveExplicitCodegenPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.PrimitiveExplicitCodegen";
+		public static final String NAME = "com.ijioio.test.model.PropertyPrimitiveExplicitCodegen";
 	}
 
 	@Test
 	public void testCodegen() throws Exception {
 
-		Class<PrimitiveExplicitCodegen> type = PrimitiveExplicitCodegen.class;
+		Class<PropertyPrimitiveExplicitCodegen> type = PropertyPrimitiveExplicitCodegen.class;
 
 		checkFieldExists(type, "valueBoolean", Modifier.PRIVATE, boolean.class);
 		checkFieldExists(type, "valueChar", Modifier.PRIVATE, char.class);

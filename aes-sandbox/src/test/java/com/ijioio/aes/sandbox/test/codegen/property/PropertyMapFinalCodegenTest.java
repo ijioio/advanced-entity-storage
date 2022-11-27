@@ -1,4 +1,4 @@
-package com.ijioio.aes.sandbox.test.codegen;
+package com.ijioio.aes.sandbox.test.codegen.property;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -13,12 +13,13 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.SerializationContext;
 import com.ijioio.aes.core.serialization.SerializationHandler;
-import com.ijioio.test.model.MapFinalCodegen;
+import com.ijioio.aes.sandbox.test.codegen.BaseCodegenTest;
+import com.ijioio.test.model.PropertyMapFinalCodegen;
 
-public class MapFinalCodegenTest extends BaseCodegenTest {
+public class PropertyMapFinalCodegenTest extends BaseCodegenTest {
 
 	@Entity( //
-			name = MapFinalCodegenPrototype.NAME, //
+			name = PropertyMapFinalCodegenPrototype.NAME, //
 			properties = { //
 					@EntityProperty(name = "valueStringMap", type = @Type(name = Type.MAP), parameters = {
 							@Type(name = Type.STRING), @Type(name = Type.STRING) }, attributes = Attribute.FINAL), //
@@ -30,15 +31,15 @@ public class MapFinalCodegenTest extends BaseCodegenTest {
 							@Type(name = "java.lang.Object") }, attributes = Attribute.FINAL) //
 			} //
 	)
-	public static interface MapFinalCodegenPrototype {
+	public static interface PropertyMapFinalCodegenPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.MapFinalCodegen";
+		public static final String NAME = "com.ijioio.test.model.PropertyMapFinalCodegen";
 	}
 
 	@Test
 	public void testCodegen() throws Exception {
 
-		Class<MapFinalCodegen> type = MapFinalCodegen.class;
+		Class<PropertyMapFinalCodegen> type = PropertyMapFinalCodegen.class;
 
 		checkFieldExists(type, "valueStringMap", Modifier.PRIVATE | Modifier.FINAL, Map.class);
 		checkFieldExists(type, "valueEnumMap", Modifier.PRIVATE | Modifier.FINAL, Map.class);

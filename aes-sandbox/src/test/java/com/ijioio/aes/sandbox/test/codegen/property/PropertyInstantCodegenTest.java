@@ -1,4 +1,4 @@
-package com.ijioio.aes.sandbox.test.codegen;
+package com.ijioio.aes.sandbox.test.codegen.property;
 
 import java.lang.reflect.Modifier;
 import java.time.Instant;
@@ -13,25 +13,26 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.SerializationContext;
 import com.ijioio.aes.core.serialization.SerializationHandler;
-import com.ijioio.test.model.InstantCodegen;
+import com.ijioio.aes.sandbox.test.codegen.BaseCodegenTest;
+import com.ijioio.test.model.PropertyInstantCodegen;
 
-public class InstantCodegenTest extends BaseCodegenTest {
+public class PropertyInstantCodegenTest extends BaseCodegenTest {
 
 	@Entity( //
-			name = InstantCodegenPrototype.NAME, //
+			name = PropertyInstantCodegenPrototype.NAME, //
 			properties = { //
 					@EntityProperty(name = "valueInstant", type = @Type(name = Type.INSTANT)) //
 			} //
 	)
-	public static interface InstantCodegenPrototype {
+	public static interface PropertyInstantCodegenPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.InstantCodegen";
+		public static final String NAME = "com.ijioio.test.model.PropertyInstantCodegen";
 	}
 
 	@Test
 	public void testCodegen() throws Exception {
 
-		Class<InstantCodegen> type = InstantCodegen.class;
+		Class<PropertyInstantCodegen> type = PropertyInstantCodegen.class;
 
 		checkFieldExists(type, "valueInstant", Modifier.PRIVATE, Instant.class);
 

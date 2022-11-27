@@ -1,4 +1,4 @@
-package com.ijioio.aes.sandbox.test.codegen;
+package com.ijioio.aes.sandbox.test.codegen.property;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -12,30 +12,31 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.SerializationContext;
 import com.ijioio.aes.core.serialization.SerializationHandler;
-import com.ijioio.test.model.MapCodegen;
+import com.ijioio.aes.sandbox.test.codegen.BaseCodegenTest;
+import com.ijioio.test.model.PropertyMapExplicitCodegen;
 
-public class MapCodegenTest extends BaseCodegenTest {
+public class PropertyMapExplicitCodegenTest extends BaseCodegenTest {
 
 	@Entity( //
-			name = MapCodegenPrototype.NAME, //
+			name = PropertyMapExplicitCodegenPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueStringMap", type = @Type(name = Type.MAP), parameters = {
+					@EntityProperty(name = "valueStringMap", type = @Type(name = "java.util.Map"), parameters = {
 							@Type(name = Type.STRING), @Type(name = Type.STRING) }), //
-					@EntityProperty(name = "valueEnumMap", type = @Type(name = Type.MAP), parameters = {
+					@EntityProperty(name = "valueEnumMap", type = @Type(name = "java.util.Map"), parameters = {
 							@Type(name = "java.time.Month"), @Type(name = "java.time.Month") }), //
-					@EntityProperty(name = "valueObjectMap", type = @Type(name = Type.MAP), parameters = {
+					@EntityProperty(name = "valueObjectMap", type = @Type(name = "java.util.Map"), parameters = {
 							@Type(name = "java.lang.Object"), @Type(name = "java.lang.Object") }) //
 			} //
 	)
-	public static interface MapCodegenPrototype {
+	public static interface PropertyMapExplicitCodegenPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.MapCodegen";
+		public static final String NAME = "com.ijioio.test.model.PropertyMapExplicitCodegen";
 	}
 
 	@Test
 	public void testCodegen() throws Exception {
 
-		Class<MapCodegen> type = MapCodegen.class;
+		Class<PropertyMapExplicitCodegen> type = PropertyMapExplicitCodegen.class;
 
 		checkFieldExists(type, "valueStringMap", Modifier.PRIVATE, Map.class);
 		checkFieldExists(type, "valueEnumMap", Modifier.PRIVATE, Map.class);

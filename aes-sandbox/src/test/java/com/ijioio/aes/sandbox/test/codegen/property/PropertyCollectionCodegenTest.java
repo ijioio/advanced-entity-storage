@@ -1,4 +1,4 @@
-package com.ijioio.aes.sandbox.test.codegen;
+package com.ijioio.aes.sandbox.test.codegen.property;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -14,30 +14,31 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.SerializationContext;
 import com.ijioio.aes.core.serialization.SerializationHandler;
-import com.ijioio.test.model.CollectionExplicitCodegen;
+import com.ijioio.aes.sandbox.test.codegen.BaseCodegenTest;
+import com.ijioio.test.model.PropertyCollectionCodegen;
 
-public class CollectionExplicitCodegenTest extends BaseCodegenTest {
+public class PropertyCollectionCodegenTest extends BaseCodegenTest {
 
 	@Entity( //
-			name = CollectionExplicitCodegenPrototype.NAME, //
+			name = PropertyCollectionCodegenPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueStringList", type = @Type(name = "java.util.List"), parameters = @Type(name = Type.STRING)), //
-					@EntityProperty(name = "valueEnumList", type = @Type(name = "java.util.List"), parameters = @Type(name = "java.time.Month")), //
-					@EntityProperty(name = "valueObjectList", type = @Type(name = "java.util.List"), parameters = @Type(name = "java.lang.Object")), //
-					@EntityProperty(name = "valueStringSet", type = @Type(name = "java.util.Set"), parameters = @Type(name = Type.STRING)), //
-					@EntityProperty(name = "valueEnumSet", type = @Type(name = "java.util.Set"), parameters = @Type(name = "java.time.Month")), //
-					@EntityProperty(name = "valueObjectSet", type = @Type(name = "java.util.Set"), parameters = @Type(name = "java.lang.Object")) //
+					@EntityProperty(name = "valueStringList", type = @Type(name = Type.LIST), parameters = @Type(name = Type.STRING)), //
+					@EntityProperty(name = "valueEnumList", type = @Type(name = Type.LIST), parameters = @Type(name = "java.time.Month")), //
+					@EntityProperty(name = "valueObjectList", type = @Type(name = Type.LIST), parameters = @Type(name = "java.lang.Object")), //
+					@EntityProperty(name = "valueStringSet", type = @Type(name = Type.SET), parameters = @Type(name = Type.STRING)), //
+					@EntityProperty(name = "valueEnumSet", type = @Type(name = Type.SET), parameters = @Type(name = "java.time.Month")), //
+					@EntityProperty(name = "valueObjectSet", type = @Type(name = Type.SET), parameters = @Type(name = "java.lang.Object")) //
 			} //
 	)
-	public static interface CollectionExplicitCodegenPrototype {
+	public static interface PropertyCollectionCodegenPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.CollectionExplicitCodegen";
+		public static final String NAME = "com.ijioio.test.model.PropertyCollectionCodegen";
 	}
 
 	@Test
 	public void testCodegen() throws Exception {
 
-		Class<CollectionExplicitCodegen> type = CollectionExplicitCodegen.class;
+		Class<PropertyCollectionCodegen> type = PropertyCollectionCodegen.class;
 
 		checkFieldExists(type, "valueStringList", Modifier.PRIVATE, List.class);
 		checkFieldExists(type, "valueEnumList", Modifier.PRIVATE, List.class);

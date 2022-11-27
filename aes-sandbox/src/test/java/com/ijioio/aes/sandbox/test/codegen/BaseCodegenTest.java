@@ -8,6 +8,16 @@ import org.junit.jupiter.api.Assertions;
 
 public class BaseCodegenTest {
 
+	protected void checkType(Class<?> type, int expectedModifiers, String expectedCanonicalName,
+			Class<?> expectedSuperClass, Collection<Class<?>> expectedInterfaces) {
+
+		Assertions.assertEquals(expectedModifiers, type.getModifiers());
+		Assertions.assertEquals(expectedCanonicalName, type.getCanonicalName());
+		Assertions.assertEquals(expectedSuperClass, type.getSuperclass());
+		Assertions.assertArrayEquals(expectedInterfaces.toArray(new Class<?>[expectedInterfaces.size()]),
+				type.getInterfaces());
+	}
+
 	protected void checkFieldExists(Class<?> type, String expectedName, int expectedModifiers, Class<?> expectedType)
 			throws NoSuchFieldException {
 

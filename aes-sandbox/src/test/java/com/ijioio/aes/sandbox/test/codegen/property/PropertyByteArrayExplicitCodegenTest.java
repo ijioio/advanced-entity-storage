@@ -1,4 +1,4 @@
-package com.ijioio.aes.sandbox.test.codegen;
+package com.ijioio.aes.sandbox.test.codegen.property;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -12,25 +12,26 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.SerializationContext;
 import com.ijioio.aes.core.serialization.SerializationHandler;
-import com.ijioio.test.model.ByteArrayExplicitCodegen;
+import com.ijioio.aes.sandbox.test.codegen.BaseCodegenTest;
+import com.ijioio.test.model.PropertyByteArrayExplicitCodegen;
 
-public class ByteArrayExplicitCodegenTest extends BaseCodegenTest {
+public class PropertyByteArrayExplicitCodegenTest extends BaseCodegenTest {
 
 	@Entity( //
-			name = ByteArrayExplicitCodegenPrototype.NAME, //
+			name = PropertyByteArrayExplicitCodegenPrototype.NAME, //
 			properties = { //
 					@EntityProperty(name = "valueByteArray", type = @Type(name = "[B")) //
 			} //
 	)
-	public static interface ByteArrayExplicitCodegenPrototype {
+	public static interface PropertyByteArrayExplicitCodegenPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.ByteArrayExplicitCodegen";
+		public static final String NAME = "com.ijioio.test.model.PropertyByteArrayExplicitCodegen";
 	}
 
 	@Test
 	public void testCodegen() throws Exception {
 
-		Class<ByteArrayExplicitCodegen> type = ByteArrayExplicitCodegen.class;
+		Class<PropertyByteArrayExplicitCodegen> type = PropertyByteArrayExplicitCodegen.class;
 
 		checkFieldExists(type, "valueByteArray", Modifier.PRIVATE, byte[].class);
 

@@ -1,4 +1,4 @@
-package com.ijioio.aes.sandbox.test.codegen;
+package com.ijioio.aes.sandbox.test.codegen.property;
 
 import java.lang.reflect.Modifier;
 import java.time.LocalDateTime;
@@ -13,25 +13,26 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.SerializationContext;
 import com.ijioio.aes.core.serialization.SerializationHandler;
-import com.ijioio.test.model.LocalDateTimeCodegen;
+import com.ijioio.aes.sandbox.test.codegen.BaseCodegenTest;
+import com.ijioio.test.model.PropertyLocalDateTimeCodegen;
 
-public class LocalDateTimeCodegenTest extends BaseCodegenTest {
+public class PropertyLocalDateTimeCodegenTest extends BaseCodegenTest {
 
 	@Entity( //
-			name = LocalDateTimeCodegenPrototype.NAME, //
+			name = PropertyLocalDateTimeCodegenPrototype.NAME, //
 			properties = { //
 					@EntityProperty(name = "valueLocalDateTime", type = @Type(name = Type.LOCAL_DATE_TIME)) //
 			} //
 	)
-	public static interface LocalDateTimeCodegenPrototype {
+	public static interface PropertyLocalDateTimeCodegenPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.LocalDateTimeCodegen";
+		public static final String NAME = "com.ijioio.test.model.PropertyLocalDateTimeCodegen";
 	}
 
 	@Test
 	public void testCodegen() throws Exception {
 
-		Class<LocalDateTimeCodegen> type = LocalDateTimeCodegen.class;
+		Class<PropertyLocalDateTimeCodegen> type = PropertyLocalDateTimeCodegen.class;
 
 		checkFieldExists(type, "valueLocalDateTime", Modifier.PRIVATE, LocalDateTime.class);
 

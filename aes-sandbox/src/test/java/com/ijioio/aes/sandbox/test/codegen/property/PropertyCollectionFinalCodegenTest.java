@@ -1,4 +1,4 @@
-package com.ijioio.aes.sandbox.test.codegen;
+package com.ijioio.aes.sandbox.test.codegen.property;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -15,12 +15,13 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.SerializationContext;
 import com.ijioio.aes.core.serialization.SerializationHandler;
-import com.ijioio.test.model.CollectionFinalCodegen;
+import com.ijioio.aes.sandbox.test.codegen.BaseCodegenTest;
+import com.ijioio.test.model.PropertyCollectionFinalCodegen;
 
-public class CollectionFinalCodegenTest extends BaseCodegenTest {
+public class PropertyCollectionFinalCodegenTest extends BaseCodegenTest {
 
 	@Entity( //
-			name = CollectionFinalCodegenPrototype.NAME, //
+			name = PropertyCollectionFinalCodegenPrototype.NAME, //
 			properties = { //
 					@EntityProperty(name = "valueStringList", type = @Type(name = Type.LIST), parameters = @Type(name = Type.STRING), attributes = Attribute.FINAL), //
 					@EntityProperty(name = "valueEnumList", type = @Type(name = Type.LIST), parameters = @Type(name = "java.time.Month"), attributes = Attribute.FINAL), //
@@ -30,15 +31,15 @@ public class CollectionFinalCodegenTest extends BaseCodegenTest {
 					@EntityProperty(name = "valueObjectSet", type = @Type(name = Type.SET), parameters = @Type(name = "java.lang.Object"), attributes = Attribute.FINAL) //
 			} //
 	)
-	public static interface CollectionFinalCodegenPrototype {
+	public static interface PropertyCollectionFinalCodegenPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.CollectionFinalCodegen";
+		public static final String NAME = "com.ijioio.test.model.PropertyCollectionFinalCodegen";
 	}
 
 	@Test
 	public void testCodegen() throws Exception {
 
-		Class<CollectionFinalCodegen> type = CollectionFinalCodegen.class;
+		Class<PropertyCollectionFinalCodegen> type = PropertyCollectionFinalCodegen.class;
 
 		checkFieldExists(type, "valueStringList", Modifier.PRIVATE | Modifier.FINAL, List.class);
 		checkFieldExists(type, "valueEnumList", Modifier.PRIVATE | Modifier.FINAL, List.class);

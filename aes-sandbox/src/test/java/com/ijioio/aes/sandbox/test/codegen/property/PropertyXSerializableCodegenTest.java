@@ -1,4 +1,4 @@
-package com.ijioio.aes.sandbox.test.codegen;
+package com.ijioio.aes.sandbox.test.codegen.property;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import com.ijioio.aes.annotation.Attribute;
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
@@ -15,9 +14,10 @@ import com.ijioio.aes.core.XSerializable;
 import com.ijioio.aes.core.serialization.SerializationContext;
 import com.ijioio.aes.core.serialization.SerializationException;
 import com.ijioio.aes.core.serialization.SerializationHandler;
-import com.ijioio.test.model.XSerializableFinalCodegen;
+import com.ijioio.aes.sandbox.test.codegen.BaseCodegenTest;
+import com.ijioio.test.model.PropertyXSerializableCodegen;
 
-public class XSerializableFinalCodegenTest extends BaseCodegenTest {
+public class PropertyXSerializableCodegenTest extends BaseCodegenTest {
 
 	public static class XSerializableObject implements XSerializable {
 
@@ -45,25 +45,25 @@ public class XSerializableFinalCodegenTest extends BaseCodegenTest {
 	}
 
 	@Entity( //
-			name = XSerializableFinalCodegenPrototype.NAME, //
+			name = PropertyXSerializableCodegenPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueXSerializableObject", type = @Type(name = "com.ijioio.aes.sandbox.test.codegen.XSerializableFinalCodegenTest.XSerializableObject"), attributes = Attribute.FINAL) //
+					@EntityProperty(name = "valueXSerializableObject", type = @Type(name = "com.ijioio.aes.sandbox.test.codegen.property.PropertyXSerializableCodegenTest.XSerializableObject")) //
 			} //
 	)
-	public static interface XSerializableFinalCodegenPrototype {
+	public static interface PropertyXSerializableCodegenPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.XSerializableFinalCodegen";
+		public static final String NAME = "com.ijioio.test.model.PropertyXSerializableCodegen";
 	}
 
 	@Test
 	public void testCodegen() throws Exception {
 
-		Class<XSerializableFinalCodegen> type = XSerializableFinalCodegen.class;
+		Class<PropertyXSerializableCodegen> type = PropertyXSerializableCodegen.class;
 
-		checkFieldExists(type, "valueXSerializableObject", Modifier.PRIVATE | Modifier.FINAL,
-				XSerializableObject.class);
+		checkFieldExists(type, "valueXSerializableObject", Modifier.PRIVATE, XSerializableObject.class);
 
-		checkMethodNotExists(type, "setValueXSerializableObject", Arrays.asList(XSerializableObject.class));
+		checkMethodExists(type, "setValueXSerializableObject", Arrays.asList(XSerializableObject.class),
+				Modifier.PUBLIC, void.class);
 		checkMethodExists(type, "getValueXSerializableObject", Collections.emptyList(), Modifier.PUBLIC,
 				XSerializableObject.class);
 

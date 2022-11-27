@@ -1,4 +1,4 @@
-package com.ijioio.aes.sandbox.test.codegen;
+package com.ijioio.aes.sandbox.test.codegen.property;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -12,25 +12,26 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.SerializationContext;
 import com.ijioio.aes.core.serialization.SerializationHandler;
-import com.ijioio.test.model.StringCodegen;
+import com.ijioio.aes.sandbox.test.codegen.BaseCodegenTest;
+import com.ijioio.test.model.PropertyStringCodegen;
 
-public class StringCodegenTest extends BaseCodegenTest {
+public class PropertyStringCodegenTest extends BaseCodegenTest {
 
 	@Entity( //
-			name = StringCodegenPrototype.NAME, //
+			name = PropertyStringCodegenPrototype.NAME, //
 			properties = { //
 					@EntityProperty(name = "valueString", type = @Type(name = Type.STRING)) //
 			} //
 	)
-	public static interface StringCodegenPrototype {
+	public static interface PropertyStringCodegenPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.StringCodegen";
+		public static final String NAME = "com.ijioio.test.model.PropertyStringCodegen";
 	}
 
 	@Test
 	public void testCodegen() throws Exception {
 
-		Class<StringCodegen> type = StringCodegen.class;
+		Class<PropertyStringCodegen> type = PropertyStringCodegen.class;
 
 		checkFieldExists(type, "valueString", Modifier.PRIVATE, String.class);
 
