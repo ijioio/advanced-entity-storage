@@ -4,15 +4,12 @@ import java.lang.reflect.Modifier;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
-import com.ijioio.aes.core.serialization.SerializationContext;
-import com.ijioio.aes.core.serialization.SerializationHandler;
 import com.ijioio.aes.sandbox.test.codegen.BaseCodegenTest;
 import com.ijioio.test.model.PropertyLocalDateCodegen;
 
@@ -38,10 +35,5 @@ public class PropertyLocalDateCodegenTest extends BaseCodegenTest {
 
 		checkMethodExists(type, "setValueLocalDate", Arrays.asList(LocalDate.class), Modifier.PUBLIC, void.class);
 		checkMethodExists(type, "getValueLocalDate", Collections.emptyList(), Modifier.PUBLIC, LocalDate.class);
-
-		checkMethodExists(type, "getWriters", Arrays.asList(SerializationContext.class, SerializationHandler.class),
-				Modifier.PUBLIC, Map.class);
-		checkMethodExists(type, "getReaders", Arrays.asList(SerializationContext.class, SerializationHandler.class),
-				Modifier.PUBLIC, Map.class);
 	}
 }

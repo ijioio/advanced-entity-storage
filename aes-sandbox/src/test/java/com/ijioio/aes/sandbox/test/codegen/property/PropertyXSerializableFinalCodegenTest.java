@@ -3,7 +3,6 @@ package com.ijioio.aes.sandbox.test.codegen.property;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -67,10 +66,5 @@ public class PropertyXSerializableFinalCodegenTest extends BaseCodegenTest {
 		checkMethodNotExists(type, "setValueXSerializableObject", Arrays.asList(XSerializableObject.class));
 		checkMethodExists(type, "getValueXSerializableObject", Collections.emptyList(), Modifier.PUBLIC,
 				XSerializableObject.class);
-
-		checkMethodExists(type, "getWriters", Arrays.asList(SerializationContext.class, SerializationHandler.class),
-				Modifier.PUBLIC, Map.class);
-		checkMethodExists(type, "getReaders", Arrays.asList(SerializationContext.class, SerializationHandler.class),
-				Modifier.PUBLIC, Map.class);
 	}
 }

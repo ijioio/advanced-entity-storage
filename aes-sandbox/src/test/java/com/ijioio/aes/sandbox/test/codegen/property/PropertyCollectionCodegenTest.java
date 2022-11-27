@@ -4,7 +4,6 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -12,8 +11,6 @@ import org.junit.jupiter.api.Test;
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
-import com.ijioio.aes.core.serialization.SerializationContext;
-import com.ijioio.aes.core.serialization.SerializationHandler;
 import com.ijioio.aes.sandbox.test.codegen.BaseCodegenTest;
 import com.ijioio.test.model.PropertyCollectionCodegen;
 
@@ -59,10 +56,5 @@ public class PropertyCollectionCodegenTest extends BaseCodegenTest {
 		checkMethodExists(type, "getValueEnumSet", Collections.emptyList(), Modifier.PUBLIC, Set.class);
 		checkMethodExists(type, "setValueObjectSet", Arrays.asList(Set.class), Modifier.PUBLIC, void.class);
 		checkMethodExists(type, "getValueObjectSet", Collections.emptyList(), Modifier.PUBLIC, Set.class);
-
-		checkMethodExists(type, "getWriters", Arrays.asList(SerializationContext.class, SerializationHandler.class),
-				Modifier.PUBLIC, Map.class);
-		checkMethodExists(type, "getReaders", Arrays.asList(SerializationContext.class, SerializationHandler.class),
-				Modifier.PUBLIC, Map.class);
 	}
 }

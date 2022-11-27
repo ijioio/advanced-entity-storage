@@ -11,8 +11,6 @@ import com.ijioio.aes.annotation.Attribute;
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
-import com.ijioio.aes.core.serialization.SerializationContext;
-import com.ijioio.aes.core.serialization.SerializationHandler;
 import com.ijioio.aes.sandbox.test.codegen.BaseCodegenTest;
 import com.ijioio.test.model.PropertyMapFinalCodegen;
 
@@ -51,10 +49,5 @@ public class PropertyMapFinalCodegenTest extends BaseCodegenTest {
 		checkMethodExists(type, "getValueEnumMap", Collections.emptyList(), Modifier.PUBLIC, Map.class);
 		checkMethodNotExists(type, "setValueObjectMap", Arrays.asList(Map.class));
 		checkMethodExists(type, "getValueObjectMap", Collections.emptyList(), Modifier.PUBLIC, Map.class);
-
-		checkMethodExists(type, "getWriters", Arrays.asList(SerializationContext.class, SerializationHandler.class),
-				Modifier.PUBLIC, Map.class);
-		checkMethodExists(type, "getReaders", Arrays.asList(SerializationContext.class, SerializationHandler.class),
-				Modifier.PUBLIC, Map.class);
 	}
 }
