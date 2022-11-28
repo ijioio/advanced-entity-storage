@@ -1,13 +1,10 @@
-package com.ijioio.aes.sandbox.test;
+package com.ijioio.aes.sandbox.test.serialization.property;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Month;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,12 +15,13 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
-import com.ijioio.test.model.MapSerialization;
+import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
+import com.ijioio.test.model.PropertyMapSerialization;
 
-public class MapSerializationTest {
+public class PropertyMapSerializationTest extends BaseSerializationTest {
 
 	@Entity( //
-			name = MapSerializationPrototype.NAME, //
+			name = PropertyMapSerializationPrototype.NAME, //
 			properties = { //
 					@EntityProperty(name = "valueStringMap", type = @Type(name = Type.MAP), parameters = {
 							@Type(name = Type.STRING), @Type(name = Type.STRING) }), //
@@ -33,19 +31,19 @@ public class MapSerializationTest {
 							@Type(name = "java.lang.Object"), @Type(name = "java.lang.Object") }) //
 			} //
 	)
-	public static interface MapSerializationPrototype {
+	public static interface PropertyMapSerializationPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.MapSerialization";
+		public static final String NAME = "com.ijioio.test.model.PropertyMapSerialization";
 	}
 
 	private Path path;
 
-	private MapSerialization model;
+	private PropertyMapSerialization model;
 
 	@BeforeEach
 	public void before() throws Exception {
 
-		path = Paths.get(getClass().getClassLoader().getResource("map-serialization.xml").toURI());
+		path = Paths.get(getClass().getClassLoader().getResource("property-map-serialization.xml").toURI());
 
 		Map<String, String> stringMap = new LinkedHashMap<>();
 
@@ -64,9 +62,9 @@ public class MapSerializationTest {
 		objectMap.put("key", "value");
 		objectMap.put(Month.JANUARY, Month.FEBRUARY);
 
-		model = new MapSerialization();
+		model = new PropertyMapSerialization();
 
-		model.setId("map-serialization");
+		model.setId("property-map-serialization");
 		model.setValueStringMap(stringMap);
 		model.setValueEnumMap(enumMap);
 		model.setValueObjectMap(objectMap);
@@ -78,7 +76,7 @@ public class MapSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		String expected = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n"));
+		String expected = readString(path);
 
 		Assertions.assertEquals(expected, actual);
 	}
@@ -88,9 +86,8 @@ public class MapSerializationTest {
 
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
-		MapSerialization actual = XmlUtil.read(handler, MapSerialization.class,
-				Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n")));
-		MapSerialization expected = model;
+		PropertyMapSerialization actual = XmlUtil.read(handler, PropertyMapSerialization.class, readString(path));
+		PropertyMapSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());
 		Assertions.assertEquals(expected.getValueStringMap(), actual.getValueStringMap());

@@ -1,11 +1,10 @@
-package com.ijioio.aes.sandbox.test;
+package com.ijioio.aes.sandbox.test.serialization.property;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -13,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,103 +20,119 @@ import org.junit.jupiter.api.Test;
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
+import com.ijioio.aes.core.BaseIdentity;
+import com.ijioio.aes.core.XSerializable;
+import com.ijioio.aes.core.serialization.SerializationContext;
+import com.ijioio.aes.core.serialization.SerializationException;
+import com.ijioio.aes.core.serialization.SerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
-import com.ijioio.test.model.IdentityBarSerialization;
-import com.ijioio.test.model.IdentityFooSerialization;
-import com.ijioio.test.model.IdentitySerialization;
+import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
+import com.ijioio.test.model.PropertyIdentitySerialization;
 
-public class IdentitySerializationTest {
+public class PropertyIdentitySerializationTest extends BaseSerializationTest {
+
+	public static class IdentityFoo extends BaseIdentity implements XSerializable {
+
+		@Override
+		public void write(SerializationContext context, SerializationHandler handler) throws SerializationException {
+			handler.write(context, Collections.singletonMap("id", () -> handler.write(context, "id", getId())));
+		}
+
+		@Override
+		public void read(SerializationContext context, SerializationHandler handler) throws SerializationException {
+			handler.read(context, Collections.singletonMap("id", () -> setId(handler.read(context, getId()))));
+		}
+	}
+
+	public static class IdentityBar extends BaseIdentity implements XSerializable {
+
+		@Override
+		public void write(SerializationContext context, SerializationHandler handler) throws SerializationException {
+			handler.write(context, Collections.singletonMap("id", () -> handler.write(context, "id", getId())));
+		}
+
+		@Override
+		public void read(SerializationContext context, SerializationHandler handler) throws SerializationException {
+			handler.read(context, Collections.singletonMap("id", () -> setId(handler.read(context, getId()))));
+		}
+	}
 
 	@Entity( //
-			name = IdentitySerializationPrototype.NAME, //
+			name = PropertyIdentitySerializationPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueIdentityFoo", type = @Type(name = IdentityFooSerializationPrototype.NAME)), //
-					@EntityProperty(name = "valueIdentityBar", type = @Type(name = IdentityBarSerializationPrototype.NAME)), //
-					@EntityProperty(name = "valueIdentityFooList", type = @Type(name = Type.LIST), parameters = @Type(name = IdentityFooSerializationPrototype.NAME)), //
-					@EntityProperty(name = "valueIdentityBarList", type = @Type(name = Type.LIST), parameters = @Type(name = IdentityBarSerializationPrototype.NAME)), //
+					@EntityProperty(name = "valueIdentityFoo", type = @Type(name = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityFoo")), //
+					@EntityProperty(name = "valueIdentityBar", type = @Type(name = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityBar")), //
+					@EntityProperty(name = "valueIdentityFooList", type = @Type(name = Type.LIST), parameters = @Type(name = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityFoo")), //
+					@EntityProperty(name = "valueIdentityBarList", type = @Type(name = Type.LIST), parameters = @Type(name = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityBar")), //
 					@EntityProperty(name = "valueIdentityMixList", type = @Type(name = Type.LIST), parameters = @Type(name = "java.lang.Object")), //
-					@EntityProperty(name = "valueIdentityFooSet", type = @Type(name = Type.SET), parameters = @Type(name = IdentityFooSerializationPrototype.NAME)), //
-					@EntityProperty(name = "valueIdentityBarSet", type = @Type(name = Type.SET), parameters = @Type(name = IdentityBarSerializationPrototype.NAME)), //
+					@EntityProperty(name = "valueIdentityFooSet", type = @Type(name = Type.SET), parameters = @Type(name = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityFoo")), //
+					@EntityProperty(name = "valueIdentityBarSet", type = @Type(name = Type.SET), parameters = @Type(name = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityBar")), //
 					@EntityProperty(name = "valueIdentityMixSet", type = @Type(name = Type.SET), parameters = @Type(name = "java.lang.Object")), //
 					@EntityProperty(name = "valueIdentityFooMap", type = @Type(name = Type.MAP), parameters = {
-							@Type(name = Type.STRING), @Type(name = IdentityFooSerializationPrototype.NAME) }), //
+							@Type(name = Type.STRING),
+							@Type(name = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityFoo") }), //
 					@EntityProperty(name = "valueIdentityBarMap", type = @Type(name = Type.MAP), parameters = {
-							@Type(name = Type.STRING), @Type(name = IdentityBarSerializationPrototype.NAME) }), //
+							@Type(name = Type.STRING),
+							@Type(name = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityBar") }), //
 					@EntityProperty(name = "valueIdentityMixMap", type = @Type(name = Type.MAP), parameters = {
-							@Type(name = Type.STRING), @Type(name = "java.lang.Object") }), //
+							@Type(name = Type.STRING), @Type(name = "java.lang.Object") }) //
 			} //
 	)
-	public static interface IdentitySerializationPrototype {
+	public static interface PropertyIdentitySerializationPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.IdentitySerialization";
-	}
-
-	@Entity( //
-			name = IdentityFooSerializationPrototype.NAME //
-	)
-	public static interface IdentityFooSerializationPrototype {
-
-		public static final String NAME = "com.ijioio.test.model.IdentityFooSerialization";
-	}
-
-	@Entity( //
-			name = IdentityBarSerializationPrototype.NAME //
-	)
-	public static interface IdentityBarSerializationPrototype {
-
-		public static final String NAME = "com.ijioio.test.model.IdentityBarSerialization";
+		public static final String NAME = "com.ijioio.test.model.PropertyIdentitySerialization";
 	}
 
 	private Path path;
 
-	private IdentitySerialization model;
+	private PropertyIdentitySerialization model;
 
-	private IdentityFooSerialization fooModel;
+	private IdentityFoo foo;
 
-	private IdentityBarSerialization barModel;
+	private IdentityBar bar;
 
 	@BeforeEach
 	public void before() throws Exception {
 
-		path = Paths.get(getClass().getClassLoader().getResource("identity-serialization.xml").toURI());
+		path = Paths.get(getClass().getClassLoader().getResource("property-identity-serialization.xml").toURI());
 
-		fooModel = new IdentityFooSerialization();
+		foo = new IdentityFoo();
 
-		fooModel.setId("identity-foo-serialization");
+		foo.setId("identity-foo");
 
-		barModel = new IdentityBarSerialization();
+		bar = new IdentityBar();
 
-		barModel.setId("identity-bar-serialization");
+		bar.setId("identity-bar");
 
-		List<IdentityFooSerialization> identityFooList = new ArrayList<>(Arrays.asList(fooModel, fooModel));
-		List<IdentityBarSerialization> identityBarList = new ArrayList<>(Arrays.asList(barModel, barModel));
-		List<Object> identityMixList = new ArrayList<>(Arrays.asList(fooModel, barModel));
+		List<IdentityFoo> identityFooList = new ArrayList<>(Arrays.asList(foo, foo));
+		List<IdentityBar> identityBarList = new ArrayList<>(Arrays.asList(bar, bar));
+		List<Object> identityMixList = new ArrayList<>(Arrays.asList(foo, bar));
 
-		Set<IdentityFooSerialization> identityFooSet = new LinkedHashSet<>(Arrays.asList(fooModel));
-		Set<IdentityBarSerialization> identityBarSet = new LinkedHashSet<>(Arrays.asList(barModel));
-		Set<Object> identityMixSet = new LinkedHashSet<>(Arrays.asList(fooModel, barModel));
+		Set<IdentityFoo> identityFooSet = new LinkedHashSet<>(Arrays.asList(foo));
+		Set<IdentityBar> identityBarSet = new LinkedHashSet<>(Arrays.asList(bar));
+		Set<Object> identityMixSet = new LinkedHashSet<>(Arrays.asList(foo, bar));
 
-		Map<String, IdentityFooSerialization> identityFooMap = new LinkedHashMap<>();
+		Map<String, IdentityFoo> identityFooMap = new LinkedHashMap<>();
 
-		identityFooMap.put("key1", fooModel);
-		identityFooMap.put("key2", fooModel);
+		identityFooMap.put("key1", foo);
+		identityFooMap.put("key2", foo);
 
-		Map<String, IdentityBarSerialization> identityBarMap = new LinkedHashMap<>();
+		Map<String, IdentityBar> identityBarMap = new LinkedHashMap<>();
 
-		identityBarMap.put("key1", barModel);
-		identityBarMap.put("key2", barModel);
+		identityBarMap.put("key1", bar);
+		identityBarMap.put("key2", bar);
 
 		Map<String, Object> identityMixMap = new LinkedHashMap<>();
 
-		identityMixMap.put("key1", fooModel);
-		identityMixMap.put("key2", barModel);
+		identityMixMap.put("key1", foo);
+		identityMixMap.put("key2", bar);
 
-		model = new IdentitySerialization();
+		model = new PropertyIdentitySerialization();
 
-		model.setId("identity-serialization");
-		model.setValueIdentityFoo(fooModel);
-		model.setValueIdentityBar(barModel);
+		model.setId("property-identity-serialization");
+		model.setValueIdentityFoo(foo);
+		model.setValueIdentityBar(bar);
 		model.setValueIdentityFooList(identityFooList);
 		model.setValueIdentityBarList(identityBarList);
 		model.setValueIdentityMixList(identityMixList);
@@ -136,7 +150,7 @@ public class IdentitySerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		String expected = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n"));
+		String expected = readString(path);
 
 		Assertions.assertEquals(expected, actual);
 	}
@@ -146,9 +160,9 @@ public class IdentitySerializationTest {
 
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
-		IdentitySerialization actual = XmlUtil.read(handler, IdentitySerialization.class,
-				Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n")));
-		IdentitySerialization expected = model;
+		PropertyIdentitySerialization actual = XmlUtil.read(handler, PropertyIdentitySerialization.class,
+				readString(path));
+		PropertyIdentitySerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());
 		Assertions.assertEquals(expected.getValueIdentityFoo(), actual.getValueIdentityFoo());
@@ -168,12 +182,12 @@ public class IdentitySerializationTest {
 		// Check all lists on object raw equal
 		//////////////////////////////////////////////////////////////////
 
-		Iterator<IdentityFooSerialization> valueIdentityFooListIterator = actual.getValueIdentityFooList().iterator();
+		Iterator<IdentityFoo> valueIdentityFooListIterator = actual.getValueIdentityFooList().iterator();
 
 		Assertions.assertTrue(valueIdentityFooListIterator.next() == actual.getValueIdentityFoo());
 		Assertions.assertTrue(valueIdentityFooListIterator.next() == actual.getValueIdentityFoo());
 
-		Iterator<IdentityBarSerialization> valueIdentityBarListIterator = actual.getValueIdentityBarList().iterator();
+		Iterator<IdentityBar> valueIdentityBarListIterator = actual.getValueIdentityBarList().iterator();
 
 		Assertions.assertTrue(valueIdentityBarListIterator.next() == actual.getValueIdentityBar());
 		Assertions.assertTrue(valueIdentityBarListIterator.next() == actual.getValueIdentityBar());
@@ -187,11 +201,11 @@ public class IdentitySerializationTest {
 		// Check all sets on object raw equal
 		//////////////////////////////////////////////////////////////////
 
-		Iterator<IdentityFooSerialization> valueIdentityFooSetIterator = actual.getValueIdentityFooSet().iterator();
+		Iterator<IdentityFoo> valueIdentityFooSetIterator = actual.getValueIdentityFooSet().iterator();
 
 		Assertions.assertTrue(valueIdentityFooSetIterator.next() == actual.getValueIdentityFoo());
 
-		Iterator<IdentityBarSerialization> valueIdentityBarSetIterator = actual.getValueIdentityBarSet().iterator();
+		Iterator<IdentityBar> valueIdentityBarSetIterator = actual.getValueIdentityBarSet().iterator();
 
 		Assertions.assertTrue(valueIdentityBarSetIterator.next() == actual.getValueIdentityBar());
 
@@ -204,14 +218,14 @@ public class IdentitySerializationTest {
 		// Check all maps on object raw equal
 		//////////////////////////////////////////////////////////////////
 
-		Iterator<Entry<String, IdentityFooSerialization>> valueIdentityFooMapIterator = actual.getValueIdentityFooMap()
-				.entrySet().iterator();
+		Iterator<Entry<String, IdentityFoo>> valueIdentityFooMapIterator = actual.getValueIdentityFooMap().entrySet()
+				.iterator();
 
 		Assertions.assertTrue(valueIdentityFooMapIterator.next().getValue() == actual.getValueIdentityFoo());
 		Assertions.assertTrue(valueIdentityFooMapIterator.next().getValue() == actual.getValueIdentityFoo());
 
-		Iterator<Entry<String, IdentityBarSerialization>> valueIdentityBarMapIterator = actual.getValueIdentityBarMap()
-				.entrySet().iterator();
+		Iterator<Entry<String, IdentityBar>> valueIdentityBarMapIterator = actual.getValueIdentityBarMap().entrySet()
+				.iterator();
 
 		Assertions.assertTrue(valueIdentityBarMapIterator.next().getValue() == actual.getValueIdentityBar());
 		Assertions.assertTrue(valueIdentityBarMapIterator.next().getValue() == actual.getValueIdentityBar());

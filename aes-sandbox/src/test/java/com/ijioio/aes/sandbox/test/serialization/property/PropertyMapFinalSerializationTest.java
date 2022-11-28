@@ -1,13 +1,10 @@
-package com.ijioio.aes.sandbox.test;
+package com.ijioio.aes.sandbox.test.serialization.property;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Month;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,12 +16,13 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
-import com.ijioio.test.model.MapFinalSerialization;
+import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
+import com.ijioio.test.model.PropertyMapFinalSerialization;
 
-public class MapFinalSerializationTest {
+public class PropertyMapFinalSerializationTest extends BaseSerializationTest {
 
 	@Entity( //
-			name = MapFinalSerializationPrototype.NAME, //
+			name = PropertyMapFinalSerializationPrototype.NAME, //
 			properties = { //
 					@EntityProperty(name = "valueStringMap", type = @Type(name = Type.MAP), parameters = {
 							@Type(name = Type.STRING), @Type(name = Type.STRING) }, attributes = Attribute.FINAL), //
@@ -36,19 +34,19 @@ public class MapFinalSerializationTest {
 							@Type(name = "java.lang.Object") }, attributes = Attribute.FINAL) //
 			} //
 	)
-	public static interface MapFinalSerializationPrototype {
+	public static interface PropertyMapFinalSerializationPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.MapFinalSerialization";
+		public static final String NAME = "com.ijioio.test.model.PropertyMapFinalSerialization";
 	}
 
 	private Path path;
 
-	private MapFinalSerialization model;
+	private PropertyMapFinalSerialization model;
 
 	@BeforeEach
 	public void before() throws Exception {
 
-		path = Paths.get(getClass().getClassLoader().getResource("map-final-serialization.xml").toURI());
+		path = Paths.get(getClass().getClassLoader().getResource("property-map-final-serialization.xml").toURI());
 
 		Map<String, String> stringMap = new LinkedHashMap<>();
 
@@ -67,9 +65,9 @@ public class MapFinalSerializationTest {
 		objectMap.put("key", "value");
 		objectMap.put(Month.JANUARY, Month.FEBRUARY);
 
-		model = new MapFinalSerialization();
+		model = new PropertyMapFinalSerialization();
 
-		model.setId("map-final-serialization");
+		model.setId("property-map-final-serialization");
 
 		model.getValueStringMap().clear();
 		model.getValueStringMap().putAll(stringMap);
@@ -87,7 +85,7 @@ public class MapFinalSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		String expected = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n"));
+		String expected = readString(path);
 
 		Assertions.assertEquals(expected, actual);
 	}
@@ -97,9 +95,9 @@ public class MapFinalSerializationTest {
 
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
-		MapFinalSerialization actual = XmlUtil.read(handler, MapFinalSerialization.class,
-				Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n")));
-		MapFinalSerialization expected = model;
+		PropertyMapFinalSerialization actual = XmlUtil.read(handler, PropertyMapFinalSerialization.class,
+				readString(path));
+		PropertyMapFinalSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());
 		Assertions.assertEquals(expected.getValueStringMap(), actual.getValueStringMap());

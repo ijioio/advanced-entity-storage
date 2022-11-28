@@ -1,7 +1,5 @@
-package com.ijioio.aes.sandbox.test;
+package com.ijioio.aes.sandbox.test.serialization.property;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Month;
@@ -10,7 +8,6 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,12 +18,13 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
-import com.ijioio.test.model.CollectionSerialization;
+import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
+import com.ijioio.test.model.PropertyCollectionSerialization;
 
-public class CollectionSerializationTest {
+public class PropertyCollectionSerializationTest extends BaseSerializationTest {
 
 	@Entity( //
-			name = CollectionSerializationPrototype.NAME, //
+			name = PropertyCollectionSerializationPrototype.NAME, //
 			properties = { //
 					@EntityProperty(name = "valueStringList", type = @Type(name = Type.LIST), parameters = @Type(name = Type.STRING)), //
 					@EntityProperty(name = "valueEnumList", type = @Type(name = Type.LIST), parameters = @Type(name = "java.time.Month")), //
@@ -36,19 +34,19 @@ public class CollectionSerializationTest {
 					@EntityProperty(name = "valueObjectSet", type = @Type(name = Type.SET), parameters = @Type(name = "java.lang.Object")) //
 			} //
 	)
-	public static interface CollectionSerializationPrototype {
+	public static interface PropertyCollectionSerializationPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.CollectionSerialization";
+		public static final String NAME = "com.ijioio.test.model.PropertyCollectionSerialization";
 	}
 
 	private Path path;
 
-	private CollectionSerialization model;
+	private PropertyCollectionSerialization model;
 
 	@BeforeEach
 	public void before() throws Exception {
 
-		path = Paths.get(getClass().getClassLoader().getResource("collection-serialization.xml").toURI());
+		path = Paths.get(getClass().getClassLoader().getResource("property-collection-serialization.xml").toURI());
 
 		List<String> stringList = new ArrayList<>(Arrays.asList("value1", "value2", "value3"));
 		List<Month> enumList = new ArrayList<>(Arrays.asList(Month.JANUARY, Month.FEBRUARY, Month.MARCH));
@@ -58,9 +56,9 @@ public class CollectionSerializationTest {
 		Set<Month> enumSet = new LinkedHashSet<>(Arrays.asList(Month.JANUARY, Month.FEBRUARY, Month.MARCH));
 		Set<Object> objectSet = new LinkedHashSet<>(Arrays.asList("value", Month.JANUARY));
 
-		model = new CollectionSerialization();
+		model = new PropertyCollectionSerialization();
 
-		model.setId("collection-serialization");
+		model.setId("property-collection-serialization");
 		model.setValueStringList(stringList);
 		model.setValueEnumList(enumList);
 		model.setValueObjectList(objectList);
@@ -75,7 +73,7 @@ public class CollectionSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		String expected = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n"));
+		String expected = readString(path);
 
 		Assertions.assertEquals(expected, actual);
 	}
@@ -85,9 +83,9 @@ public class CollectionSerializationTest {
 
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
-		CollectionSerialization actual = XmlUtil.read(handler, CollectionSerialization.class,
-				Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n")));
-		CollectionSerialization expected = model;
+		PropertyCollectionSerialization actual = XmlUtil.read(handler, PropertyCollectionSerialization.class,
+				readString(path));
+		PropertyCollectionSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());
 		Assertions.assertEquals(expected.getValueStringList(), actual.getValueStringList());

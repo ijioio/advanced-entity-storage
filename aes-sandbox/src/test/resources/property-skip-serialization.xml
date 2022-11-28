@@ -7,7 +7,7 @@
             <skip>skip</skip>
         </skip>
     </skip>
-    <id>skip-serialization</id>
+    <id>property-skip-serialization</id>
     <skip>skip</skip>
     <skip>
         <skip>skip</skip>

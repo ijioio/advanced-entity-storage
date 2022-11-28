@@ -1,11 +1,8 @@
-package com.ijioio.aes.sandbox.test;
+package com.ijioio.aes.sandbox.test.serialization.property;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalTime;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,33 +13,34 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
-import com.ijioio.test.model.LocalTimeSerialization;
+import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
+import com.ijioio.test.model.PropertyLocalTimeSerialization;
 
-public class LocalTimeSerializationTest {
+public class PropertyLocalTimeSerializationTest extends BaseSerializationTest {
 
 	@Entity( //
-			name = LocalTimeSerializationPrototype.NAME, //
+			name = PropertyLocalTimeSerializationPrototype.NAME, //
 			properties = { //
 					@EntityProperty(name = "valueLocalTime", type = @Type(name = Type.LOCAL_TIME)) //
 			} //
 	)
-	public static interface LocalTimeSerializationPrototype {
+	public static interface PropertyLocalTimeSerializationPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.LocalTimeSerialization";
+		public static final String NAME = "com.ijioio.test.model.PropertyLocalTimeSerialization";
 	}
 
 	private Path path;
 
-	private LocalTimeSerialization model;
+	private PropertyLocalTimeSerialization model;
 
 	@BeforeEach
 	public void before() throws Exception {
 
-		path = Paths.get(getClass().getClassLoader().getResource("local-time-serialization.xml").toURI());
+		path = Paths.get(getClass().getClassLoader().getResource("property-local-time-serialization.xml").toURI());
 
-		model = new LocalTimeSerialization();
+		model = new PropertyLocalTimeSerialization();
 
-		model.setId("local-time-serialization");
+		model.setId("property-local-time-serialization");
 		model.setValueLocalTime(LocalTime.of(14, 25, 40, 123456789));
 	}
 
@@ -52,7 +50,7 @@ public class LocalTimeSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		String expected = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n"));
+		String expected = readString(path);
 
 		Assertions.assertEquals(expected, actual);
 	}
@@ -62,9 +60,9 @@ public class LocalTimeSerializationTest {
 
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
-		LocalTimeSerialization actual = XmlUtil.read(handler, LocalTimeSerialization.class,
-				Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n")));
-		LocalTimeSerialization expected = model;
+		PropertyLocalTimeSerialization actual = XmlUtil.read(handler, PropertyLocalTimeSerialization.class,
+				readString(path));
+		PropertyLocalTimeSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());
 		Assertions.assertEquals(expected.getValueLocalTime(), actual.getValueLocalTime());

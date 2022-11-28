@@ -1,10 +1,7 @@
-package com.ijioio.aes.sandbox.test;
+package com.ijioio.aes.sandbox.test.serialization.property;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,33 +12,34 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
-import com.ijioio.test.model.StringSerialization;
+import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
+import com.ijioio.test.model.PropertyStringSerialization;
 
-public class StringSerializationTest {
+public class PropertyStringSerializationTest extends BaseSerializationTest {
 
 	@Entity( //
-			name = StringSerializationPrototype.NAME, //
+			name = PropertyStringSerializationPrototype.NAME, //
 			properties = { //
 					@EntityProperty(name = "valueString", type = @Type(name = Type.STRING)) //
 			} //
 	)
-	public static interface StringSerializationPrototype {
+	public static interface PropertyStringSerializationPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.StringSerialization";
+		public static final String NAME = "com.ijioio.test.model.PropertyStringSerialization";
 	}
 
 	private Path path;
 
-	private StringSerialization model;
+	private PropertyStringSerialization model;
 
 	@BeforeEach
 	public void before() throws Exception {
 
-		path = Paths.get(getClass().getClassLoader().getResource("string-serialization.xml").toURI());
+		path = Paths.get(getClass().getClassLoader().getResource("property-string-serialization.xml").toURI());
 
-		model = new StringSerialization();
+		model = new PropertyStringSerialization();
 
-		model.setId("string-serialization");
+		model.setId("property-string-serialization");
 		model.setValueString("value");
 	}
 
@@ -51,7 +49,7 @@ public class StringSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		String expected = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n"));
+		String expected = readString(path);
 
 		Assertions.assertEquals(expected, actual);
 	}
@@ -61,9 +59,8 @@ public class StringSerializationTest {
 
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
-		StringSerialization actual = XmlUtil.read(handler, StringSerialization.class,
-				Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n")));
-		StringSerialization expected = model;
+		PropertyStringSerialization actual = XmlUtil.read(handler, PropertyStringSerialization.class, readString(path));
+		PropertyStringSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());
 		Assertions.assertEquals(expected.getValueString(), actual.getValueString());

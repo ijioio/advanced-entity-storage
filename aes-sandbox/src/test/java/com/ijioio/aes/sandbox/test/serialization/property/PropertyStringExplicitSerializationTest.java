@@ -1,10 +1,7 @@
-package com.ijioio.aes.sandbox.test;
+package com.ijioio.aes.sandbox.test.serialization.property;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,33 +12,34 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
-import com.ijioio.test.model.StringExplicitSerialization;
+import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
+import com.ijioio.test.model.PropertyStringExplicitSerialization;
 
-public class StringExplicitSerializationTest {
+public class PropertyStringExplicitSerializationTest extends BaseSerializationTest {
 
 	@Entity( //
-			name = StringExplicitSerializationPrototype.NAME, //
+			name = PropertyStringExplicitSerializationPrototype.NAME, //
 			properties = { //
 					@EntityProperty(name = "valueString", type = @Type(name = "java.lang.String")) //
 			} //
 	)
-	public static interface StringExplicitSerializationPrototype {
+	public static interface PropertyStringExplicitSerializationPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.StringExplicitSerialization";
+		public static final String NAME = "com.ijioio.test.model.PropertyStringExplicitSerialization";
 	}
 
 	private Path path;
 
-	private StringExplicitSerialization model;
+	private PropertyStringExplicitSerialization model;
 
 	@BeforeEach
 	public void before() throws Exception {
 
-		path = Paths.get(getClass().getClassLoader().getResource("string-explicit-serialization.xml").toURI());
+		path = Paths.get(getClass().getClassLoader().getResource("property-string-explicit-serialization.xml").toURI());
 
-		model = new StringExplicitSerialization();
+		model = new PropertyStringExplicitSerialization();
 
-		model.setId("string-explicit-serialization");
+		model.setId("property-string-explicit-serialization");
 		model.setValueString("value");
 	}
 
@@ -51,7 +49,7 @@ public class StringExplicitSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		String expected = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n"));
+		String expected = readString(path);
 
 		Assertions.assertEquals(expected, actual);
 	}
@@ -61,9 +59,9 @@ public class StringExplicitSerializationTest {
 
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
-		StringExplicitSerialization actual = XmlUtil.read(handler, StringExplicitSerialization.class,
-				Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n")));
-		StringExplicitSerialization expected = model;
+		PropertyStringExplicitSerialization actual = XmlUtil.read(handler, PropertyStringExplicitSerialization.class,
+				readString(path));
+		PropertyStringExplicitSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());
 		Assertions.assertEquals(expected.getValueString(), actual.getValueString());

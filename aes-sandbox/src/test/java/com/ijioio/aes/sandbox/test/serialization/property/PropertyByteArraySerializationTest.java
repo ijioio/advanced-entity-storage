@@ -1,10 +1,8 @@
-package com.ijioio.aes.sandbox.test;
+package com.ijioio.aes.sandbox.test.serialization.property;
 
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,34 +13,35 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
-import com.ijioio.test.model.ByteArraySerialization;
+import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
+import com.ijioio.test.model.PropertyByteArraySerialization;
 
-public class ByteArraySerializationTest {
+public class PropertyByteArraySerializationTest extends BaseSerializationTest {
 
 	@Entity( //
-			name = ByteArraySerializationPrototype.NAME, //
+			name = PropertyByteArraySerializationPrototype.NAME, //
 			properties = { //
 					@EntityProperty(name = "valueByteArray", type = @Type(name = Type.BYTE_ARRAY)) //
 			} //
 	)
-	public static interface ByteArraySerializationPrototype {
+	public static interface PropertyByteArraySerializationPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.ByteArraySerialization";
+		public static final String NAME = "com.ijioio.test.model.PropertyByteArraySerialization";
 	}
 
 	private Path path;
 
-	private ByteArraySerialization model;
+	private PropertyByteArraySerialization model;
 
 	@BeforeEach
 	public void before() throws Exception {
 
-		path = Paths.get(getClass().getClassLoader().getResource("byte-array-serialization.xml").toURI());
+		path = Paths.get(getClass().getClassLoader().getResource("property-byte-array-serialization.xml").toURI());
 
-		model = new ByteArraySerialization();
+		model = new PropertyByteArraySerialization();
 
-		model.setId("byte-array-serialization");
-		model.setValueByteArray("value1\nvalue2\rvalue3\r\nvalue4".getBytes(StandardCharsets.UTF_8));
+		model.setId("property-byte-array-serialization");
+		model.setValueByteArray("value".getBytes(StandardCharsets.UTF_8));
 	}
 
 	@Test
@@ -51,7 +50,7 @@ public class ByteArraySerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		String expected = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n"));
+		String expected = readString(path);
 
 		Assertions.assertEquals(expected, actual);
 	}
@@ -61,9 +60,9 @@ public class ByteArraySerializationTest {
 
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
-		ByteArraySerialization actual = XmlUtil.read(handler, ByteArraySerialization.class,
-				Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n")));
-		ByteArraySerialization expected = model;
+		PropertyByteArraySerialization actual = XmlUtil.read(handler, PropertyByteArraySerialization.class,
+				readString(path));
+		PropertyByteArraySerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());
 		Assertions.assertArrayEquals(expected.getValueByteArray(), actual.getValueByteArray());

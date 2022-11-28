@@ -1,7 +1,5 @@
-package com.ijioio.aes.sandbox.test;
+package com.ijioio.aes.sandbox.test.serialization.property;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -10,7 +8,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,12 +18,13 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
-import com.ijioio.test.model.SkipSerialization;
+import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
+import com.ijioio.test.model.PropertySkipSerialization;
 
-public class SkipSerializationTest {
+public class PropertySkipSerializationTest extends BaseSerializationTest {
 
 	@Entity( //
-			name = SkipSerializationPrototype.NAME, //
+			name = PropertySkipSerializationPrototype.NAME, //
 			properties = { //
 					@EntityProperty(name = "valueString", type = @Type(name = Type.STRING)), //
 					@EntityProperty(name = "valueStringList", type = @Type(name = Type.LIST), parameters = @Type(name = Type.STRING)), //
@@ -35,19 +33,19 @@ public class SkipSerializationTest {
 							@Type(name = Type.STRING), @Type(name = Type.STRING) }) //
 			} //
 	)
-	public static interface SkipSerializationPrototype {
+	public static interface PropertySkipSerializationPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.SkipSerialization";
+		public static final String NAME = "com.ijioio.test.model.PropertySkipSerialization";
 	}
 
 	private Path path;
 
-	private SkipSerialization model;
+	private PropertySkipSerialization model;
 
 	@BeforeEach
 	public void before() throws Exception {
 
-		path = Paths.get(getClass().getClassLoader().getResource("skip-serialization.xml").toURI());
+		path = Paths.get(getClass().getClassLoader().getResource("property-skip-serialization.xml").toURI());
 
 		ArrayList<String> stringList = new ArrayList<>(Arrays.asList("value1", "value2"));
 		Set<String> stringSet = new LinkedHashSet<>(Arrays.asList("value1", "value2"));
@@ -56,9 +54,9 @@ public class SkipSerializationTest {
 		stringMap.put("key1", "value1");
 		stringMap.put("key2", "value2");
 
-		model = new SkipSerialization();
+		model = new PropertySkipSerialization();
 
-		model.setId("skip-serialization");
+		model.setId("property-skip-serialization");
 		model.setValueString("value");
 		model.setValueStringList(stringList);
 		model.setValueStringSet(stringSet);
@@ -70,9 +68,8 @@ public class SkipSerializationTest {
 
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
-		SkipSerialization actual = XmlUtil.read(handler, SkipSerialization.class,
-				Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n")));
-		SkipSerialization expected = model;
+		PropertySkipSerialization actual = XmlUtil.read(handler, PropertySkipSerialization.class, readString(path));
+		PropertySkipSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());
 		Assertions.assertEquals(expected.getValueString(), actual.getValueString());

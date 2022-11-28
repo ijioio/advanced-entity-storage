@@ -1,7 +1,5 @@
-package com.ijioio.aes.sandbox.test;
+package com.ijioio.aes.sandbox.test.serialization.property;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Month;
@@ -9,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,12 +17,13 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
-import com.ijioio.test.model.CollectionExplicitSerialization;
+import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
+import com.ijioio.test.model.PropertyCollectionExplicitSerialization;
 
-public class CollectionExplicitSerializationTest {
+public class PropertyCollectionExplicitSerializationTest extends BaseSerializationTest {
 
 	@Entity( //
-			name = CollectionExplicitSerializationPrototype.NAME, //
+			name = PropertyCollectionExplicitSerializationPrototype.NAME, //
 			properties = { //
 					@EntityProperty(name = "valueStringList", type = @Type(name = "java.util.List"), parameters = @Type(name = Type.STRING)), //
 					@EntityProperty(name = "valueEnumList", type = @Type(name = "java.util.List"), parameters = @Type(name = "java.time.Month")), //
@@ -35,19 +33,20 @@ public class CollectionExplicitSerializationTest {
 					@EntityProperty(name = "valueObjectSet", type = @Type(name = "java.util.Set"), parameters = @Type(name = "java.lang.Object")) //
 			} //
 	)
-	public static interface CollectionExplicitSerializationPrototype {
+	public static interface PropertyCollectionExplicitSerializationPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.CollectionExplicitSerialization";
+		public static final String NAME = "com.ijioio.test.model.PropertyCollectionExplicitSerialization";
 	}
 
 	private Path path;
 
-	private CollectionExplicitSerialization model;
+	private PropertyCollectionExplicitSerialization model;
 
 	@BeforeEach
 	public void before() throws Exception {
 
-		path = Paths.get(getClass().getClassLoader().getResource("collection-explicit-serialization.xml").toURI());
+		path = Paths
+				.get(getClass().getClassLoader().getResource("property-collection-explicit-serialization.xml").toURI());
 
 		ArrayList<String> stringList = new ArrayList<>(Arrays.asList("value1", "value2", "value3"));
 		ArrayList<Month> enumList = new ArrayList<>(Arrays.asList(Month.JANUARY, Month.FEBRUARY, Month.MARCH));
@@ -57,9 +56,9 @@ public class CollectionExplicitSerializationTest {
 		Set<Month> enumSet = new LinkedHashSet<>(Arrays.asList(Month.JANUARY, Month.FEBRUARY, Month.MARCH));
 		Set<Object> objectSet = new LinkedHashSet<>(Arrays.asList("value", Month.JANUARY));
 
-		model = new CollectionExplicitSerialization();
+		model = new PropertyCollectionExplicitSerialization();
 
-		model.setId("collection-explicit-serialization");
+		model.setId("property-collection-explicit-serialization");
 		model.setValueStringList(stringList);
 		model.setValueEnumList(enumList);
 		model.setValueObjectList(objectList);
@@ -74,7 +73,7 @@ public class CollectionExplicitSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		String expected = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n"));
+		String expected = readString(path);
 
 		Assertions.assertEquals(expected, actual);
 	}
@@ -84,9 +83,9 @@ public class CollectionExplicitSerializationTest {
 
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
-		CollectionExplicitSerialization actual = XmlUtil.read(handler, CollectionExplicitSerialization.class,
-				Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n")));
-		CollectionExplicitSerialization expected = model;
+		PropertyCollectionExplicitSerialization actual = XmlUtil.read(handler,
+				PropertyCollectionExplicitSerialization.class, readString(path));
+		PropertyCollectionExplicitSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());
 		Assertions.assertEquals(expected.getValueStringList(), actual.getValueStringList());

@@ -1,10 +1,7 @@
-package com.ijioio.aes.sandbox.test;
+package com.ijioio.aes.sandbox.test.serialization.property;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,12 +12,13 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
-import com.ijioio.test.model.PrimitiveExplicitSerialization;
+import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
+import com.ijioio.test.model.PropertyPrimitiveExplicitSerialization;
 
-public class PrimitiveExplicitSerializationTest {
+public class PropertyPrimitiveExplicitSerializationTest extends BaseSerializationTest {
 
 	@Entity( //
-			name = PrimitiveExplicitSerializationPrototype.NAME, //
+			name = PropertyPrimitiveExplicitSerializationPrototype.NAME, //
 			properties = { //
 					@EntityProperty(name = "valueBoolean", type = @Type(name = "boolean")), //
 					@EntityProperty(name = "valueChar", type = @Type(name = "char")), //
@@ -32,23 +30,24 @@ public class PrimitiveExplicitSerializationTest {
 					@EntityProperty(name = "valueDouble", type = @Type(name = "double")) //
 			} //
 	)
-	public static interface PrimitiveExplicitSerializationPrototype {
+	public static interface PropertyPrimitiveExplicitSerializationPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.PrimitiveExplicitSerialization";
+		public static final String NAME = "com.ijioio.test.model.PropertyPrimitiveExplicitSerialization";
 	}
 
 	private Path path;
 
-	private PrimitiveExplicitSerialization model;
+	private PropertyPrimitiveExplicitSerialization model;
 
 	@BeforeEach
 	public void before() throws Exception {
 
-		path = Paths.get(getClass().getClassLoader().getResource("primitive-explicit-serialization.xml").toURI());
+		path = Paths
+				.get(getClass().getClassLoader().getResource("property-primitive-explicit-serialization.xml").toURI());
 
-		model = new PrimitiveExplicitSerialization();
+		model = new PropertyPrimitiveExplicitSerialization();
 
-		model.setId("primitive-explicit-serialization");
+		model.setId("property-primitive-explicit-serialization");
 		model.setValueBoolean(true);
 		model.setValueByte((byte) 10);
 		model.setValueShort((short) 20);
@@ -65,7 +64,7 @@ public class PrimitiveExplicitSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		String expected = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n"));
+		String expected = readString(path);
 
 		Assertions.assertEquals(expected, actual);
 	}
@@ -75,9 +74,9 @@ public class PrimitiveExplicitSerializationTest {
 
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
-		PrimitiveExplicitSerialization actual = XmlUtil.read(handler, PrimitiveExplicitSerialization.class,
-				Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n")));
-		PrimitiveExplicitSerialization expected = model;
+		PropertyPrimitiveExplicitSerialization actual = XmlUtil.read(handler,
+				PropertyPrimitiveExplicitSerialization.class, readString(path));
+		PropertyPrimitiveExplicitSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());
 		Assertions.assertEquals(expected.isValueBoolean(), actual.isValueBoolean());

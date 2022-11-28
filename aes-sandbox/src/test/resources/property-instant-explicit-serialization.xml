@@ -1,4 +1,4 @@
-<object class="com.ijioio.test.model.InstantExplicitSerialization">
-    <id>instant-explicit-serialization</id>
+<object class="com.ijioio.test.model.PropertyInstantExplicitSerialization">
+    <id>property-instant-explicit-serialization</id>
     <valueInstant>2022-08-22T14:25:40.123456789Z</valueInstant>
 </object>

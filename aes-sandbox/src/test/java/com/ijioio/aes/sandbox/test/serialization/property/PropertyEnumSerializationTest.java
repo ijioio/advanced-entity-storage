@@ -1,11 +1,8 @@
-package com.ijioio.aes.sandbox.test;
+package com.ijioio.aes.sandbox.test.serialization.property;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Month;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,33 +13,34 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
-import com.ijioio.test.model.EnumSerialization;
+import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
+import com.ijioio.test.model.PropertyEnumSerialization;
 
-public class EnumSerializationTest {
+public class PropertyEnumSerializationTest extends BaseSerializationTest {
 
 	@Entity( //
-			name = EnumSerializationPrototype.NAME, //
+			name = PropertyEnumSerializationPrototype.NAME, //
 			properties = { //
 					@EntityProperty(name = "valueEnum", type = @Type(name = "java.time.Month")) //
 			} //
 	)
-	public static interface EnumSerializationPrototype {
+	public static interface PropertyEnumSerializationPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.EnumSerialization";
+		public static final String NAME = "com.ijioio.test.model.PropertyEnumSerialization";
 	}
 
 	private Path path;
 
-	private EnumSerialization model;
+	private PropertyEnumSerialization model;
 
 	@BeforeEach
 	public void before() throws Exception {
 
-		path = Paths.get(getClass().getClassLoader().getResource("enum-serialization.xml").toURI());
+		path = Paths.get(getClass().getClassLoader().getResource("property-enum-serialization.xml").toURI());
 
-		model = new EnumSerialization();
+		model = new PropertyEnumSerialization();
 
-		model.setId("enum-serialization");
+		model.setId("property-enum-serialization");
 		model.setValueEnum(Month.JANUARY);
 	}
 
@@ -52,7 +50,7 @@ public class EnumSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		String expected = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n"));
+		String expected = readString(path);
 
 		Assertions.assertEquals(expected, actual);
 	}
@@ -62,9 +60,8 @@ public class EnumSerializationTest {
 
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
-		EnumSerialization actual = XmlUtil.read(handler, EnumSerialization.class,
-				Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n")));
-		EnumSerialization expected = model;
+		PropertyEnumSerialization actual = XmlUtil.read(handler, PropertyEnumSerialization.class, readString(path));
+		PropertyEnumSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());
 		Assertions.assertEquals(expected.getValueEnum(), actual.getValueEnum());

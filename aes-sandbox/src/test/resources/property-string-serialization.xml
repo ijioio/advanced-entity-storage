@@ -1,4 +1,4 @@
-<object class="com.ijioio.test.model.StringSerialization">
-    <id>string-serialization</id>
+<object class="com.ijioio.test.model.PropertyStringSerialization">
+    <id>property-string-serialization</id>
     <valueString>value</valueString>
 </object>

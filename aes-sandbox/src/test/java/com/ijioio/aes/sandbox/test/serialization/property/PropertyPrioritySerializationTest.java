@@ -1,13 +1,10 @@
-package com.ijioio.aes.sandbox.test;
+package com.ijioio.aes.sandbox.test.serialization.property;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.stream.Collectors;
 
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -28,9 +25,10 @@ import com.ijioio.aes.core.serialization.SerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationContext;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
-import com.ijioio.test.model.PrioritySerialization;
+import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
+import com.ijioio.test.model.PropertyPrioritySerialization;
 
-public class PrioritySerializationTest {
+public class PropertyPrioritySerializationTest extends BaseSerializationTest {
 
 	public static class XSerializableList extends ArrayList<String> implements XSerializable {
 
@@ -186,26 +184,26 @@ public class PrioritySerializationTest {
 	}
 
 	@Entity( //
-			name = PrioritySerializationPrototype.NAME, //
+			name = PropertyPrioritySerializationPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueXSerializableList", type = @Type(name = "com.ijioio.aes.sandbox.test.PrioritySerializationTest.XSerializableList")), //
-					@EntityProperty(name = "valueXSerializableSet", type = @Type(name = "com.ijioio.aes.sandbox.test.PrioritySerializationTest.XSerializableSet")), //
-					@EntityProperty(name = "valueXSerializableMap", type = @Type(name = "com.ijioio.aes.sandbox.test.PrioritySerializationTest.XSerializableMap")) //
+					@EntityProperty(name = "valueXSerializableList", type = @Type(name = "com.ijioio.aes.sandbox.test.serialization.property.PropertyPrioritySerializationTest.XSerializableList")), //
+					@EntityProperty(name = "valueXSerializableSet", type = @Type(name = "com.ijioio.aes.sandbox.test.serialization.property.PropertyPrioritySerializationTest.XSerializableSet")), //
+					@EntityProperty(name = "valueXSerializableMap", type = @Type(name = "com.ijioio.aes.sandbox.test.serialization.property.PropertyPrioritySerializationTest.XSerializableMap")) //
 			} //
 	)
-	public static interface PrioritySerializationPrototype {
+	public static interface PropertyPrioritySerializationPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.PrioritySerialization";
+		public static final String NAME = "com.ijioio.test.model.PropertyPrioritySerialization";
 	}
 
 	private Path path;
 
-	private PrioritySerialization model;
+	private PropertyPrioritySerialization model;
 
 	@BeforeEach
 	public void before() throws Exception {
 
-		path = Paths.get(getClass().getClassLoader().getResource("priority-serialization.xml").toURI());
+		path = Paths.get(getClass().getClassLoader().getResource("property-priority-serialization.xml").toURI());
 
 		XSerializableList xSerializableList = new XSerializableList();
 
@@ -225,9 +223,9 @@ public class PrioritySerializationTest {
 		xSerializableMap.put("key2", "value2");
 		xSerializableMap.put("key3", "value3");
 
-		model = new PrioritySerialization();
+		model = new PropertyPrioritySerialization();
 
-		model.setId("priority-serialization");
+		model.setId("property-priority-serialization");
 		model.setValueXSerializableList(xSerializableList);
 		model.setValueXSerializableSet(xSerializableSet);
 		model.setValueXSerializableMap(xSerializableMap);
@@ -239,7 +237,7 @@ public class PrioritySerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		String expected = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n"));
+		String expected = readString(path);
 
 		Assertions.assertEquals(expected, actual);
 	}
@@ -249,9 +247,9 @@ public class PrioritySerializationTest {
 
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
-		PrioritySerialization actual = XmlUtil.read(handler, PrioritySerialization.class,
-				Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n")));
-		PrioritySerialization expected = model;
+		PropertyPrioritySerialization actual = XmlUtil.read(handler, PropertyPrioritySerialization.class,
+				readString(path));
+		PropertyPrioritySerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());
 		Assertions.assertEquals(expected.getValueXSerializableList(), actual.getValueXSerializableList());

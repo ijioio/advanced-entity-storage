@@ -1,13 +1,10 @@
-package com.ijioio.aes.sandbox.test;
+package com.ijioio.aes.sandbox.test.serialization.property;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Month;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,12 +15,13 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
-import com.ijioio.test.model.MapExplicitSerialization;
+import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
+import com.ijioio.test.model.PropertyMapExplicitSerialization;
 
-public class MapExplicitSerializationTest {
+public class PropertyMapExplicitSerializationTest extends BaseSerializationTest {
 
 	@Entity( //
-			name = MapExplicitSerializationPrototype.NAME, //
+			name = PropertyMapExplicitSerializationPrototype.NAME, //
 			properties = { //
 					@EntityProperty(name = "valueStringMap", type = @Type(name = "java.util.Map"), parameters = {
 							@Type(name = Type.STRING), @Type(name = Type.STRING) }), //
@@ -33,19 +31,19 @@ public class MapExplicitSerializationTest {
 							@Type(name = "java.lang.Object"), @Type(name = "java.lang.Object") }) //
 			} //
 	)
-	public static interface MapExplicitSerializationPrototype {
+	public static interface PropertyMapExplicitSerializationPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.MapExplicitSerialization";
+		public static final String NAME = "com.ijioio.test.model.PropertyMapExplicitSerialization";
 	}
 
 	private Path path;
 
-	private MapExplicitSerialization model;
+	private PropertyMapExplicitSerialization model;
 
 	@BeforeEach
 	public void before() throws Exception {
 
-		path = Paths.get(getClass().getClassLoader().getResource("map-explicit-serialization.xml").toURI());
+		path = Paths.get(getClass().getClassLoader().getResource("property-map-explicit-serialization.xml").toURI());
 
 		Map<String, String> stringMap = new LinkedHashMap<>();
 
@@ -64,9 +62,9 @@ public class MapExplicitSerializationTest {
 		objectMap.put("key", "value");
 		objectMap.put(Month.JANUARY, Month.FEBRUARY);
 
-		model = new MapExplicitSerialization();
+		model = new PropertyMapExplicitSerialization();
 
-		model.setId("map-explicit-serialization");
+		model.setId("property-map-explicit-serialization");
 		model.setValueStringMap(stringMap);
 		model.setValueEnumMap(enumMap);
 		model.setValueObjectMap(objectMap);
@@ -78,7 +76,7 @@ public class MapExplicitSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		String expected = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n"));
+		String expected = readString(path);
 
 		Assertions.assertEquals(expected, actual);
 	}
@@ -88,9 +86,9 @@ public class MapExplicitSerializationTest {
 
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
-		MapExplicitSerialization actual = XmlUtil.read(handler, MapExplicitSerialization.class,
-				Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n")));
-		MapExplicitSerialization expected = model;
+		PropertyMapExplicitSerialization actual = XmlUtil.read(handler, PropertyMapExplicitSerialization.class,
+				readString(path));
+		PropertyMapExplicitSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());
 		Assertions.assertEquals(expected.getValueStringMap(), actual.getValueStringMap());

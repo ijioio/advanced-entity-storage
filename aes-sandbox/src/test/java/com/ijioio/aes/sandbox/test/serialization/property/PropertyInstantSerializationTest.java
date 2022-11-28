@@ -1,13 +1,10 @@
-package com.ijioio.aes.sandbox.test;
+package com.ijioio.aes.sandbox.test.serialization.property;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneOffset;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,33 +15,34 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
-import com.ijioio.test.model.InstantSerialization;
+import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
+import com.ijioio.test.model.PropertyInstantSerialization;
 
-public class InstantSerializationTest {
+public class PropertyInstantSerializationTest extends BaseSerializationTest {
 
 	@Entity( //
-			name = InstantSerializationPrototype.NAME, //
+			name = PropertyInstantSerializationPrototype.NAME, //
 			properties = { //
 					@EntityProperty(name = "valueInstant", type = @Type(name = Type.INSTANT)) //
 			} //
 	)
-	public static interface InstantSerializationPrototype {
+	public static interface PropertyInstantSerializationPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.InstantSerialization";
+		public static final String NAME = "com.ijioio.test.model.PropertyInstantSerialization";
 	}
 
 	private Path path;
 
-	private InstantSerialization model;
+	private PropertyInstantSerialization model;
 
 	@BeforeEach
 	public void before() throws Exception {
 
-		path = Paths.get(getClass().getClassLoader().getResource("instant-serialization.xml").toURI());
+		path = Paths.get(getClass().getClassLoader().getResource("property-instant-serialization.xml").toURI());
 
-		model = new InstantSerialization();
+		model = new PropertyInstantSerialization();
 
-		model.setId("instant-serialization");
+		model.setId("property-instant-serialization");
 		model.setValueInstant(
 				LocalDateTime.of(2022, Month.AUGUST, 22, 14, 25, 40, 123456789).atZone(ZoneOffset.UTC).toInstant());
 	}
@@ -55,7 +53,7 @@ public class InstantSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		String expected = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n"));
+		String expected = readString(path);
 
 		Assertions.assertEquals(expected, actual);
 	}
@@ -65,9 +63,9 @@ public class InstantSerializationTest {
 
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
-		InstantSerialization actual = XmlUtil.read(handler, InstantSerialization.class,
-				Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n")));
-		InstantSerialization expected = model;
+		PropertyInstantSerialization actual = XmlUtil.read(handler, PropertyInstantSerialization.class,
+				readString(path));
+		PropertyInstantSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());
 		Assertions.assertEquals(expected.getValueInstant(), actual.getValueInstant());

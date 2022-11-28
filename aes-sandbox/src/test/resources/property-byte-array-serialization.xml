@@ -1,4 +1,4 @@
-<object class="com.ijioio.test.model.ByteArraySerialization">
-    <id>byte-array-serialization</id>
-    <valueByteArray>dmFsdWUxCnZhbHVlMg12YWx1ZTMNCnZhbHVlNA==</valueByteArray>
+<object class="com.ijioio.test.model.PropertyByteArraySerialization">
+    <id>property-byte-array-serialization</id>
+    <valueByteArray>dmFsdWU=</valueByteArray>
 </object>

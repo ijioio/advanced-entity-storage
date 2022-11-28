@@ -1,4 +1,4 @@
-<object class="com.ijioio.test.model.LocalDateExplicitSerialization">
-    <id>local-date-explicit-serialization</id>
+<object class="com.ijioio.test.model.PropertyLocalDateExplicitSerialization">
+    <id>property-local-date-explicit-serialization</id>
     <valueLocalDate>2022-08-22</valueLocalDate>
 </object>

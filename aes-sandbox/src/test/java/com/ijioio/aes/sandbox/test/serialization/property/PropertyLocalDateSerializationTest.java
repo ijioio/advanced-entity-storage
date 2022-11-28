@@ -1,12 +1,9 @@
-package com.ijioio.aes.sandbox.test;
+package com.ijioio.aes.sandbox.test.serialization.property;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,33 +14,34 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
-import com.ijioio.test.model.LocalDateSerialization;
+import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
+import com.ijioio.test.model.PropertyLocalDateSerialization;
 
-public class LocalDateSerializationTest {
+public class PropertyLocalDateSerializationTest extends BaseSerializationTest {
 
 	@Entity( //
-			name = LocalDateSerializationPrototype.NAME, //
+			name = PropertyLocalDateSerializationPrototype.NAME, //
 			properties = { //
 					@EntityProperty(name = "valueLocalDate", type = @Type(name = Type.LOCAL_DATE)) //
 			} //
 	)
-	public static interface LocalDateSerializationPrototype {
+	public static interface PropertyLocalDateSerializationPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.LocalDateSerialization";
+		public static final String NAME = "com.ijioio.test.model.PropertyLocalDateSerialization";
 	}
 
 	private Path path;
 
-	private LocalDateSerialization model;
+	private PropertyLocalDateSerialization model;
 
 	@BeforeEach
 	public void before() throws Exception {
 
-		path = Paths.get(getClass().getClassLoader().getResource("local-date-serialization.xml").toURI());
+		path = Paths.get(getClass().getClassLoader().getResource("property-local-date-serialization.xml").toURI());
 
-		model = new LocalDateSerialization();
+		model = new PropertyLocalDateSerialization();
 
-		model.setId("local-date-serialization");
+		model.setId("property-local-date-serialization");
 		model.setValueLocalDate(LocalDate.of(2022, Month.AUGUST, 22));
 	}
 
@@ -53,7 +51,7 @@ public class LocalDateSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		String expected = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n"));
+		String expected = readString(path);
 
 		Assertions.assertEquals(expected, actual);
 	}
@@ -63,9 +61,9 @@ public class LocalDateSerializationTest {
 
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
-		LocalDateSerialization actual = XmlUtil.read(handler, LocalDateSerialization.class,
-				Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n")));
-		LocalDateSerialization expected = model;
+		PropertyLocalDateSerialization actual = XmlUtil.read(handler, PropertyLocalDateSerialization.class,
+				readString(path));
+		PropertyLocalDateSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());
 		Assertions.assertEquals(expected.getValueLocalDate(), actual.getValueLocalDate());

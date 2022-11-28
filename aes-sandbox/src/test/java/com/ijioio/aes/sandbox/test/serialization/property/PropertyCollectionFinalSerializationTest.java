@@ -1,7 +1,5 @@
-package com.ijioio.aes.sandbox.test;
+package com.ijioio.aes.sandbox.test.serialization.property;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Month;
@@ -9,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,12 +18,13 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
-import com.ijioio.test.model.CollectionFinalSerialization;
+import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
+import com.ijioio.test.model.PropertyCollectionFinalSerialization;
 
-public class CollectionFinalSerializationTest {
+public class PropertyCollectionFinalSerializationTest extends BaseSerializationTest {
 
 	@Entity( //
-			name = CollectionFinalSerializationPrototype.NAME, //
+			name = PropertyCollectionFinalSerializationPrototype.NAME, //
 			properties = { //
 					@EntityProperty(name = "valueStringList", type = @Type(name = Type.LIST), parameters = @Type(name = Type.STRING), attributes = Attribute.FINAL), //
 					@EntityProperty(name = "valueEnumList", type = @Type(name = Type.LIST), parameters = @Type(name = "java.time.Month"), attributes = Attribute.FINAL), //
@@ -36,19 +34,20 @@ public class CollectionFinalSerializationTest {
 					@EntityProperty(name = "valueObjectSet", type = @Type(name = Type.SET), parameters = @Type(name = "java.lang.Object"), attributes = Attribute.FINAL) //
 			} //
 	)
-	public static interface CollectionFinalSerializationPrototype {
+	public static interface PropertyCollectionFinalSerializationPrototype {
 
-		public static final String NAME = "com.ijioio.test.model.CollectionFinalSerialization";
+		public static final String NAME = "com.ijioio.test.model.PropertyCollectionFinalSerialization";
 	}
 
 	private Path path;
 
-	private CollectionFinalSerialization model;
+	private PropertyCollectionFinalSerialization model;
 
 	@BeforeEach
 	public void before() throws Exception {
 
-		path = Paths.get(getClass().getClassLoader().getResource("collection-final-serialization.xml").toURI());
+		path = Paths
+				.get(getClass().getClassLoader().getResource("property-collection-final-serialization.xml").toURI());
 
 		ArrayList<String> stringList = new ArrayList<>(Arrays.asList("value1", "value2", "value3"));
 		ArrayList<Month> enumList = new ArrayList<>(Arrays.asList(Month.JANUARY, Month.FEBRUARY, Month.MARCH));
@@ -58,9 +57,9 @@ public class CollectionFinalSerializationTest {
 		Set<Month> enumSet = new LinkedHashSet<>(Arrays.asList(Month.JANUARY, Month.FEBRUARY, Month.MARCH));
 		Set<Object> objectSet = new LinkedHashSet<>(Arrays.asList("value", Month.JANUARY));
 
-		model = new CollectionFinalSerialization();
+		model = new PropertyCollectionFinalSerialization();
 
-		model.setId("collection-final-serialization");
+		model.setId("property-collection-final-serialization");
 
 		model.getValueStringList().clear();
 		model.getValueStringList().addAll(stringList);
@@ -87,7 +86,7 @@ public class CollectionFinalSerializationTest {
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
 		String actual = XmlUtil.write(handler, model);
-		String expected = Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n"));
+		String expected = readString(path);
 
 		Assertions.assertEquals(expected, actual);
 	}
@@ -97,9 +96,9 @@ public class CollectionFinalSerializationTest {
 
 		XmlSerializationHandler handler = new XmlSerializationHandler();
 
-		CollectionFinalSerialization actual = XmlUtil.read(handler, CollectionFinalSerialization.class,
-				Files.lines(path, StandardCharsets.UTF_8).collect(Collectors.joining("\n")));
-		CollectionFinalSerialization expected = model;
+		PropertyCollectionFinalSerialization actual = XmlUtil.read(handler, PropertyCollectionFinalSerialization.class,
+				readString(path));
+		PropertyCollectionFinalSerialization expected = model;
 
 		Assertions.assertEquals(expected.getId(), actual.getId());
 		Assertions.assertEquals(expected.getValueStringList(), actual.getValueStringList());
