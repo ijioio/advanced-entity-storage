@@ -1,0 +1,6 @@
+<object class="com.ijioio.test.model.PropertyXSerializableFinalSerialization">
+    <id>property-xserializable-final-serialization</id>
+    <valueXSerializableObject class="com.ijioio.aes.sandbox.test.serialization.property.PropertyXSerializableFinalSerializationTest$XSerializableObject">
+        <valueString>value</valueString>
+    </valueXSerializableObject>
+</object>

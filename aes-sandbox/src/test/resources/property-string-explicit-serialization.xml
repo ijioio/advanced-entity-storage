@@ -1,0 +1,4 @@
+<object class="com.ijioio.test.model.PropertyStringExplicitSerialization">
+    <id>property-string-explicit-serialization</id>
+    <valueString>value</valueString>
+</object>

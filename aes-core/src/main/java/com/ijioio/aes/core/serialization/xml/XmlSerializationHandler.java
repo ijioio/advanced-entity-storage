@@ -753,13 +753,13 @@ public class XmlSerializationHandler implements SerializationHandler {
 		@SuppressWarnings("unchecked")
 		@Override
 		public Collection read(XmlSerializationContext context, XmlSerializationHandler handler, Class<Collection> type,
-				Collection value) throws SerializationException {
+				Collection values) throws SerializationException {
 
 			XMLStreamReader reader = context.getReader();
 
 			try {
 
-				Collection collection = value != null ? value
+				Collection collection = values != null ? values
 						: List.class.isAssignableFrom(type) ? new ArrayList<>() : new LinkedHashSet<>();
 
 				collection.clear();
@@ -909,11 +909,11 @@ public class XmlSerializationHandler implements SerializationHandler {
 
 			try {
 
-				XSerializable result = type.newInstance();
+				XSerializable xSerializable = value != null ? value : type.newInstance();
 
-				result.read(context, handler);
+				xSerializable.read(context, handler);
 
-				return result;
+				return xSerializable;
 
 			} catch (IllegalAccessException | InstantiationException e) {
 				throw new SerializationException(e);
