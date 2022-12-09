@@ -1,7 +1,6 @@
 package com.ijioio.aes.annotation.processor.util;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -82,11 +81,4 @@ public class ProcessorUtil {
 			return value;
 		}
 	};
-
-	private static final Pattern pattern = Pattern.compile("\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*"
-			+ "(\\.\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*)*");
-
-	public static boolean isJavaIdentifier(String value) {
-		return pattern.matcher(value).matches();
-	}
 }

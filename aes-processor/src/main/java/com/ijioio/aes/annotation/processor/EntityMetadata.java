@@ -64,7 +64,7 @@ public class EntityMetadata {
 
 				name = ProcessorUtil.stringVisitor.visit(value);
 
-				if (!ProcessorUtil.isJavaIdentifier(name)) {
+				if (!TypeUtil.isValidIdentifier(name)) {
 					throw new EntityIllegalStateException(String.format("Name should be a valid class name identifier"),
 							MessageContext.of(context.getElement(), context.getAnnotationMirror(), value));
 				}
@@ -73,7 +73,7 @@ public class EntityMetadata {
 
 				parent = ProcessorUtil.stringVisitor.visit(value);
 
-				if (!ProcessorUtil.isJavaIdentifier(parent)) {
+				if (!TypeUtil.isValidIdentifier(parent)) {
 					throw new EntityIllegalStateException(
 							String.format("Parent should be a valid class name identifier"),
 							MessageContext.of(context.getElement(), context.getAnnotationMirror(), value));
