@@ -10,6 +10,7 @@ import com.ijioio.aes.annotation.processor.exception.ProcessorException;
 import com.ijioio.aes.annotation.processor.exception.TypeIllegalStateException;
 import com.ijioio.aes.annotation.processor.util.ProcessorUtil;
 import com.ijioio.aes.annotation.processor.util.TextUtil;
+import com.ijioio.aes.annotation.processor.util.TypeUtil;
 
 public class TypeMetadata {
 
@@ -39,7 +40,10 @@ public class TypeMetadata {
 
 				name = ProcessorUtil.stringVisitor.visit(value);
 
-				// TODO: check on valid identifiers and constants?
+				if (!TypeUtil.isValidIdentifier(name)) {
+					throw new TypeIllegalStateException(String.format("Name should be a valid class name identifier"),
+							MessageContext.of(context.getElement(), context.getAnnotationMirror(), value));
+				}
 
 			} else if (key.getSimpleName().contentEquals("reference")) {
 
