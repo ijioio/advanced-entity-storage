@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
@@ -22,8 +23,9 @@ import com.ijioio.aes.annotation.processor.util.TypeUtil;
 
 public class EntityPropertyMetadata {
 
-	public static EntityPropertyMetadata of(ProcessorContext context) throws ProcessorException {
-		return new EntityPropertyMetadata(context);
+	public static EntityPropertyMetadata of(ProcessingEnvironment environment, ProcessorContext context)
+			throws ProcessorException {
+		return new EntityPropertyMetadata(environment, context);
 	}
 
 	private static final Set<Attribute> supportedAttributes = new HashSet<>();
@@ -33,8 +35,6 @@ public class EntityPropertyMetadata {
 		supportedAttributes.add(Attribute.FINAL);
 	}
 
-	private final ProcessorContext context;
-
 	private String name;
 
 	private TypeMetadata type;
@@ -43,9 +43,8 @@ public class EntityPropertyMetadata {
 
 	private final Set<Attribute> attributes = new HashSet<>();
 
-	private EntityPropertyMetadata(ProcessorContext context) throws ProcessorException {
-
-		this.context = context;
+	private EntityPropertyMetadata(ProcessingEnvironment environment, ProcessorContext context)
+			throws ProcessorException {
 
 		Map<? extends ExecutableElement, ? extends AnnotationValue> elementValues = context.getAnnotationMirror()
 				.getElementValues();
@@ -63,7 +62,7 @@ public class EntityPropertyMetadata {
 
 				AnnotationMirror annotationMirror = ProcessorUtil.annotationVisitor.visit(value);
 
-				type = TypeMetadata.of(context.withAnnotationMirror(annotationMirror));
+				type = TypeMetadata.of(environment, context.withAnnotationMirror(annotationMirror));
 
 			} else if (key.getSimpleName().contentEquals("parameters")) {
 
@@ -75,7 +74,7 @@ public class EntityPropertyMetadata {
 
 					AnnotationMirror annotationMirror = ProcessorUtil.annotationVisitor.visit(annotationValue);
 
-					TypeMetadata type = TypeMetadata.of(context.withAnnotationMirror(annotationMirror));
+					TypeMetadata type = TypeMetadata.of(environment, context.withAnnotationMirror(annotationMirror));
 
 					parameters.add(type);
 				}
@@ -118,10 +117,6 @@ public class EntityPropertyMetadata {
 					String.format("Final attribute is not allowed for the immutable types"),
 					MessageContext.of(context.getElement(), context.getAnnotationMirror(), null));
 		}
-	}
-
-	public ProcessorContext getContext() {
-		return context;
 	}
 
 	public String getName() {

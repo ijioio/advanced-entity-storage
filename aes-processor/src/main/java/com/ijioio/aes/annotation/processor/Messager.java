@@ -20,40 +20,41 @@ public class Messager {
 		print(Kind.NOTE, message, null);
 	}
 
-	public void debug(CharSequence message, MessageContext hint) {
-		print(Kind.NOTE, message, hint);
+	public void debug(CharSequence message, MessageContext context) {
+		print(Kind.NOTE, message, context);
 	}
 
 	public void info(CharSequence message) {
 		print(Kind.NOTE, message, null);
 	}
 
-	public void info(CharSequence message, MessageContext hint) {
-		print(Kind.NOTE, message, hint);
+	public void info(CharSequence message, MessageContext context) {
+		print(Kind.NOTE, message, context);
 	}
 
 	public void warn(CharSequence message) {
 		print(Kind.WARNING, message, null);
 	}
 
-	public void warn(CharSequence message, MessageContext hint) {
-		print(Kind.WARNING, message, hint);
+	public void warn(CharSequence message, MessageContext context) {
+		print(Kind.WARNING, message, context);
 	}
 
 	public void error(CharSequence message) {
 		print(Kind.ERROR, message, null);
 	}
 
-	public void error(CharSequence message, MessageContext hint) {
-		print(Kind.ERROR, message, hint);
+	public void error(CharSequence message, MessageContext context) {
+		print(Kind.ERROR, message, context);
 	}
 
-	public void print(Kind kind, CharSequence message, MessageContext hint) {
+	public void print(Kind kind, CharSequence message, MessageContext context) {
 
 		Objects.requireNonNull(kind);
 		Objects.requireNonNull(message);
 
-		messager.printMessage(kind, message, hint != null ? hint.getElement() : null,
-				hint != null ? hint.getAnnotationMirror() : null, hint != null ? hint.getAnnotationValue() : null);
+		messager.printMessage(kind, message, context != null ? context.getElement() : null,
+				context != null ? context.getAnnotationMirror() : null,
+				context != null ? context.getAnnotationValue() : null);
 	}
 }
