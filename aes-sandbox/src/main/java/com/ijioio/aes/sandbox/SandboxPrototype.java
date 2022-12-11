@@ -7,6 +7,7 @@ import com.ijioio.aes.annotation.Type;
 
 @Entity( //
 		name = SandboxPrototype.NAME, //
+		parent = SandboxParentPrototype.NAME, //
 		attributes = Attribute.FINAL, //
 		properties = { //
 				@EntityProperty(name = "valueBoolean", type = @Type(name = Type.BOOLEAN)), //

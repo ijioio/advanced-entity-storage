@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ElementKind;
@@ -25,8 +26,9 @@ import com.ijioio.aes.annotation.processor.util.TypeUtil;
 
 public class EntityMetadata {
 
-	public static EntityMetadata of(ProcessorContext context) throws ProcessorException {
-		return new EntityMetadata(context);
+	public static EntityMetadata of(ProcessingEnvironment environment, ProcessorContext context)
+			throws ProcessorException {
+		return new EntityMetadata(environment, context);
 	}
 
 	private static final Set<Attribute> supportedAttributes = new HashSet<>();
@@ -35,8 +37,6 @@ public class EntityMetadata {
 
 		supportedAttributes.add(Attribute.FINAL);
 	}
-
-	private final ProcessorContext context;
 
 	private String name;
 
@@ -48,9 +48,7 @@ public class EntityMetadata {
 
 	private final Map<String, EntityPropertyMetadata> properties = new LinkedHashMap<>();
 
-	private EntityMetadata(ProcessorContext context) throws ProcessorException {
-
-		this.context = context;
+	private EntityMetadata(ProcessingEnvironment environment, ProcessorContext context) throws ProcessorException {
 
 		Map<? extends ExecutableElement, ? extends AnnotationValue> elementValues = context.getAnnotationMirror()
 				.getElementValues();
@@ -77,6 +75,24 @@ public class EntityMetadata {
 					throw new EntityIllegalStateException(
 							String.format("Parent should be a valid class name identifier"),
 							MessageContext.of(context.getElement(), context.getAnnotationMirror(), value));
+				}
+
+				TypeElement parentTypeElement = environment.getElementUtils().getTypeElement(parent);
+
+				// It can be null in cases parent is also generated type
+				if (parentTypeElement != null) {
+
+					if (parentTypeElement.getKind() != ElementKind.CLASS) {
+						throw new EntityIllegalStateException(String.format("Parent should be of class type"),
+								MessageContext.of(context.getElement(), context.getAnnotationMirror(), value));
+					}
+
+					if (!ProcessorUtil.isSubtype(parentTypeElement.asType(), TypeUtil.BASE_ENTITY_TYPE_NAME)
+							.orElse(Boolean.TRUE).booleanValue()) {
+						throw new EntityIllegalStateException(
+								String.format("Parent should be a subclass of %s", TypeUtil.BASE_ENTITY_TYPE_NAME),
+								MessageContext.of(context.getElement(), context.getAnnotationMirror(), value));
+					}
 				}
 
 			} else if (key.getSimpleName().contentEquals("interfaces")) {
@@ -130,8 +146,8 @@ public class EntityMetadata {
 
 					AnnotationMirror annotationMirror = ProcessorUtil.annotationVisitor.visit(annotationValue);
 
-					EntityPropertyMetadata property = EntityPropertyMetadata
-							.of(context.withAnnotationMirror(annotationMirror));
+					EntityPropertyMetadata property = EntityPropertyMetadata.of(environment,
+							context.withAnnotationMirror(annotationMirror));
 
 					if (properties.containsKey(property.getName())) {
 						throw new EntityPropertyIllegalStateException(
@@ -157,10 +173,6 @@ public class EntityMetadata {
 			throw new EntityPropertyIllegalStateException(String.format("Parent of the entity is not defined"),
 					MessageContext.of(context.getElement(), context.getAnnotationMirror(), null));
 		}
-	}
-
-	public ProcessorContext getContext() {
-		return context;
 	}
 
 	public String getName() {

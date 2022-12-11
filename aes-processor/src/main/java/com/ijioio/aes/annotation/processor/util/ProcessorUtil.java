@@ -1,6 +1,7 @@
 package com.ijioio.aes.annotation.processor.util;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -9,6 +10,7 @@ import javax.lang.model.element.ElementVisitor;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVisitor;
 import javax.lang.model.util.SimpleAnnotationValueVisitor8;
@@ -81,4 +83,30 @@ public class ProcessorUtil {
 			return value;
 		}
 	};
+
+	public static Optional<Boolean> isSubtype(TypeMirror type, String name) {
+
+		TypeMirror parentTypeMirror = type;
+
+		while (true) {
+
+			TypeElement typeElement = ProcessorUtil.typeElementVisitor
+					.visit(ProcessorUtil.declaredTypeVisitor.visit(parentTypeMirror).asElement());
+
+			if (typeElement.getQualifiedName().toString().equals(name)) {
+				return Optional.of(Boolean.TRUE);
+			}
+
+			parentTypeMirror = ProcessorUtil.typeElementVisitor
+					.visit(ProcessorUtil.declaredTypeVisitor.visit(parentTypeMirror).asElement()).getSuperclass();
+
+			if (parentTypeMirror.getKind() == TypeKind.NONE) {
+				return Optional.of(Boolean.FALSE);
+			}
+
+			if (parentTypeMirror.getKind() == TypeKind.ERROR) {
+				return Optional.empty();
+			}
+		}
+	}
 }

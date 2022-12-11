@@ -3,6 +3,7 @@ package com.ijioio.aes.annotation.processor;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
 
@@ -14,19 +15,16 @@ import com.ijioio.aes.annotation.processor.util.TypeUtil;
 
 public class TypeMetadata {
 
-	public static TypeMetadata of(ProcessorContext context) throws ProcessorException {
-		return new TypeMetadata(context);
+	public static TypeMetadata of(ProcessingEnvironment environment, ProcessorContext context)
+			throws ProcessorException {
+		return new TypeMetadata(environment, context);
 	}
-
-	private final ProcessorContext context;
 
 	private String name;
 
 	private boolean reference;
 
-	private TypeMetadata(ProcessorContext context) throws ProcessorException {
-
-		this.context = context;
+	private TypeMetadata(ProcessingEnvironment environment, ProcessorContext context) throws ProcessorException {
 
 		Map<? extends ExecutableElement, ? extends AnnotationValue> elementValues = context.getAnnotationMirror()
 				.getElementValues();
@@ -55,10 +53,6 @@ public class TypeMetadata {
 			throw new TypeIllegalStateException(String.format("Name of the type is not defined"),
 					MessageContext.of(context.getElement(), context.getAnnotationMirror(), null));
 		}
-	}
-
-	public ProcessorContext getContext() {
-		return context;
 	}
 
 	public String getName() {

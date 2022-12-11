@@ -46,14 +46,18 @@ import com.squareup.javapoet.TypeSpec;
 
 public class EntityProcessor extends AbstractProcessor {
 
+	protected ProcessingEnvironment environment;
+
 	protected Messager messager;
 
 	@Override
-	public synchronized void init(ProcessingEnvironment processingEnvironment) {
+	public synchronized void init(ProcessingEnvironment environment) {
 
-		super.init(processingEnvironment);
+		super.init(environment);
 
-		messager = Messager.of(processingEnvironment.getMessager());
+		this.environment = environment;
+
+		messager = Messager.of(environment.getMessager());
 	}
 
 	@Override
@@ -77,13 +81,13 @@ public class EntityProcessor extends AbstractProcessor {
 
 				for (Element annotatedElement : annotatedElements) {
 
-					AnnotationMirror annotatinMirror = annotatedElement.getAnnotationMirrors().stream()
+					AnnotationMirror annotationMirror = annotatedElement.getAnnotationMirrors().stream()
 							.filter(item -> item.getAnnotationType().toString().equals(Entity.class.getCanonicalName()))
 							.findFirst().orElse(null);
 
-					ProcessorContext processorContext = ProcessorContext.of(annotatedElement, annotatinMirror);
+					ProcessorContext context = ProcessorContext.of(annotatedElement, annotationMirror);
 
-					EntityMetadata entity = EntityMetadata.of(processorContext);
+					EntityMetadata entity = EntityMetadata.of(environment, context);
 
 					messager.debug("entity -> " + entity);
 
