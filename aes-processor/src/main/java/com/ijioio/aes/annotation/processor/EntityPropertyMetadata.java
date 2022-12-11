@@ -18,6 +18,7 @@ import com.ijioio.aes.annotation.processor.exception.EntityPropertyIllegalStateE
 import com.ijioio.aes.annotation.processor.exception.ProcessorException;
 import com.ijioio.aes.annotation.processor.util.ProcessorUtil;
 import com.ijioio.aes.annotation.processor.util.TextUtil;
+import com.ijioio.aes.annotation.processor.util.TypeUtil;
 
 public class EntityPropertyMetadata {
 
@@ -109,6 +110,12 @@ public class EntityPropertyMetadata {
 
 		if (type == null) {
 			throw new EntityPropertyIllegalStateException(String.format("Type of the entity property is not defined"),
+					MessageContext.of(context.getElement(), context.getAnnotationMirror(), null));
+		}
+
+		if (attributes.contains(Attribute.FINAL) && TypeUtil.isImmutable(type.getName())) {
+			throw new EntityPropertyIllegalStateException(
+					String.format("Final attribute is not allowed for the immutable types"),
 					MessageContext.of(context.getElement(), context.getAnnotationMirror(), null));
 		}
 	}
