@@ -717,6 +717,52 @@ public class XmlSerializationHandler implements SerializationHandler {
 	};
 
 	@SuppressWarnings("rawtypes")
+	private static final XmlSerializationValueHandler<Class> HANDLER_CLASS = new XmlSerializationValueHandler<Class>() {
+
+		@Override
+		public Class<Class> getType() {
+			return Class.class;
+		}
+
+		@Override
+		public void write(XmlSerializationContext context, XmlSerializationHandler handler, String name, Class value)
+				throws SerializationException {
+
+			if (value == null) {
+				return;
+			}
+
+			XMLStreamWriter writer = context.getWriter();
+
+			try {
+
+				writer.writeStartElement(name);
+				handler.writeAttributes(writer, context.getAttributes());
+				writer.writeCharacters(value.getName());
+				writer.writeEndElement();
+
+			} catch (XMLStreamException e) {
+				throw new SerializationException(e);
+			}
+		}
+
+		@Override
+		public Class read(XmlSerializationContext context, XmlSerializationHandler handler, Class<Class> type,
+				Class value) throws SerializationException {
+
+			XMLStreamReader reader = context.getReader();
+
+			try {
+
+				return Class.forName(reader.getElementText());
+
+			} catch (XMLStreamException | ClassNotFoundException e) {
+				throw new SerializationException(e);
+			}
+		}
+	};
+
+	@SuppressWarnings("rawtypes")
 	private static final XmlSerializationValueHandler<Collection> HANDLER_COLLECTION = new XmlSerializationValueHandler<Collection>() {
 
 		@Override
@@ -942,6 +988,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 		registerValueHandler(HANDLER_LOCAL_TIME);
 		registerValueHandler(HANDLER_LOCAL_DATE_TIME);
 		registerValueHandler(HANDLER_ENUM);
+		registerValueHandler(HANDLER_CLASS);
 		registerValueHandler(HANDLER_COLLECTION);
 		registerValueHandler(HANDLER_MAP);
 		registerValueHandler(HANDLER_XSERIALIZABLE);
