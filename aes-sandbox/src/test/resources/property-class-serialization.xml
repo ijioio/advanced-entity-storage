@@ -1,0 +1,4 @@
+<object class="com.ijioio.test.model.PropertyClassSerialization">
+    <id>property-class-serialization</id>
+    <valueClass class="java.lang.Class">java.lang.String</valueClass>
+</object>
