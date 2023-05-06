@@ -4,11 +4,10 @@ package com.ijioio.aes.annotation.processor.util;
 public class TextUtil {
 
 	/**
-	 * Checks whether an indicated {@code value} is blank, i.e. either
-	 * {@code null} or zero length or contains only the white space characters.
+	 * Checks whether an indicated {@code value} is blank, i.e. either {@code null}
+	 * or zero length or contains only the white space characters.
 	 *
-	 * @param value
-	 *            to check
+	 * @param value to check
 	 * @return {@code true} if value is blank, {@code false} otherwise
 	 */
 	public static boolean isBlank(CharSequence value) {
@@ -16,11 +15,10 @@ public class TextUtil {
 	}
 
 	/**
-	 * Checks whether an indicated {@code value} is empty, i.e. either
-	 * {@code null} or zero length.
+	 * Checks whether an indicated {@code value} is empty, i.e. either {@code null}
+	 * or zero length.
 	 *
-	 * @param value
-	 *            to check
+	 * @param value to check
 	 * @return {@code true} if value is empty, {@code false} otherwise
 	 */
 	public static boolean isEmpty(CharSequence value) {
@@ -28,8 +26,8 @@ public class TextUtil {
 	}
 
 	/**
-	 * Capitalizes indicated {#code value} string by changing the first
-	 * character to upper case.
+	 * Capitalizes indicated {@code value} string by changing the first character to
+	 * upper case.
 	 * 
 	 * <pre>
 	 * TextUtil.capitalize(null)   = null
@@ -38,8 +36,7 @@ public class TextUtil {
 	 * TextUtil.capitalize("tExt") = "TExt"
 	 * </pre>
 	 * 
-	 * @param value
-	 *            to capitalize
+	 * @param value to capitalize
 	 * @return value with first letter capitalized
 	 */
 	public static String capitalize(String value) {
