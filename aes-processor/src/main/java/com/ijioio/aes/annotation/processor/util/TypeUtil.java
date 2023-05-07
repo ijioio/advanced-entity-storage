@@ -70,11 +70,6 @@ public class TypeUtil {
 	public static final String INSTANT_TYPE_NAME = Instant.class.getName();
 
 	/**
-	 * Fully qualified name for {@link LocalDateTime} type.
-	 */
-	public static final String LOCAL_DATE_TIME_TYPE_NAME = LocalDateTime.class.getName();
-
-	/**
 	 * Fully qualified name for {@link LocalDate} type.
 	 */
 	public static final String LOCAL_DATE_TYPE_NAME = LocalDate.class.getName();
@@ -83,6 +78,16 @@ public class TypeUtil {
 	 * Fully qualified name for {@link LocalTime} type.
 	 */
 	public static final String LOCAL_TIME_TYPE_NAME = LocalTime.class.getName();
+
+	/**
+	 * Fully qualified name for {@link LocalDateTime} type.
+	 */
+	public static final String LOCAL_DATE_TIME_TYPE_NAME = LocalDateTime.class.getName();
+
+	/**
+	 * Fully qualified name for {@link Class} type.
+	 */
+	public static final String CLASS_TYPE_NAME = Class.class.getName();
 
 	/**
 	 * Fully qualified name for {@link List} type.
@@ -103,6 +108,16 @@ public class TypeUtil {
 	 * Fully qualified name for base entity type.
 	 */
 	public static final String BASE_ENTITY_TYPE_NAME = "com.ijioio.aes.core.BaseEntity";
+
+	/**
+	 * Fully qualified name for base entity index type.
+	 */
+	public static final String BASE_ENTITY_INDEX_TYPE_NAME = "com.ijioio.aes.core.BaseEntityIndex";
+
+	/**
+	 * Fully qualified name for base entity index data type.
+	 */
+	public static final String BASE_ENTITY_INDEX_DATA_TYPE_NAME = "com.ijioio.aes.core.BaseEntityIndexData";
 
 	/**
 	 * Fully qualified name for entity reference type.
@@ -334,22 +349,6 @@ public class TypeUtil {
 	};
 
 	/**
-	 * Type handler of {@link LocalDateTime} type.
-	 */
-	public static final TypeHandler LOCAL_DATE_TIME_TYPE_HANDLER = new TypeHandler() {
-
-		@Override
-		public boolean isImmutable() {
-			return true;
-		}
-
-		@Override
-		public boolean isValidIdentifier() {
-			return true;
-		}
-	};
-
-	/**
 	 * Type handler of {@link LocalDate} type.
 	 */
 	public static final TypeHandler LOCAL_DATE_TYPE_HANDLER = new TypeHandler() {
@@ -369,6 +368,38 @@ public class TypeUtil {
 	 * Type handler of {@link LocalTime} type.
 	 */
 	public static final TypeHandler LOCAL_TIME_TYPE_HANDLER = new TypeHandler() {
+
+		@Override
+		public boolean isImmutable() {
+			return true;
+		}
+
+		@Override
+		public boolean isValidIdentifier() {
+			return true;
+		}
+	};
+
+	/**
+	 * Type handler of {@link LocalDateTime} type.
+	 */
+	public static final TypeHandler LOCAL_DATE_TIME_TYPE_HANDLER = new TypeHandler() {
+
+		@Override
+		public boolean isImmutable() {
+			return true;
+		}
+
+		@Override
+		public boolean isValidIdentifier() {
+			return true;
+		}
+	};
+
+	/**
+	 * Type handler of {@link Class} type.
+	 */
+	public static final TypeHandler CLASS_TYPE_HANDLER = new TypeHandler() {
 
 		@Override
 		public boolean isImmutable() {
@@ -417,6 +448,22 @@ public class TypeUtil {
 	 * Type handler of {@link Map} type.
 	 */
 	public static final TypeHandler MAP_TYPE_HANDLER = new TypeHandler() {
+
+		@Override
+		public boolean isImmutable() {
+			return false;
+		}
+
+		@Override
+		public boolean isValidIdentifier() {
+			return true;
+		}
+	};
+
+	/**
+	 * Type handler of entity reference type.
+	 */
+	public static final TypeHandler ENTITY_REFERENCE_TYPE_HANDLER = new TypeHandler() {
 
 		@Override
 		public boolean isImmutable() {
@@ -497,16 +544,20 @@ public class TypeUtil {
 			return INSTANT_TYPE_HANDLER;
 		}
 
-		if (name.equals(Type.LOCAL_DATE_TIME) || name.equals(LOCAL_DATE_TIME_TYPE_NAME)) {
-			return LOCAL_DATE_TIME_TYPE_HANDLER;
-		}
-
 		if (name.equals(Type.LOCAL_DATE) || name.equals(LOCAL_DATE_TYPE_NAME)) {
 			return LOCAL_DATE_TYPE_HANDLER;
 		}
 
 		if (name.equals(Type.LOCAL_TIME) || name.equals(LOCAL_TIME_TYPE_NAME)) {
 			return LOCAL_TIME_TYPE_HANDLER;
+		}
+
+		if (name.equals(Type.LOCAL_DATE_TIME) || name.equals(LOCAL_DATE_TIME_TYPE_NAME)) {
+			return LOCAL_DATE_TIME_TYPE_HANDLER;
+		}
+
+		if (name.equals(Type.CLASS) || name.equals(CLASS_TYPE_NAME)) {
+			return CLASS_TYPE_HANDLER;
 		}
 
 		if (name.equals(Type.LIST) || name.equals(LIST_TYPE_NAME)) {
@@ -519,6 +570,10 @@ public class TypeUtil {
 
 		if (name.equals(Type.MAP) || name.equals(MAP_TYPE_NAME)) {
 			return MAP_TYPE_HANDLER;
+		}
+
+		if (name.equals(Type.ENTITY_REFERENCE) || name.equals(ENTITY_REFERENCE_TYPE_NAME)) {
+			return ENTITY_REFERENCE_TYPE_HANDLER;
 		}
 
 		return new TypeHandler() {
