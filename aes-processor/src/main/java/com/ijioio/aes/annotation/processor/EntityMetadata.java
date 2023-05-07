@@ -18,7 +18,6 @@ import javax.lang.model.element.VariableElement;
 
 import com.ijioio.aes.annotation.Attribute;
 import com.ijioio.aes.annotation.processor.exception.EntityIllegalStateException;
-import com.ijioio.aes.annotation.processor.exception.EntityPropertyIllegalStateException;
 import com.ijioio.aes.annotation.processor.exception.ProcessorException;
 import com.ijioio.aes.annotation.processor.util.ProcessorUtil;
 import com.ijioio.aes.annotation.processor.util.TextUtil;
@@ -47,6 +46,8 @@ public class EntityMetadata {
 	private final Set<Attribute> attributes = new HashSet<>();
 
 	private final Map<String, EntityPropertyMetadata> properties = new LinkedHashMap<>();
+
+	private final Map<String, EntityIndexMetadata> indexes = new LinkedHashMap<>();
 
 	private EntityMetadata(ProcessingEnvironment environment, ProcessorContext context) throws ProcessorException {
 
@@ -108,7 +109,8 @@ public class EntityMetadata {
 
 					if (typeElement.getKind() != ElementKind.INTERFACE) {
 						throw new EntityIllegalStateException(
-								String.format("%s is not an interface type", typeElement.getQualifiedName().toString()),
+								String.format("Type %s is not an interface type",
+										typeElement.getQualifiedName().toString()),
 								MessageContext.of(context.getElement(), context.getAnnotationMirror(), value));
 					}
 
@@ -129,7 +131,7 @@ public class EntityMetadata {
 
 					if (!supportedAttributes.contains(attribute)) {
 						throw new EntityIllegalStateException(
-								String.format("attribute %s is not allowed for the entity", attribute),
+								String.format("Attribute %s is not allowed for the entity", attribute),
 								MessageContext.of(context.getElement(), context.getAnnotationMirror(), value));
 					}
 
@@ -150,12 +152,34 @@ public class EntityMetadata {
 							context.withAnnotationMirror(annotationMirror));
 
 					if (properties.containsKey(property.getName())) {
-						throw new EntityPropertyIllegalStateException(
-								String.format("property %s is already defined for the %s", property.getName(), name),
+						throw new EntityIllegalStateException(
+								String.format("Property %s is already defined for the entity", property.getName()),
 								MessageContext.of(context.getElement(), annotationMirror, annotationValue));
 					}
 
 					properties.put(property.getName(), property);
+				}
+
+			} else if (key.getSimpleName().contentEquals("indexes")) {
+
+				List<? extends AnnotationValue> annotationValues = ProcessorUtil.arrayVisitor.visit(value);
+
+				indexes.clear();
+
+				for (AnnotationValue annotationValue : annotationValues) {
+
+					AnnotationMirror annotationMirror = ProcessorUtil.annotationVisitor.visit(annotationValue);
+
+					EntityIndexMetadata index = EntityIndexMetadata.of(environment,
+							context.withAnnotationMirror(annotationMirror));
+
+					if (indexes.containsKey(index.getName())) {
+						throw new EntityIllegalStateException(
+								String.format("Index %s is already defined for the entity", index.getName()),
+								MessageContext.of(context.getElement(), annotationMirror, annotationValue));
+					}
+
+					indexes.put(index.getName(), index);
 				}
 			}
 		}
@@ -165,12 +189,12 @@ public class EntityMetadata {
 		}
 
 		if (TextUtil.isBlank(name)) {
-			throw new EntityPropertyIllegalStateException(String.format("Name of the entity is not defined"),
+			throw new EntityIllegalStateException(String.format("Name of the entity is not defined"),
 					MessageContext.of(context.getElement(), context.getAnnotationMirror(), null));
 		}
 
 		if (TextUtil.isBlank(parent)) {
-			throw new EntityPropertyIllegalStateException(String.format("Parent of the entity is not defined"),
+			throw new EntityIllegalStateException(String.format("Parent of the entity is not defined"),
 					MessageContext.of(context.getElement(), context.getAnnotationMirror(), null));
 		}
 	}
@@ -191,13 +215,17 @@ public class EntityMetadata {
 		return properties;
 	}
 
+	public Map<String, EntityIndexMetadata> getIndexes() {
+		return indexes;
+	}
+
 	public boolean isFinal() {
 		return attributes.contains(Attribute.FINAL);
 	}
 
 	@Override
 	public String toString() {
-		return "EntityMetadata [name=" + name + ", parent=" + parent + ", interfaces=" + interfaces + ", properties="
-				+ properties + "]";
+		return "EntityMetadata [name=" + name + ", parent=" + parent + ", interfaces=" + interfaces + ", attributes="
+				+ attributes + ", properties=" + properties + ", indexes=" + indexes + "]";
 	}
 }

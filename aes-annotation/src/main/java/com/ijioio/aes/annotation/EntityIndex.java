@@ -5,19 +5,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.TYPE)
+@Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.SOURCE)
-public @interface Entity {
+public @interface EntityIndex {
 
 	public String name();
 
-	public String parent() default "";
-
-	public Class<?>[] interfaces() default {};
-
 	public Attribute[] attributes() default {};
-
-	public EntityProperty[] properties() default {};
-
-	public EntityIndex[] indexes() default {};
+	
+	public EntityIndexProperty[] properties() default {};
 }

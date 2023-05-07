@@ -14,24 +14,22 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 
 import com.ijioio.aes.annotation.Attribute;
-import com.ijioio.aes.annotation.processor.exception.EntityPropertyIllegalStateException;
+import com.ijioio.aes.annotation.processor.exception.EntityIndexPropertyIllegalStateException;
 import com.ijioio.aes.annotation.processor.exception.ProcessorException;
 import com.ijioio.aes.annotation.processor.util.ProcessorUtil;
 import com.ijioio.aes.annotation.processor.util.TextUtil;
-import com.ijioio.aes.annotation.processor.util.TypeUtil;
 
-public class EntityPropertyMetadata {
+public class EntityIndexPropertyMetadata {
 
-	public static EntityPropertyMetadata of(ProcessingEnvironment environment, ProcessorContext context)
+	public static EntityIndexPropertyMetadata of(ProcessingEnvironment environment, ProcessorContext context)
 			throws ProcessorException {
-		return new EntityPropertyMetadata(environment, context);
+		return new EntityIndexPropertyMetadata(environment, context);
 	}
 
 	private static final Set<Attribute> supportedAttributes = new HashSet<>();
 
 	static {
 
-		supportedAttributes.add(Attribute.FINAL);
 	}
 
 	private String name;
@@ -42,7 +40,7 @@ public class EntityPropertyMetadata {
 
 	private final Set<Attribute> attributes = new HashSet<>();
 
-	private EntityPropertyMetadata(ProcessingEnvironment environment, ProcessorContext context)
+	private EntityIndexPropertyMetadata(ProcessingEnvironment environment, ProcessorContext context)
 			throws ProcessorException {
 
 		Map<? extends ExecutableElement, ? extends AnnotationValue> elementValues = context.getAnnotationMirror()
@@ -91,8 +89,8 @@ public class EntityPropertyMetadata {
 					Attribute attribute = Attribute.valueOf(variableElement.getSimpleName().toString());
 
 					if (!supportedAttributes.contains(attribute)) {
-						throw new EntityPropertyIllegalStateException(
-								String.format("Attribute %s is not allowed for the entity property", attribute),
+						throw new EntityIndexPropertyIllegalStateException(
+								String.format("Attribute %s is not allowed for the entity index property", attribute),
 								MessageContext.of(context.getElement(), context.getAnnotationMirror(), value));
 					}
 
@@ -102,19 +100,14 @@ public class EntityPropertyMetadata {
 		}
 
 		if (TextUtil.isBlank(name)) {
-			throw new EntityPropertyIllegalStateException(String.format("Name of the entity property is not defined"),
+			throw new EntityIndexPropertyIllegalStateException(
+					String.format("Name of the entity index property is not defined"),
 					MessageContext.of(context.getElement(), context.getAnnotationMirror(), null));
 		}
 
 		if (type == null) {
-			throw new EntityPropertyIllegalStateException(String.format("Type of the entity property is not defined"),
-					MessageContext.of(context.getElement(), context.getAnnotationMirror(), null));
-		}
-
-		if (attributes.contains(Attribute.FINAL)
-				&& TypeUtil.isImmutable(type.isReference() ? TypeUtil.ENTITY_REFERENCE_TYPE_NAME : type.getName())) {
-			throw new EntityPropertyIllegalStateException(
-					String.format("Final attribute is not allowed for the immutable types"),
+			throw new EntityIndexPropertyIllegalStateException(
+					String.format("Type of the entity index property is not defined"),
 					MessageContext.of(context.getElement(), context.getAnnotationMirror(), null));
 		}
 	}
@@ -131,13 +124,9 @@ public class EntityPropertyMetadata {
 		return parameters;
 	}
 
-	public boolean isFinal() {
-		return attributes.contains(Attribute.FINAL);
-	}
-
 	@Override
 	public String toString() {
-		return "EntityPropertyMetadata [name=" + name + ", type=" + type + ", parameters=" + parameters
+		return "EntityIndexPropertyMetadata [name=" + name + ", type=" + type + ", parameters=" + parameters
 				+ ", attributes=" + attributes + "]";
 	}
 }
