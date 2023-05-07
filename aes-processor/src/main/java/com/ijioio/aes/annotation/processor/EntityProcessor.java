@@ -128,27 +128,27 @@ public class EntityProcessor extends AbstractProcessor {
 
 			if (handler.isBoolean()) {
 				methods.add(MethodSpec.methodBuilder(String.format("is%s", TextUtil.capitalize(property.getName())))
-						.addModifiers(Modifier.PUBLIC).returns(handler.getFullType())
+						.addModifiers(Modifier.PUBLIC).returns(handler.getParameterizedType())
 						.addStatement("return $L", property.getName()).build());
 			} else {
 				methods.add(MethodSpec.methodBuilder(String.format("get%s", TextUtil.capitalize(property.getName())))
-						.addModifiers(Modifier.PUBLIC).returns(handler.getFullType())
+						.addModifiers(Modifier.PUBLIC).returns(handler.getParameterizedType())
 						.addStatement("return $L", property.getName()).build());
 			}
 
 			if (property.isFinal()) {
 
-				fields.add(FieldSpec.builder(handler.getFullType(), property.getName())
+				fields.add(FieldSpec.builder(handler.getParameterizedType(), property.getName())
 						.addModifiers(Modifier.PRIVATE, Modifier.FINAL)
-						.initializer("new $T()", handler.getFullImplementationType()).build());
+						.initializer("new $T()", handler.getParameterizedImplementationType()).build());
 
 			} else {
 
-				fields.add(FieldSpec.builder(handler.getFullType(), property.getName()).addModifiers(Modifier.PRIVATE)
-						.build());
+				fields.add(FieldSpec.builder(handler.getParameterizedType(), property.getName())
+						.addModifiers(Modifier.PRIVATE).build());
 
 				methods.add(MethodSpec.methodBuilder(String.format("set%s", TextUtil.capitalize(property.getName())))
-						.addModifiers(Modifier.PUBLIC).addParameter(handler.getFullType(), property.getName())
+						.addModifiers(Modifier.PUBLIC).addParameter(handler.getParameterizedType(), property.getName())
 						.addStatement("this.$L = $L", property.getName(), property.getName()).build());
 			}
 		}
@@ -287,21 +287,21 @@ public class EntityProcessor extends AbstractProcessor {
 
 			CodeGenTypeHandler handler = CodeGenTypeUtil.getTypeHandler(property.getType(), property.getParameters());
 
-			fields.add(FieldSpec.builder(handler.getFullType(), property.getName()).addModifiers(Modifier.PRIVATE)
-					.build());
+			fields.add(FieldSpec.builder(handler.getParameterizedType(), property.getName())
+					.addModifiers(Modifier.PRIVATE).build());
 
 			if (handler.isBoolean()) {
 				methods.add(MethodSpec.methodBuilder(String.format("is%s", TextUtil.capitalize(property.getName())))
-						.addModifiers(Modifier.PUBLIC).returns(handler.getFullType())
+						.addModifiers(Modifier.PUBLIC).returns(handler.getParameterizedType())
 						.addStatement("return $L", property.getName()).build());
 			} else {
 				methods.add(MethodSpec.methodBuilder(String.format("get%s", TextUtil.capitalize(property.getName())))
-						.addModifiers(Modifier.PUBLIC).returns(handler.getFullType())
+						.addModifiers(Modifier.PUBLIC).returns(handler.getParameterizedType())
 						.addStatement("return $L", property.getName()).build());
 			}
 
 			methods.add(MethodSpec.methodBuilder(String.format("set%s", TextUtil.capitalize(property.getName())))
-					.addModifiers(Modifier.PUBLIC).addParameter(handler.getFullType(), property.getName())
+					.addModifiers(Modifier.PUBLIC).addParameter(handler.getParameterizedType(), property.getName())
 					.addStatement("this.$L = $L", property.getName(), property.getName()).build());
 		}
 
@@ -348,7 +348,7 @@ public class EntityProcessor extends AbstractProcessor {
 				methods.add(MethodSpec.methodBuilder(String.format("get%s", TextUtil.capitalize(property.getName())))
 						.addAnnotation(AnnotationSpec.builder(SuppressWarnings.class)
 								.addMember("value", "$S", "unchecked").build())
-						.addModifiers(Modifier.PUBLIC).returns(handler.getFullType()).addCode("\n")
+						.addModifiers(Modifier.PUBLIC).returns(handler.getParameterizedType()).addCode("\n")
 						.beginControlFlow("try")
 						.addStatement("return $T.of($L, ($T) Class.forName($L))",
 								ClassName.bestGuess(TypeUtil.ENTITY_REFERENCE_TYPE_NAME),
@@ -359,7 +359,7 @@ public class EntityProcessor extends AbstractProcessor {
 						.build());
 
 				methods.add(MethodSpec.methodBuilder(String.format("set%s", TextUtil.capitalize(property.getName())))
-						.addModifiers(Modifier.PUBLIC).addParameter(handler.getFullType(), property.getName())
+						.addModifiers(Modifier.PUBLIC).addParameter(handler.getParameterizedType(), property.getName())
 						.addCode("\n")
 						.addStatement("this.$L = $L.getId()", String.format("%sId", property.getName()),
 								property.getName())
@@ -369,22 +369,22 @@ public class EntityProcessor extends AbstractProcessor {
 
 			} else {
 
-				fields.add(FieldSpec.builder(handler.getFullType(), property.getName()).addModifiers(Modifier.PRIVATE)
-						.build());
+				fields.add(FieldSpec.builder(handler.getParameterizedType(), property.getName())
+						.addModifiers(Modifier.PRIVATE).build());
 
 				if (handler.isBoolean()) {
 					methods.add(MethodSpec.methodBuilder(String.format("is%s", TextUtil.capitalize(property.getName())))
-							.addModifiers(Modifier.PUBLIC).returns(handler.getFullType())
+							.addModifiers(Modifier.PUBLIC).returns(handler.getParameterizedType())
 							.addStatement("return $L", property.getName()).build());
 				} else {
 					methods.add(
 							MethodSpec.methodBuilder(String.format("get%s", TextUtil.capitalize(property.getName())))
-									.addModifiers(Modifier.PUBLIC).returns(handler.getFullType())
+									.addModifiers(Modifier.PUBLIC).returns(handler.getParameterizedType())
 									.addStatement("return $L", property.getName()).build());
 				}
 
 				methods.add(MethodSpec.methodBuilder(String.format("set%s", TextUtil.capitalize(property.getName())))
-						.addModifiers(Modifier.PUBLIC).addParameter(handler.getFullType(), property.getName())
+						.addModifiers(Modifier.PUBLIC).addParameter(handler.getParameterizedType(), property.getName())
 						.addStatement("this.$L = $L", property.getName(), property.getName()).build());
 			}
 		}
