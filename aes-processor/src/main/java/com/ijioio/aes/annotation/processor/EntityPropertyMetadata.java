@@ -112,7 +112,8 @@ public class EntityPropertyMetadata {
 					MessageContext.of(context.getElement(), context.getAnnotationMirror(), null));
 		}
 
-		if (attributes.contains(Attribute.FINAL) && TypeUtil.isImmutable(type.getName())) {
+		if (attributes.contains(Attribute.FINAL)
+				&& TypeUtil.isImmutable(type.isReference() ? TypeUtil.ENTITY_REFERENCE_TYPE_NAME : type.getName())) {
 			throw new EntityPropertyIllegalStateException(
 					String.format("Final attribute is not allowed for the immutable types"),
 					MessageContext.of(context.getElement(), context.getAnnotationMirror(), null));
