@@ -14,7 +14,6 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 
 import com.ijioio.aes.annotation.Attribute;
-import com.ijioio.aes.annotation.processor.exception.EntityIllegalStateException;
 import com.ijioio.aes.annotation.processor.exception.EntityPropertyIllegalStateException;
 import com.ijioio.aes.annotation.processor.exception.ProcessorException;
 import com.ijioio.aes.annotation.processor.util.ProcessorUtil;
@@ -92,8 +91,8 @@ public class EntityPropertyMetadata {
 					Attribute attribute = Attribute.valueOf(variableElement.getSimpleName().toString());
 
 					if (!supportedAttributes.contains(attribute)) {
-						throw new EntityIllegalStateException(
-								String.format("attribute %s is not allowed for the entity property", attribute),
+						throw new EntityPropertyIllegalStateException(
+								String.format("Attribute %s is not allowed for the entity property", attribute),
 								MessageContext.of(context.getElement(), context.getAnnotationMirror(), value));
 					}
 
