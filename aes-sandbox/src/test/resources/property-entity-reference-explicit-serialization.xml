@@ -1,0 +1,7 @@
+<object class="com.ijioio.test.model.PropertyEntityReferenceExplicitSerialization">
+    <id>property-entity-reference-explicit-serialization</id>
+    <valueEntityReference class="com.ijioio.aes.core.EntityReference">
+        <id>some</id>
+        <type class="java.lang.Class">com.ijioio.aes.sandbox.test.serialization.property.PropertyEntityReferenceExplicitSerializationTest$Some</type>
+    </valueEntityReference>
+</object>
