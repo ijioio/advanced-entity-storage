@@ -1,41 +1,44 @@
 package com.ijioio.aes.core;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import com.ijioio.aes.core.serialization.SerializationContext;
+import com.ijioio.aes.core.serialization.SerializationHandler;
+import com.ijioio.aes.core.serialization.SerializationReader;
+import com.ijioio.aes.core.serialization.SerializationWriter;
+
 /**
  * Convenient class for holding reference data for the entity.
  */
-public final class EntityReference<E extends Entity> {
+public final class EntityReference<E extends Entity> extends BaseEntity {
 
 	/**
 	 * Creates entity reference for entity with indicated {@code id} and
 	 * {@code type}.
 	 *
-	 * @param id
-	 *            of the entity
-	 * @param type
-	 *            of the entity
+	 * @param id of the entity
+	 * @param type of the entity
 	 * @return entity reference for the entity
 	 */
-	public static <E extends Entity> EntityReference<E> of(String id,
-			Class<E> type) {
-		return new EntityReference<>(id, type);
+	public static <E extends Entity> EntityReference<E> of(String id, Class<E> type) {
+
+		EntityReference<E> entityReference = new EntityReference<>();
+
+		entityReference.setId(id);
+		entityReference.setType(type);
+
+		return entityReference;
 	}
 
-	private final String id;
-
-	private final Class<E> type;
-
-	private EntityReference(String id, Class<E> type) {
-
-		this.id = id;
-		this.type = type;
-	}
-
-	public String getId() {
-		return id;
-	}
+	private Class<E> type;
 
 	public Class<E> getType() {
 		return type;
+	}
+
+	public void setType(Class<E> type) {
+		this.type = type;
 	}
 
 	@Override
@@ -43,9 +46,8 @@ public final class EntityReference<E extends Entity> {
 
 		final int prime = 31;
 
-		int result = 1;
+		int result = super.hashCode();
 
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
 
 		return result;
@@ -58,7 +60,7 @@ public final class EntityReference<E extends Entity> {
 			return true;
 		}
 
-		if (obj == null) {
+		if (!super.equals(obj)) {
 			return false;
 		}
 
@@ -67,16 +69,6 @@ public final class EntityReference<E extends Entity> {
 		}
 
 		EntityReference<?> other = (EntityReference<?>) obj;
-
-		if (id == null) {
-
-			if (other.id != null) {
-				return false;
-			}
-
-		} else if (!id.equals(other.id)) {
-			return false;
-		}
 
 		if (type == null) {
 
@@ -92,7 +84,27 @@ public final class EntityReference<E extends Entity> {
 	}
 
 	@Override
+	public Map<String, SerializationWriter> getWriters(SerializationContext context, SerializationHandler handler) {
+
+		Map<String, SerializationWriter> writers = new LinkedHashMap<>(super.getWriters(context, handler));
+
+		writers.put("type", () -> handler.write(context, "type", type));
+
+		return writers;
+	}
+
+	@Override
+	public Map<String, SerializationReader> getReaders(SerializationContext context, SerializationHandler handler) {
+
+		Map<String, SerializationReader> readers = new LinkedHashMap<>(super.getReaders(context, handler));
+
+		readers.put("type", () -> type = handler.read(context, type));
+
+		return readers;
+	}
+
+	@Override
 	public String toString() {
-		return "EntityReference [id=" + id + ", type=" + type + "]";
+		return "EntityReference [id=" + getId() + ", type=" + type + "]";
 	}
 }
