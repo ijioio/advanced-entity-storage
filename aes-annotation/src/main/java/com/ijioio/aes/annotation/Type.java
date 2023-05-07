@@ -37,11 +37,15 @@ public @interface Type {
 
 	public static final String LOCAL_DATE_TIME = "LOCAL_DATE_TIME";
 
+	public static final String CLASS = "CLASS";
+
 	public static final String LIST = "LIST";
 
 	public static final String SET = "SET";
 
 	public static final String MAP = "MAP";
+
+	public static final String ENTITY_REFERENCE = "ENTITY_REFERENCE";
 
 	public String name();
 
