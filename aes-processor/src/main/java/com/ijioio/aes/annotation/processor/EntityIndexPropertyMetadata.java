@@ -14,8 +14,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 
 import com.ijioio.aes.annotation.Attribute;
-import com.ijioio.aes.annotation.processor.exception.EntityIllegalStateException;
-import com.ijioio.aes.annotation.processor.exception.EntityPropertyIllegalStateException;
+import com.ijioio.aes.annotation.processor.exception.EntityIndexPropertyIllegalStateException;
 import com.ijioio.aes.annotation.processor.exception.ProcessorException;
 import com.ijioio.aes.annotation.processor.util.ProcessorUtil;
 import com.ijioio.aes.annotation.processor.util.TextUtil;
@@ -90,8 +89,8 @@ public class EntityIndexPropertyMetadata {
 					Attribute attribute = Attribute.valueOf(variableElement.getSimpleName().toString());
 
 					if (!supportedAttributes.contains(attribute)) {
-						throw new EntityIllegalStateException(
-								String.format("attribute %s is not allowed for the entity index property", attribute),
+						throw new EntityIndexPropertyIllegalStateException(
+								String.format("Attribute %s is not allowed for the entity index property", attribute),
 								MessageContext.of(context.getElement(), context.getAnnotationMirror(), value));
 					}
 
@@ -101,13 +100,13 @@ public class EntityIndexPropertyMetadata {
 		}
 
 		if (TextUtil.isBlank(name)) {
-			throw new EntityPropertyIllegalStateException(
+			throw new EntityIndexPropertyIllegalStateException(
 					String.format("Name of the entity index property is not defined"),
 					MessageContext.of(context.getElement(), context.getAnnotationMirror(), null));
 		}
 
 		if (type == null) {
-			throw new EntityPropertyIllegalStateException(
+			throw new EntityIndexPropertyIllegalStateException(
 					String.format("Type of the entity index property is not defined"),
 					MessageContext.of(context.getElement(), context.getAnnotationMirror(), null));
 		}
