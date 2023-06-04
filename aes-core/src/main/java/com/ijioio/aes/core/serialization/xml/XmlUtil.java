@@ -14,15 +14,50 @@ import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.XMLEvent;
 
 import com.ijioio.aes.core.XSerializable;
+import com.ijioio.aes.core.serialization.SerializationException;
 
 public class XmlUtil {
 
-	public static String write(XmlSerializationHandler handler, final XSerializable object) throws Exception {
+	public static String write(XmlSerializationHandler handler, final XSerializable object)
+			throws SerializationException {
 
-		try (StringWriter stringWriter = new StringWriter()) {
+		try {
 
-			XMLPrettyPrintStreamWriter writer = XMLPrettyPrintStreamWriter
-					.of(XMLOutputFactory.newInstance().createXMLStreamWriter(stringWriter));
+			try (StringWriter stringWriter = new StringWriter()) {
+
+				XMLPrettyPrintStreamWriter writer = XMLPrettyPrintStreamWriter
+						.of(XMLOutputFactory.newInstance().createXMLStreamWriter(stringWriter));
+
+				try {
+
+					XmlSerializationContext context = XmlSerializationContext.of(writer);
+
+					writer.writeStartElement("object");
+					writer.writeAttribute("class", object.getClass().getName());
+					object.write(context, handler);
+					writer.writeEndElement();
+
+				} finally {
+					writer.close();
+				}
+
+				stringWriter.flush();
+
+				return stringWriter.toString();
+			}
+
+		} catch (Exception e) {
+			throw new SerializationException(String.format("object write failed", object), e);
+		}
+	}
+
+	public static void write(XmlSerializationHandler handler, final XSerializable object, final OutputStream os)
+			throws SerializationException {
+
+		try {
+
+			XMLStreamWriter writer = XMLPrettyPrintStreamWriter
+					.of(XMLOutputFactory.newInstance().createXMLStreamWriter(os));
 
 			try {
 
@@ -37,40 +72,53 @@ public class XmlUtil {
 				writer.close();
 			}
 
-			stringWriter.flush();
-
-			return stringWriter.toString();
-		}
-	}
-
-	public static void write(XmlSerializationHandler handler, final XSerializable object, final OutputStream os)
-			throws Exception {
-
-		XMLStreamWriter writer = XMLPrettyPrintStreamWriter
-				.of(XMLOutputFactory.newInstance().createXMLStreamWriter(os));
-
-		try {
-
-			XmlSerializationContext context = XmlSerializationContext.of(writer);
-
-			writer.writeStartElement("object");
-			writer.writeAttribute("class", object.getClass().getName());
-			object.write(context, handler);
-			writer.writeEndElement();
-
-		} finally {
-			writer.close();
+		} catch (Exception e) {
+			throw new SerializationException(String.format("object write failed", object), e);
 		}
 	}
 
 	public static <T extends XSerializable> T read(XmlSerializationHandler handler, final Class<T> type,
-			final String content) throws Exception {
+			final String content) throws SerializationException {
 
-		T object = type.newInstance();
+		try {
 
-		try (StringReader stringReader = new StringReader(content)) {
+			T object = type.newInstance();
 
-			XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(stringReader);
+			try (StringReader stringReader = new StringReader(content)) {
+
+				XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(stringReader);
+
+				try {
+
+					XmlSerializationContext context = XmlSerializationContext.of(reader);
+
+					while (reader.next() != XMLEvent.END_DOCUMENT) {
+
+						if (reader.getName().getLocalPart().equals("object")) {
+							object.read(context, handler);
+						}
+					}
+
+					return object;
+
+				} finally {
+					reader.close();
+				}
+			}
+
+		} catch (Exception e) {
+			throw new SerializationException("object read failed", e);
+		}
+	}
+
+	public static <T extends XSerializable> T read(XmlSerializationHandler handler, final Class<T> type,
+			final InputStream is) throws SerializationException {
+
+		try {
+
+			T object = type.newInstance();
+
+			XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(is);
 
 			try {
 
@@ -88,22 +136,9 @@ public class XmlUtil {
 			} finally {
 				reader.close();
 			}
-		}
-	}
 
-	public static void read(XmlSerializationHandler handler, final XSerializable object, final InputStream is)
-			throws Exception {
-
-		XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(is);
-
-		try {
-
-			XmlSerializationContext context = XmlSerializationContext.of(reader);
-
-			object.read(context, handler);
-
-		} finally {
-			reader.close();
+		} catch (Exception e) {
+			throw new SerializationException("object read failed", e);
 		}
 	}
 
