@@ -38,6 +38,7 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.WildcardTypeName;
 
 public class EntityProcessor extends AbstractProcessor {
 
@@ -305,6 +306,13 @@ public class EntityProcessor extends AbstractProcessor {
 					.addStatement("this.$L = $L", property.getName(), property.getName()).build());
 		}
 
+		methods.add(generateGetColumnProviders(entity, index));
+		methods.add(generateGetWriters(entity, index));
+		methods.add(generateGetReaders(entity, index));
+		methods.add(generateGetProperties());
+
+		TypeSpec propertiesType = generateProperties(entity, index);
+
 		ClassName className = ClassName.bestGuess(index.getName());
 		TypeName parentTypeName = ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.BASE_ENTITY_INDEX_TYPE_NAME),
 				ClassName.bestGuess(entity.getName()));
@@ -318,13 +326,248 @@ public class EntityProcessor extends AbstractProcessor {
 
 		TypeSpec type = TypeSpec.classBuilder(className.simpleName()).superclass(parentTypeName)
 				.addModifiers(modifiers.toArray(new Modifier[modifiers.size()])).addAnnotations(annotations)
-				.addFields(fields).addMethods(methods).build();
+				.addType(propertiesType).addFields(fields).addMethods(methods).build();
 
 		JavaFile javaFile = JavaFile.builder(className.packageName(), type).build();
 
 		try (Writer writer = filer.createSourceFile(index.getName()).openWriter()) {
 			javaFile.writeTo(writer);
 		}
+	}
+
+	private MethodSpec generateGetColumnProviders(EntityMetadata entity, EntityIndexMetadata index) {
+
+		CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
+
+		codeBlockBuilder.add("\n");
+		codeBlockBuilder.addStatement(
+				"$T<$T, $T> columnProviders = new $T<>(super.getColumnProviders(context, handler))", Map.class,
+				String.class, ClassName.bestGuess(TypeUtil.PERSISTENCE_COLUMN_PROVIDER_TYPE_NAME), LinkedHashMap.class);
+
+		Collection<EntityIndexPropertyMetadata> properties = index.getProperties().values();
+
+		if (properties.size() > 0) {
+			codeBlockBuilder.add("\n");
+		}
+
+		for (EntityIndexPropertyMetadata property : properties) {
+
+			CodeGenTypeHandler handler = CodeGenTypeUtil.getTypeHandler(property.getType(), property.getParameters());
+
+			codeBlockBuilder.addStatement("columnProviders.put($S, () -> handler.getColumns(context, $S, $T.class))",
+					property.getName(), property.getName(), handler.getType());
+		}
+
+		codeBlockBuilder.add("\n");
+		codeBlockBuilder.addStatement("return columnProviders");
+
+		List<AnnotationSpec> annotations = new ArrayList<>();
+
+		annotations.add(AnnotationSpec.builder(ClassName.get(Override.class)).build());
+
+		List<ParameterSpec> parameters = new ArrayList<>();
+
+		parameters.add(
+				ParameterSpec.builder(ClassName.bestGuess(TypeUtil.PERSISTENCE_CONTEXT_TYPE_NAME), "context").build());
+		parameters.add(
+				ParameterSpec.builder(ClassName.bestGuess(TypeUtil.PERSISTENCE_HANDLER_TYPE_NAME), "handler").build());
+
+		CodeBlock codeBlock = codeBlockBuilder.build();
+
+		MethodSpec method = MethodSpec.methodBuilder("getColumnProviders").addAnnotations(annotations)
+				.addModifiers(Modifier.PUBLIC)
+				.returns(ParameterizedTypeName.get(ClassName.get(Map.class), ClassName.get(String.class),
+						ClassName.bestGuess(TypeUtil.PERSISTENCE_COLUMN_PROVIDER_TYPE_NAME)))
+				.addParameters(parameters).addCode(codeBlock).build();
+
+		return method;
+	}
+
+	private MethodSpec generateGetWriters(EntityMetadata entity, EntityIndexMetadata index) {
+
+		CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
+
+		codeBlockBuilder.add("\n");
+		codeBlockBuilder.addStatement("$T<$T, $T> writers = new $T<>(super.getWriters(context, handler))", Map.class,
+				String.class, ClassName.bestGuess(TypeUtil.PERSISTENCE_WRITER_TYPE_NAME), LinkedHashMap.class);
+
+		Collection<EntityIndexPropertyMetadata> properties = index.getProperties().values();
+
+		if (properties.size() > 0) {
+			codeBlockBuilder.add("\n");
+		}
+
+		for (EntityIndexPropertyMetadata property : properties) {
+
+			CodeGenTypeHandler handler = CodeGenTypeUtil.getTypeHandler(property.getType(), property.getParameters());
+
+			codeBlockBuilder.addStatement("writers.put($S, () -> handler.write(context, $S, $L, $T.class))",
+					property.getName(), property.getName(), property.getName(), handler.getType());
+		}
+
+		codeBlockBuilder.add("\n");
+		codeBlockBuilder.addStatement("return writers");
+
+		List<AnnotationSpec> annotations = new ArrayList<>();
+
+		annotations.add(AnnotationSpec.builder(ClassName.get(Override.class)).build());
+
+		List<ParameterSpec> parameters = new ArrayList<>();
+
+		parameters.add(
+				ParameterSpec.builder(ClassName.bestGuess(TypeUtil.PERSISTENCE_CONTEXT_TYPE_NAME), "context").build());
+		parameters.add(
+				ParameterSpec.builder(ClassName.bestGuess(TypeUtil.PERSISTENCE_HANDLER_TYPE_NAME), "handler").build());
+
+		CodeBlock codeBlock = codeBlockBuilder.build();
+
+		MethodSpec method = MethodSpec.methodBuilder("getWriters").addAnnotations(annotations)
+				.addModifiers(Modifier.PUBLIC)
+				.returns(ParameterizedTypeName.get(ClassName.get(Map.class), ClassName.get(String.class),
+						ClassName.bestGuess(TypeUtil.PERSISTENCE_WRITER_TYPE_NAME)))
+				.addParameters(parameters).addCode(codeBlock).build();
+
+		return method;
+	}
+
+	private MethodSpec generateGetReaders(EntityMetadata entity, EntityIndexMetadata index) {
+
+		CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
+
+		codeBlockBuilder.add("\n");
+		codeBlockBuilder.addStatement("$T<$T, $T> readers = new $T<>(super.getReaders(context, handler))", Map.class,
+				String.class, ClassName.bestGuess(TypeUtil.PERSISTENCE_READER_TYPE_NAME), LinkedHashMap.class);
+
+		Collection<EntityIndexPropertyMetadata> properties = index.getProperties().values();
+
+		if (properties.size() > 0) {
+			codeBlockBuilder.add("\n");
+		}
+
+		for (EntityIndexPropertyMetadata property : properties) {
+
+			CodeGenTypeHandler handler = CodeGenTypeUtil.getTypeHandler(property.getType(), property.getParameters());
+
+//			if (property.isFinal()) {
+//				codeBlockBuilder.addStatement("readers.put($S, () -> handler.read(context, $L))", property.getName(),
+//						property.getName());
+//			} else {
+			codeBlockBuilder.addStatement("readers.put($S, () -> $L = handler.read(context, $S, $L, $T.class))",
+					property.getName(), property.getName(), property.getName(), property.getName(), handler.getType());
+//			}
+		}
+
+		codeBlockBuilder.add("\n");
+		codeBlockBuilder.addStatement("return readers");
+
+		List<AnnotationSpec> annotations = new ArrayList<>();
+
+		annotations.add(AnnotationSpec.builder(ClassName.get(Override.class)).build());
+
+		List<ParameterSpec> parameters = new ArrayList<>();
+
+		parameters.add(
+				ParameterSpec.builder(ClassName.bestGuess(TypeUtil.PERSISTENCE_CONTEXT_TYPE_NAME), "context").build());
+		parameters.add(
+				ParameterSpec.builder(ClassName.bestGuess(TypeUtil.PERSISTENCE_HANDLER_TYPE_NAME), "handler").build());
+
+		CodeBlock codeBlock = codeBlockBuilder.build();
+
+		MethodSpec method = MethodSpec.methodBuilder("getReaders").addAnnotations(annotations)
+				.addModifiers(Modifier.PUBLIC)
+				.returns(ParameterizedTypeName.get(ClassName.get(Map.class), ClassName.get(String.class),
+						ClassName.bestGuess(TypeUtil.PERSISTENCE_READER_TYPE_NAME)))
+				.addParameters(parameters).addCode(codeBlock).build();
+
+		return method;
+	}
+
+	private MethodSpec generateGetProperties() {
+
+		CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
+
+		codeBlockBuilder.add("\n");
+		codeBlockBuilder.addStatement("$T properties = new $T<>(super.getProperties())",
+				ParameterizedTypeName.get(ClassName.get(Collection.class), ParameterizedTypeName.get(
+						ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME), WildcardTypeName.subtypeOf(TypeName.OBJECT))),
+				ArrayList.class);
+		codeBlockBuilder.add("\n");
+		codeBlockBuilder.addStatement("properties.addAll($T.values)", ClassName.bestGuess("Properties"));
+		codeBlockBuilder.add("\n");
+		codeBlockBuilder.addStatement("return properties");
+
+		List<AnnotationSpec> annotations = new ArrayList<>();
+
+		annotations.add(AnnotationSpec.builder(ClassName.get(Override.class)).build());
+
+		CodeBlock codeBlock = codeBlockBuilder.build();
+
+		MethodSpec method = MethodSpec.methodBuilder("getProperties").addAnnotations(annotations)
+				.addModifiers(Modifier.PUBLIC)
+				.returns(
+						ParameterizedTypeName
+								.get(ClassName.get(Collection.class),
+										ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME),
+												WildcardTypeName.subtypeOf(TypeName.OBJECT))))
+				.addCode(codeBlock).build();
+
+		return method;
+	}
+
+	private TypeSpec generateProperties(EntityMetadata entity, EntityIndexMetadata index) {
+
+		List<FieldSpec> fields = new ArrayList<>();
+		List<MethodSpec> methods = new ArrayList<>();
+
+		CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
+
+		codeBlockBuilder.add("\n");
+
+		Collection<EntityIndexPropertyMetadata> properties = index.getProperties().values();
+
+		for (EntityIndexPropertyMetadata property : properties) {
+
+			CodeGenTypeHandler handler = CodeGenTypeUtil.getTypeHandler(property.getType(), property.getParameters());
+
+			fields.add(FieldSpec
+					.builder(
+							ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME),
+									handler.getType().isPrimitive() ? handler.getType().box() : handler.getType()),
+							property.getName())
+					.addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+					.initializer("$T.of($S, $T.class)", ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME),
+							property.getName(),
+							handler.getType().isPrimitive() ? handler.getType().box() : handler.getType())
+					.build());
+
+			codeBlockBuilder.addStatement("values.add($L)", property.getName());
+		}
+
+		fields.add(FieldSpec
+				.builder(ParameterizedTypeName.get(ClassName.get(List.class),
+						ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME),
+								WildcardTypeName.subtypeOf(TypeName.OBJECT))),
+						"values")
+				.addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+				.initializer("new $T<>()", ClassName.get(ArrayList.class)).build());
+
+		ClassName className = ClassName.bestGuess("Properties");
+
+		List<Modifier> modifiers = new ArrayList<>();
+
+		modifiers.add(Modifier.PUBLIC);
+		modifiers.add(Modifier.STATIC);
+		modifiers.add(Modifier.FINAL);
+
+		List<AnnotationSpec> annotations = new ArrayList<>();
+
+		CodeBlock codeBlock = codeBlockBuilder.build();
+
+		TypeSpec type = TypeSpec.classBuilder(className.simpleName())
+				.addModifiers(modifiers.toArray(new Modifier[modifiers.size()])).addAnnotations(annotations)
+				.addFields(fields).addStaticBlock(codeBlock).addMethods(methods).build();
+
+		return type;
 	}
 
 	private void generateIndexData(EntityMetadata entity, EntityIndexMetadata index, Filer filer) throws IOException {
