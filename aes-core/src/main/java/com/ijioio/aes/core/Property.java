@@ -23,4 +23,9 @@ public class Property<T> {
 	public Class<T> getType() {
 		return type;
 	}
+
+	@Override
+	public String toString() {
+		return "Property [name=" + name + ", type=" + type + "]";
+	}
 }
