@@ -44,6 +44,10 @@ public class JdbcPersistenceContext implements PersistenceContext {
 		this.resultSet = resultSet;
 	}
 
+	public void resetIndex() {
+		index = 1;
+	}
+
 	public int getNextIndex() {
 		return index++;
 	}
