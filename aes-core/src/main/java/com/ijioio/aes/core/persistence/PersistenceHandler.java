@@ -4,7 +4,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.ijioio.aes.core.EntityIndex;
 import com.ijioio.aes.core.Property;
+import com.ijioio.aes.core.SearchQuery;
 
 public interface PersistenceHandler {
 
@@ -17,5 +19,16 @@ public interface PersistenceHandler {
 
 	public void insert(PersistenceContext context, String table, Collection<Property<?>> properties,
 			Map<String, PersistenceColumnProvider> columnProviders, Map<String, PersistenceWriter> writers)
+			throws PersistenceException;
+
+	public void update(PersistenceContext context, String table, Property<?> idProperty,
+			Collection<Property<?>> properties, Map<String, PersistenceColumnProvider> columnProviders,
+			Map<String, PersistenceWriter> writers) throws PersistenceException;
+
+	public void delete(PersistenceContext context, String table, Property<?> idProperty,
+			Map<String, PersistenceColumnProvider> columnProviders, Map<String, PersistenceWriter> writers)
+			throws PersistenceException;
+
+	public <I extends EntityIndex<?>> void search(PersistenceContext context, SearchQuery<I> query)
 			throws PersistenceException;
 }

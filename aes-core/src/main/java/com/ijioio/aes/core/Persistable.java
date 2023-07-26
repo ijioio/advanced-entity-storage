@@ -6,5 +6,9 @@ import com.ijioio.aes.core.persistence.PersistenceHandler;
 
 public interface Persistable {
 
-	public void insert(PersistenceContext context, PersistenceHandler handler) throws PersistenceException;
+	public void insert(PersistenceHandler handler, PersistenceContext context) throws PersistenceException;
+
+	public void update(PersistenceHandler handler, PersistenceContext context) throws PersistenceException;
+
+	public void delete(PersistenceHandler handler, PersistenceContext context) throws PersistenceException;
 }

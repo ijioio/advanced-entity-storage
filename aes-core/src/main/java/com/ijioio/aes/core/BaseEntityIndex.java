@@ -50,13 +50,25 @@ public abstract class BaseEntityIndex<E extends Entity> extends BaseIdentity imp
 	}
 
 	@Override
-	public void insert(PersistenceContext context, PersistenceHandler handler) throws PersistenceException {
-		handler.insert(context, getClass().getSimpleName(), getProperties(), getColumnProviders(context, handler),
-				getWriters(context, handler));
+	public void insert(PersistenceHandler handler, PersistenceContext context) throws PersistenceException {
+		handler.insert(context, getClass().getSimpleName(), getProperties(), getColumnProviders(handler, context),
+				getWriters(handler, context));
 	}
 
-	public Map<String, PersistenceColumnProvider> getColumnProviders(PersistenceContext context,
-			PersistenceHandler handler) {
+	@Override
+	public void update(PersistenceHandler handler, PersistenceContext context) throws PersistenceException {
+		handler.update(context, getClass().getSimpleName(), Properties.id, getProperties(),
+				getColumnProviders(handler, context), getWriters(handler, context));
+	}
+
+	@Override
+	public void delete(PersistenceHandler handler, PersistenceContext context) throws PersistenceException {
+		handler.delete(context, getClass().getSimpleName(), Properties.id, getColumnProviders(handler, context),
+				getWriters(handler, context));
+	}
+
+	public Map<String, PersistenceColumnProvider> getColumnProviders(PersistenceHandler handler,
+			PersistenceContext context) {
 
 		Map<String, PersistenceColumnProvider> columnProviders = new LinkedHashMap<>();
 
@@ -66,7 +78,7 @@ public abstract class BaseEntityIndex<E extends Entity> extends BaseIdentity imp
 		return columnProviders;
 	}
 
-	public Map<String, PersistenceWriter> getWriters(PersistenceContext context, PersistenceHandler handler) {
+	public Map<String, PersistenceWriter> getWriters(PersistenceHandler handler, PersistenceContext context) {
 
 		Map<String, PersistenceWriter> writers = new LinkedHashMap<>();
 
@@ -77,7 +89,7 @@ public abstract class BaseEntityIndex<E extends Entity> extends BaseIdentity imp
 	}
 
 	@SuppressWarnings("unchecked")
-	public Map<String, PersistenceReader> getReaders(PersistenceContext context, PersistenceHandler handler) {
+	public Map<String, PersistenceReader> getReaders(PersistenceHandler handler, PersistenceContext context) {
 
 		Map<String, PersistenceReader> readers = new LinkedHashMap<>();
 
