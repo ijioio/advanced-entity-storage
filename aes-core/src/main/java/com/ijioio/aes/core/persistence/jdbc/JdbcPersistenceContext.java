@@ -18,7 +18,7 @@ public class JdbcPersistenceContext implements PersistenceContext {
 
 	private ResultSet resultSet;
 
-	private int index = 0;
+	private int index = 1;
 
 	private JdbcPersistenceContext(Connection connection) {
 		this.connection = connection;
