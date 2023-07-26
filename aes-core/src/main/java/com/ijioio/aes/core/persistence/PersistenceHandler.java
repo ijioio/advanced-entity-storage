@@ -17,7 +17,10 @@ public interface PersistenceHandler {
 
 	public <T> T read(PersistenceContext context, String name, T value, Class<T> type) throws PersistenceException;
 
-	public void insert(PersistenceContext context, String table, Collection<Property<?>> properties,
+	public void read(PersistenceContext context, Collection<Property<?>> properties,
+			Map<String, PersistenceReader> readers) throws PersistenceException;
+
+	public void create(PersistenceContext context, String table, Collection<Property<?>> properties,
 			Map<String, PersistenceColumnProvider> columnProviders, Map<String, PersistenceWriter> writers)
 			throws PersistenceException;
 
@@ -29,6 +32,6 @@ public interface PersistenceHandler {
 			Map<String, PersistenceColumnProvider> columnProviders, Map<String, PersistenceWriter> writers)
 			throws PersistenceException;
 
-	public <I extends EntityIndex<?>> void search(PersistenceContext context, SearchQuery<I> query)
+	public <I extends EntityIndex<?>> List<I> search(PersistenceContext context, SearchQuery<I> query)
 			throws PersistenceException;
 }
