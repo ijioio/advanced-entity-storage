@@ -6,7 +6,9 @@ import com.ijioio.aes.core.persistence.PersistenceHandler;
 
 public interface Persistable {
 
-	public void insert(PersistenceHandler handler, PersistenceContext context) throws PersistenceException;
+	public void read(PersistenceHandler handler, PersistenceContext context) throws PersistenceException;
+
+	public void create(PersistenceHandler handler, PersistenceContext context) throws PersistenceException;
 
 	public void update(PersistenceHandler handler, PersistenceContext context) throws PersistenceException;
 

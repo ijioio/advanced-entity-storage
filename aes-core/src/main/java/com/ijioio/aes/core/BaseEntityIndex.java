@@ -50,8 +50,13 @@ public abstract class BaseEntityIndex<E extends Entity> extends BaseIdentity imp
 	}
 
 	@Override
-	public void insert(PersistenceHandler handler, PersistenceContext context) throws PersistenceException {
-		handler.insert(context, getClass().getSimpleName(), getProperties(), getColumnProviders(handler, context),
+	public void read(PersistenceHandler handler, PersistenceContext context) throws PersistenceException {
+		handler.read(context, getProperties(), getReaders(handler, context));
+	}
+
+	@Override
+	public void create(PersistenceHandler handler, PersistenceContext context) throws PersistenceException {
+		handler.create(context, getClass().getSimpleName(), getProperties(), getColumnProviders(handler, context),
 				getWriters(handler, context));
 	}
 
