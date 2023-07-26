@@ -341,7 +341,7 @@ public class EntityProcessor extends AbstractProcessor {
 
 		codeBlockBuilder.add("\n");
 		codeBlockBuilder.addStatement(
-				"$T<$T, $T> columnProviders = new $T<>(super.getColumnProviders(context, handler))", Map.class,
+				"$T<$T, $T> columnProviders = new $T<>(super.getColumnProviders(handler, context))", Map.class,
 				String.class, ClassName.bestGuess(TypeUtil.PERSISTENCE_COLUMN_PROVIDER_TYPE_NAME), LinkedHashMap.class);
 
 		Collection<EntityIndexPropertyMetadata> properties = index.getProperties().values();
@@ -368,9 +368,9 @@ public class EntityProcessor extends AbstractProcessor {
 		List<ParameterSpec> parameters = new ArrayList<>();
 
 		parameters.add(
-				ParameterSpec.builder(ClassName.bestGuess(TypeUtil.PERSISTENCE_CONTEXT_TYPE_NAME), "context").build());
-		parameters.add(
 				ParameterSpec.builder(ClassName.bestGuess(TypeUtil.PERSISTENCE_HANDLER_TYPE_NAME), "handler").build());
+		parameters.add(
+				ParameterSpec.builder(ClassName.bestGuess(TypeUtil.PERSISTENCE_CONTEXT_TYPE_NAME), "context").build());
 
 		CodeBlock codeBlock = codeBlockBuilder.build();
 
@@ -388,7 +388,7 @@ public class EntityProcessor extends AbstractProcessor {
 		CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
 
 		codeBlockBuilder.add("\n");
-		codeBlockBuilder.addStatement("$T<$T, $T> writers = new $T<>(super.getWriters(context, handler))", Map.class,
+		codeBlockBuilder.addStatement("$T<$T, $T> writers = new $T<>(super.getWriters(handler, context))", Map.class,
 				String.class, ClassName.bestGuess(TypeUtil.PERSISTENCE_WRITER_TYPE_NAME), LinkedHashMap.class);
 
 		Collection<EntityIndexPropertyMetadata> properties = index.getProperties().values();
@@ -415,9 +415,9 @@ public class EntityProcessor extends AbstractProcessor {
 		List<ParameterSpec> parameters = new ArrayList<>();
 
 		parameters.add(
-				ParameterSpec.builder(ClassName.bestGuess(TypeUtil.PERSISTENCE_CONTEXT_TYPE_NAME), "context").build());
-		parameters.add(
 				ParameterSpec.builder(ClassName.bestGuess(TypeUtil.PERSISTENCE_HANDLER_TYPE_NAME), "handler").build());
+		parameters.add(
+				ParameterSpec.builder(ClassName.bestGuess(TypeUtil.PERSISTENCE_CONTEXT_TYPE_NAME), "context").build());
 
 		CodeBlock codeBlock = codeBlockBuilder.build();
 
@@ -435,7 +435,7 @@ public class EntityProcessor extends AbstractProcessor {
 		CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
 
 		codeBlockBuilder.add("\n");
-		codeBlockBuilder.addStatement("$T<$T, $T> readers = new $T<>(super.getReaders(context, handler))", Map.class,
+		codeBlockBuilder.addStatement("$T<$T, $T> readers = new $T<>(super.getReaders(handler, context))", Map.class,
 				String.class, ClassName.bestGuess(TypeUtil.PERSISTENCE_READER_TYPE_NAME), LinkedHashMap.class);
 
 		Collection<EntityIndexPropertyMetadata> properties = index.getProperties().values();
@@ -467,9 +467,9 @@ public class EntityProcessor extends AbstractProcessor {
 		List<ParameterSpec> parameters = new ArrayList<>();
 
 		parameters.add(
-				ParameterSpec.builder(ClassName.bestGuess(TypeUtil.PERSISTENCE_CONTEXT_TYPE_NAME), "context").build());
-		parameters.add(
 				ParameterSpec.builder(ClassName.bestGuess(TypeUtil.PERSISTENCE_HANDLER_TYPE_NAME), "handler").build());
+		parameters.add(
+				ParameterSpec.builder(ClassName.bestGuess(TypeUtil.PERSISTENCE_CONTEXT_TYPE_NAME), "context").build());
 
 		CodeBlock codeBlock = codeBlockBuilder.build();
 
