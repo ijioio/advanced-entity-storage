@@ -1,4 +1,4 @@
-package com.ijioio.aes.annotation.processor.util;
+package com.ijioio.aes.core.util;
 
 /** Helper class for tuples. */
 public class TupleUtil {

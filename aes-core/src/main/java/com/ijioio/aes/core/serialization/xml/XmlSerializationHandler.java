@@ -169,51 +169,6 @@ public class XmlSerializationHandler implements SerializationHandler {
 		};
 	};
 
-	private static final XmlSerializationValueHandler<Integer> HANDLER_INTEGER = new XmlSerializationValueHandler<Integer>() {
-
-		@Override
-		public Class<Integer> getType() {
-			return Integer.class;
-		}
-
-		@Override
-		public void write(XmlSerializationContext context, XmlSerializationHandler handler, String name, Integer value)
-				throws SerializationException {
-
-			if (value == null) {
-				return;
-			}
-
-			XMLStreamWriter writer = context.getWriter();
-
-			try {
-
-				writer.writeStartElement(name);
-				handler.writeAttributes(writer, context.getAttributes());
-				writer.writeCharacters(String.valueOf(value.intValue()));
-				writer.writeEndElement();
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		}
-
-		@Override
-		public Integer read(XmlSerializationContext context, XmlSerializationHandler handler, Class<Integer> type,
-				Integer value) throws SerializationException {
-
-			XMLStreamReader reader = context.getReader();
-
-			try {
-
-				return Integer.valueOf(reader.getElementText());
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		};
-	};
-
 	private static final XmlSerializationValueHandler<Short> HANDLER_SHORT = new XmlSerializationValueHandler<Short>() {
 
 		@Override
@@ -252,6 +207,51 @@ public class XmlSerializationHandler implements SerializationHandler {
 			try {
 
 				return Short.valueOf(reader.getElementText());
+
+			} catch (XMLStreamException e) {
+				throw new SerializationException(e);
+			}
+		};
+	};
+
+	private static final XmlSerializationValueHandler<Integer> HANDLER_INTEGER = new XmlSerializationValueHandler<Integer>() {
+
+		@Override
+		public Class<Integer> getType() {
+			return Integer.class;
+		}
+
+		@Override
+		public void write(XmlSerializationContext context, XmlSerializationHandler handler, String name, Integer value)
+				throws SerializationException {
+
+			if (value == null) {
+				return;
+			}
+
+			XMLStreamWriter writer = context.getWriter();
+
+			try {
+
+				writer.writeStartElement(name);
+				handler.writeAttributes(writer, context.getAttributes());
+				writer.writeCharacters(String.valueOf(value.intValue()));
+				writer.writeEndElement();
+
+			} catch (XMLStreamException e) {
+				throw new SerializationException(e);
+			}
+		}
+
+		@Override
+		public Integer read(XmlSerializationContext context, XmlSerializationHandler handler, Class<Integer> type,
+				Integer value) throws SerializationException {
+
+			XMLStreamReader reader = context.getReader();
+
+			try {
+
+				return Integer.valueOf(reader.getElementText());
 
 			} catch (XMLStreamException e) {
 				throw new SerializationException(e);

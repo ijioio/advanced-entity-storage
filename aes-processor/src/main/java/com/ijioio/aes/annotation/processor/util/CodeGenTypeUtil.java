@@ -140,12 +140,6 @@ public class CodeGenTypeUtil {
 			.bestGuess("com.ijioio.aes.core.BaseEntityIndex");
 
 	/**
-	 * Type name for base entity index data type.
-	 */
-	public static final TypeName BASE_ENTITY_INDEX_DATA_TYPE_NAME = ClassName
-			.bestGuess("com.ijioio.aes.core.BaseEntityIndexData");
-
-	/**
 	 * Type name for entity reference type.
 	 */
 	public static final TypeName ENTITY_REFERENCE_TYPE_NAME = ClassName

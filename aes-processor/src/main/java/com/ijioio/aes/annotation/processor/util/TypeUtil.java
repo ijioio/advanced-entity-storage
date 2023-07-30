@@ -115,9 +115,19 @@ public class TypeUtil {
 	public static final String BASE_ENTITY_INDEX_TYPE_NAME = "com.ijioio.aes.core.BaseEntityIndex";
 
 	/**
-	 * Fully qualified name for base entity index data type.
+	 * Fully qualified name for property type.
 	 */
-	public static final String BASE_ENTITY_INDEX_DATA_TYPE_NAME = "com.ijioio.aes.core.BaseEntityIndexData";
+	public static final String PROPERTY_TYPE_NAME = "com.ijioio.aes.core.Property";
+
+	/**
+	 * Fully qualified name for property writer.
+	 */
+	public static final String PROPERTY_WRITER_TYPE_NAME = "com.ijioio.aes.core.PropertyWriter";
+
+	/**
+	 * Fully qualified name for property reader.
+	 */
+	public static final String PROPERTY_READER_TYPE_NAME = "com.ijioio.aes.core.PropertyReader";
 
 	/**
 	 * Fully qualified name for entity reference type.
@@ -148,6 +158,21 @@ public class TypeUtil {
 	 * Fully qualified name for serialization reader.
 	 */
 	public static final String SERIALIZATION_READER_TYPE_NAME = "com.ijioio.aes.core.serialization.SerializationReader";
+
+	/**
+	 * Fully qualified name for persistence context.
+	 */
+	public static final String PERSISTENCE_CONTEXT_TYPE_NAME = "com.ijioio.aes.core.persistence.PersistenceContext";
+
+	/**
+	 * Fully qualified name for persistence handler.
+	 */
+	public static final String PERSISTENCE_HANDLER_TYPE_NAME = "com.ijioio.aes.core.persistence.PersistenceHandler";
+
+	/**
+	 * Fully qualified name for persistence exception.
+	 */
+	public static final String PERSISTENCE_EXCEPTION_TYPE_NAME = "com.ijioio.aes.core.persistence.PersistenceException";
 
 	private static final Pattern pattern = Pattern.compile("\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*"
 			+ "(\\.\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*)*");
