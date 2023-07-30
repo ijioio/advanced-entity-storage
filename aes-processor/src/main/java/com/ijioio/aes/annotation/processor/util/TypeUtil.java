@@ -115,11 +115,6 @@ public class TypeUtil {
 	public static final String BASE_ENTITY_INDEX_TYPE_NAME = "com.ijioio.aes.core.BaseEntityIndex";
 
 	/**
-	 * Fully qualified name for base entity index data type.
-	 */
-	public static final String BASE_ENTITY_INDEX_DATA_TYPE_NAME = "com.ijioio.aes.core.BaseEntityIndexData";
-
-	/**
 	 * Fully qualified name for property type.
 	 */
 	public static final String PROPERTY_TYPE_NAME = "com.ijioio.aes.core.Property";
