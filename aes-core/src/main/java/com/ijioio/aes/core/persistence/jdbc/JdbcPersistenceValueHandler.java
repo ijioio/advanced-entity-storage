@@ -8,8 +8,6 @@ public interface JdbcPersistenceValueHandler<T> {
 
 	public Class<T> getType();
 
-//	public Collection<Property<?>> getProperties(Property<?> property);
-
 	public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String property);
 
 	public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, T value)

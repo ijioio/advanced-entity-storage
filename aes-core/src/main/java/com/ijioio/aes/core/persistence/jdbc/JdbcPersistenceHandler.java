@@ -27,20 +27,19 @@ import com.ijioio.aes.core.EntityReference;
 import com.ijioio.aes.core.Operation;
 import com.ijioio.aes.core.Order;
 import com.ijioio.aes.core.Property;
+import com.ijioio.aes.core.PropertyReader;
+import com.ijioio.aes.core.PropertyWriter;
 import com.ijioio.aes.core.SearchCriterion;
 import com.ijioio.aes.core.SearchCriterion.AndSearchCriterion;
 import com.ijioio.aes.core.SearchCriterion.NotSearchCriterion;
 import com.ijioio.aes.core.SearchCriterion.OrSearchCriterion;
 import com.ijioio.aes.core.SearchCriterion.SimpleSearchCriterion;
 import com.ijioio.aes.core.SearchQuery;
-import com.ijioio.aes.core.persistence.PersistenceColumnProvider;
-import com.ijioio.aes.core.persistence.PersistenceContext;
 import com.ijioio.aes.core.persistence.PersistenceException;
 import com.ijioio.aes.core.persistence.PersistenceHandler;
-import com.ijioio.aes.core.persistence.PersistenceReader;
-import com.ijioio.aes.core.persistence.PersistenceWriter;
+import com.ijioio.aes.core.util.TupleUtil.Pair;
 
-public class JdbcPersistenceHandler implements PersistenceHandler {
+public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenceContext> {
 
 	private static final JdbcPersistenceValueHandler<Boolean> HANDLER_BOOLEAN = new JdbcPersistenceValueHandler<Boolean>() {
 
@@ -745,105 +744,42 @@ public class JdbcPersistenceHandler implements PersistenceHandler {
 		return handler;
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public <T> List<String> getColumns(PersistenceContext context, String name, Class<T> type)
-			throws PersistenceException {
+	public void create(JdbcPersistenceContext context, EntityIndex<?> index) throws PersistenceException {
 
-		JdbcPersistenceValueHandler<T> handler = getValueHandler(type);
-
-		if (handler != null) {
-			return handler.getColumns((JdbcPersistenceContext) context, this, name);
-		} else {
-			throw new PersistenceException(String.format("type %s is not supported", type));
-		}
-	}
-
-	@Override
-	public <T> void write(PersistenceContext context, String name, T value, Class<T> type) throws PersistenceException {
-
-		JdbcPersistenceValueHandler<T> handler = getValueHandler(type);
-
-		if (handler != null) {
-			handler.write((JdbcPersistenceContext) context, this, value);
-		} else {
-			throw new PersistenceException(String.format("type %s is not supported", type));
-		}
-	}
-
-	@Override
-	public <T> T read(PersistenceContext context, String name, T value, Class<T> type) throws PersistenceException {
-
-		JdbcPersistenceValueHandler<T> handler = getValueHandler(type);
-
-		if (handler != null) {
-			return handler.read((JdbcPersistenceContext) context, this, value, type);
-		} else {
-			throw new PersistenceException(String.format("type %s is not supported", type));
-		}
-	}
-
-	@Override
-	public void read(PersistenceContext context, Collection<Property<?>> properties,
-			Map<String, PersistenceReader> readers) throws PersistenceException {
-
-		((JdbcPersistenceContext) context).resetIndex();
-
-		for (Property<?> property : properties) {
-
-			PersistenceReader reader = readers.get(property.getName());
-
-			if (reader == null) {
-				throw new PersistenceException(
-						String.format("reader for property %s is not found", property.getName()));
-			}
-
-			reader.read();
-		}
-	}
-
-	@Override
-	public void create(PersistenceContext context, String table, Collection<Property<?>> properties,
-			Map<String, PersistenceColumnProvider> columnProviders, Map<String, PersistenceWriter> writers)
-			throws PersistenceException {
-
-		((JdbcPersistenceContext) context).resetIndex();
-
-		Connection connection = ((JdbcPersistenceContext) context).getConnection();
+		Connection connection = context.getConnection();
 
 		try {
+
+			Collection<Property<?>> properties = index.getProperties();
+			Map<Property<?>, PropertyReader<?>> readers = index.getReaders();
 
 			List<String> columns = new ArrayList<>();
 
 			for (Property<?> property : properties) {
-
-				PersistenceColumnProvider columnProvider = columnProviders.get(property.getName());
-
-				if (columnProvider == null) {
-					throw new PersistenceException(
-							String.format("column provider for property %s is not found", property.getName()));
-				}
-
-				columns.addAll(columnProvider.getColumns());
+				columns.addAll(getColumns(context, property));
 			}
 
-			String sql = String.format("insert into %s (%s) values (%s)", table,
+			String sql = String.format("insert into %s (%s) values (%s)", index.getClass().getSimpleName(),
 					columns.stream().collect(Collectors.joining(", ")),
 					columns.stream().map(item -> "?").collect(Collectors.joining(", ")));
 
 			try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
-				((JdbcPersistenceContext) context).setStatement(statement);
+				context.setStatement(statement);
+				context.resetIndex();
 
 				for (Property<?> property : properties) {
 
-					PersistenceWriter writer = writers.get(property.getName());
+					PropertyReader<?> reader = readers.get(property);
 
-					if (writer == null) {
+					if (reader == null) {
 						throw new PersistenceException(
-								String.format("writer for property %s is not found", property.getName()));
+								String.format("reader for property %s is not found", property.getName()));
 					}
 
-					writer.write();
+					write(context, (Property) property, reader.read());
 				}
 
 				statement.executeUpdate();
@@ -854,155 +790,69 @@ public class JdbcPersistenceHandler implements PersistenceHandler {
 		}
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public void update(PersistenceContext context, String table, Property<?> idProperty,
-			Collection<Property<?>> properties, Map<String, PersistenceColumnProvider> columnProviders,
-			Map<String, PersistenceWriter> writers) throws PersistenceException {
-
-		((JdbcPersistenceContext) context).resetIndex();
-
-		Connection connection = ((JdbcPersistenceContext) context).getConnection();
-
-		try {
-
-			List<String> idColumns = new ArrayList<>();
-
-			PersistenceColumnProvider idColumnProvider = columnProviders.get(idProperty.getName());
-
-			if (idColumnProvider == null) {
-				throw new PersistenceException(
-						String.format("column provider for property %s is not found", idProperty.getName()));
-			}
-
-			idColumns.addAll(idColumnProvider.getColumns());
-
-			List<String> columns = new ArrayList<>();
-
-			for (Property<?> property : properties) {
-
-				PersistenceColumnProvider columnProvider = columnProviders.get(property.getName());
-
-				if (columnProvider == null) {
-					throw new PersistenceException(
-							String.format("column provider for property %s is not found", property.getName()));
-				}
-
-				columns.addAll(columnProvider.getColumns());
-			}
-
-			String sql = String.format("update %s set %s where %s", table,
-					columns.stream().map(item -> String.format("%s = ?", item)).collect(Collectors.joining(", ")),
-					idColumns.stream().map(item -> String.format("%s = ?", item)).collect(Collectors.joining(" and ")));
-
-			try (PreparedStatement statement = connection.prepareStatement(sql)) {
-
-				((JdbcPersistenceContext) context).setStatement(statement);
-
-				for (Property<?> property : properties) {
-
-					PersistenceWriter writer = writers.get(property.getName());
-
-					if (writer == null) {
-						throw new PersistenceException(
-								String.format("writer for property %s is not found", property.getName()));
-					}
-
-					writer.write();
-				}
-
-				PersistenceWriter idWriter = writers.get(idProperty.getName());
-
-				if (idWriter == null) {
-					throw new PersistenceException(
-							String.format("writer for property %s is not found", idProperty.getName()));
-				}
-
-				idWriter.write();
-
-				statement.executeUpdate();
-			}
-
-		} catch (SQLException e) {
-			throw new PersistenceException(e);
-		}
-	}
-
-	@Override
-	public void delete(PersistenceContext context, String table, Property<?> idProperty,
-			Map<String, PersistenceColumnProvider> columnProviders, Map<String, PersistenceWriter> writers)
+	public <I extends EntityIndex<?>> void delete(JdbcPersistenceContext context, SearchQuery<I> query)
 			throws PersistenceException {
 
-		((JdbcPersistenceContext) context).resetIndex();
-
-		Connection connection = ((JdbcPersistenceContext) context).getConnection();
+		Connection connection = context.getConnection();
 
 		try {
 
-			List<String> idColumns = new ArrayList<>();
+			List<Pair<Property<?>, PropertyReader<?>>> readers = new ArrayList<>();
 
-			PersistenceColumnProvider idColumnProvider = columnProviders.get(idProperty.getName());
-
-			if (idColumnProvider == null) {
-				throw new PersistenceException(
-						String.format("column provider for property %s is not found", idProperty.getName()));
-			}
-
-			idColumns.addAll(idColumnProvider.getColumns());
-
-			String sql = String.format("delete from %s where %s", table,
-					idColumns.stream().map(item -> String.format("%s = ?", item)).collect(Collectors.joining(" and ")));
-
-			try (PreparedStatement statement = connection.prepareStatement(sql)) {
-
-				((JdbcPersistenceContext) context).setStatement(statement);
-
-				PersistenceWriter idWriter = writers.get(idProperty.getName());
-
-				if (idWriter == null) {
-					throw new PersistenceException(
-							String.format("writer for property %s is not found", idProperty.getName()));
-				}
-
-				idWriter.write();
-
-				statement.executeUpdate();
-			}
-
-		} catch (SQLException e) {
-			throw new PersistenceException(e);
-		}
-	}
-
-	@Override
-	public <I extends EntityIndex<?>> List<I> search(PersistenceContext context, SearchQuery<I> query)
-			throws PersistenceException {
-
-		((JdbcPersistenceContext) context).resetIndex();
-
-		Connection connection = ((JdbcPersistenceContext) context).getConnection();
-
-		try {
-
-			List<PersistenceWriter> writers = new ArrayList<>();
-
-			String sql = handleSearchQuery(context, query, writers);
+			String sql = handleDeleteQuery(context, query, readers);
 
 			System.out.println(sql);
 
 			try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
-				((JdbcPersistenceContext) context).setStatement(statement);
-				((JdbcPersistenceContext) context).resetIndex();
+				context.setStatement(statement);
+				context.resetIndex();
 
-				for (PersistenceWriter writer : writers) {
-					writer.write();
+				for (Pair<Property<?>, PropertyReader<?>> reader : readers) {
+					write(context, (Property) reader.getFirst(), reader.getSecond());
+				}
+
+				System.out.println(statement);
+
+				statement.executeUpdate();
+			}
+
+		} catch (SQLException e) {
+			throw new PersistenceException(e);
+		}
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public <I extends EntityIndex<?>> List<I> search(JdbcPersistenceContext context, SearchQuery<I> query)
+			throws PersistenceException {
+
+		Connection connection = context.getConnection();
+
+		try {
+
+			List<Pair<Property<?>, PropertyReader<?>>> queryValueReaders = new ArrayList<>();
+
+			String sql = handleSearchQuery(context, query, queryValueReaders);
+
+			System.out.println(sql);
+
+			try (PreparedStatement statement = connection.prepareStatement(sql)) {
+
+				context.setStatement(statement);
+				context.resetIndex();
+
+				for (Pair<Property<?>, PropertyReader<?>> queryValueReader : queryValueReaders) {
+					write(context, (Property) queryValueReader.getFirst(), queryValueReader.getSecond().read());
 				}
 
 				System.out.println(statement);
 
 				try (ResultSet resultSet = statement.executeQuery()) {
 
-					((JdbcPersistenceContext) context).setResultSet(resultSet);
+					context.setResultSet(resultSet);
 
 					List<I> indexes = new ArrayList<>();
 
@@ -1010,7 +860,31 @@ public class JdbcPersistenceHandler implements PersistenceHandler {
 
 						I index = query.getType().newInstance();
 
-						index.read(this, context);
+						Collection<Property<?>> properties = index.getProperties();
+
+						Map<Property<?>, PropertyWriter<?>> writers = index.getWriters();
+						Map<Property<?>, PropertyReader<?>> readers = index.getReaders();
+
+						context.resetIndex();
+
+						for (Property<?> property : properties) {
+
+							PropertyWriter<?> writer = writers.get(property);
+
+							if (writer == null) {
+								throw new PersistenceException(
+										String.format("writer for property %s is not found", property.getName()));
+							}
+
+							PropertyReader<?> reader = readers.get(property);
+
+							if (reader == null) {
+								throw new PersistenceException(
+										String.format("reader for property %s is not found", property.getName()));
+							}
+
+							((PropertyWriter) writer).write(read(context, (Property) property, reader.read()));
+						}
 
 						indexes.add(index);
 					}
@@ -1024,10 +898,60 @@ public class JdbcPersistenceHandler implements PersistenceHandler {
 		}
 	}
 
-	private <I extends EntityIndex<?>> String handleSearchQuery(PersistenceContext context, SearchQuery<I> query,
-			List<PersistenceWriter> writers) throws PersistenceException {
+	private <T> List<String> getColumns(JdbcPersistenceContext context, Property<T> property)
+			throws PersistenceException {
 
-		String conditions = handleAndCriterion(context, AndSearchCriterion.of(query.getCriterions()), writers);
+		JdbcPersistenceValueHandler<T> handler = getValueHandler(property.getType());
+
+		if (handler != null) {
+			return handler.getColumns(context, this, property.getName());
+		} else {
+			throw new PersistenceException(String.format("type %s is not supported", property.getType()));
+		}
+	}
+
+	private <T> void write(JdbcPersistenceContext context, Property<T> property, T value) throws PersistenceException {
+
+		JdbcPersistenceValueHandler<T> handler = getValueHandler(property.getType());
+
+		if (handler != null) {
+			handler.write(context, this, value);
+		} else {
+			throw new PersistenceException(String.format("type %s is not supported", property.getType()));
+		}
+	}
+
+	private <T> T read(JdbcPersistenceContext context, Property<T> property, T value) throws PersistenceException {
+
+		JdbcPersistenceValueHandler<T> handler = getValueHandler(property.getType());
+
+		if (handler != null) {
+			return handler.read(context, this, value, property.getType());
+		} else {
+			throw new PersistenceException(String.format("type %s is not supported", property.getType()));
+		}
+	}
+
+	private <I extends EntityIndex<?>> String handleDeleteQuery(JdbcPersistenceContext context, SearchQuery<I> query,
+			List<Pair<Property<?>, PropertyReader<?>>> readers) throws PersistenceException {
+
+		String conditions = handleAndCriterion(context, AndSearchCriterion.of(query.getCriterions()), readers);
+
+		StringBuilder sql = new StringBuilder();
+
+		sql.append(String.format("delete from %s", query.getType().getSimpleName()));
+
+		if (conditions != null) {
+			sql.append(String.format(" where %s", conditions));
+		}
+
+		return sql.toString();
+	}
+
+	private <I extends EntityIndex<?>> String handleSearchQuery(JdbcPersistenceContext context, SearchQuery<I> query,
+			List<Pair<Property<?>, PropertyReader<?>>> readers) throws PersistenceException {
+
+		String conditions = handleAndCriterion(context, AndSearchCriterion.of(query.getCriterions()), readers);
 		String sortings = handleSortings(context, query.getSortings());
 
 		StringBuilder sql = new StringBuilder();
@@ -1053,14 +977,14 @@ public class JdbcPersistenceHandler implements PersistenceHandler {
 		return sql.toString();
 	}
 
-	private <T> String handleSimpleCriterion(PersistenceContext context, SimpleSearchCriterion<T> criterion,
-			List<PersistenceWriter> writers) throws PersistenceException {
+	private <T> String handleSimpleCriterion(JdbcPersistenceContext context, SimpleSearchCriterion<T> criterion,
+			List<Pair<Property<?>, PropertyReader<?>>> readers) throws PersistenceException {
 
 		Property<T> property = criterion.getProperty();
 
-		writers.add(() -> write(context, property.getName(), criterion.getValue(), property.getType()));
+		readers.add(Pair.of(property, () -> criterion.getValue()));
 
-		List<String> columns = getColumns(context, property.getName(), property.getType());
+		List<String> columns = getColumns(context, property);
 
 		String operation = getOperation(criterion.getOperation());
 
@@ -1068,8 +992,8 @@ public class JdbcPersistenceHandler implements PersistenceHandler {
 				.collect(Collectors.joining(" and "));
 	}
 
-	private String handleNotCriterion(PersistenceContext context, NotSearchCriterion groupCriterion,
-			List<PersistenceWriter> writers) throws PersistenceException {
+	private String handleNotCriterion(JdbcPersistenceContext context, NotSearchCriterion groupCriterion,
+			List<Pair<Property<?>, PropertyReader<?>>> readers) throws PersistenceException {
 
 		List<String> sqls = new ArrayList<>();
 
@@ -1078,13 +1002,13 @@ public class JdbcPersistenceHandler implements PersistenceHandler {
 			String sql = null;
 
 			if (criterion instanceof SimpleSearchCriterion) {
-				sql = handleSimpleCriterion(context, (SimpleSearchCriterion<?>) criterion, writers);
+				sql = handleSimpleCriterion(context, (SimpleSearchCriterion<?>) criterion, readers);
 			} else if (criterion instanceof NotSearchCriterion) {
-				sql = handleNotCriterion(context, (NotSearchCriterion) criterion, writers);
+				sql = handleNotCriterion(context, (NotSearchCriterion) criterion, readers);
 			} else if (criterion instanceof AndSearchCriterion) {
-				sql = handleAndCriterion(context, (AndSearchCriterion) criterion, writers);
+				sql = handleAndCriterion(context, (AndSearchCriterion) criterion, readers);
 			} else if (criterion instanceof OrSearchCriterion) {
-				sql = handleOrCriterion(context, (OrSearchCriterion) criterion, writers);
+				sql = handleOrCriterion(context, (OrSearchCriterion) criterion, readers);
 			} else {
 				throw new PersistenceException(String.format("criterion %s is not supported", criterion));
 			}
@@ -1103,8 +1027,8 @@ public class JdbcPersistenceHandler implements PersistenceHandler {
 		}
 	}
 
-	private String handleAndCriterion(PersistenceContext context, AndSearchCriterion groupCriterion,
-			List<PersistenceWriter> writers) throws PersistenceException {
+	private String handleAndCriterion(JdbcPersistenceContext context, AndSearchCriterion groupCriterion,
+			List<Pair<Property<?>, PropertyReader<?>>> readers) throws PersistenceException {
 
 		List<String> sqls = new ArrayList<>();
 
@@ -1113,13 +1037,13 @@ public class JdbcPersistenceHandler implements PersistenceHandler {
 			String sql = null;
 
 			if (criterion instanceof SimpleSearchCriterion) {
-				sql = handleSimpleCriterion(context, (SimpleSearchCriterion<?>) criterion, writers);
+				sql = handleSimpleCriterion(context, (SimpleSearchCriterion<?>) criterion, readers);
 			} else if (criterion instanceof NotSearchCriterion) {
-				sql = handleNotCriterion(context, (NotSearchCriterion) criterion, writers);
+				sql = handleNotCriterion(context, (NotSearchCriterion) criterion, readers);
 			} else if (criterion instanceof AndSearchCriterion) {
-				sql = handleAndCriterion(context, (AndSearchCriterion) criterion, writers);
+				sql = handleAndCriterion(context, (AndSearchCriterion) criterion, readers);
 			} else if (criterion instanceof OrSearchCriterion) {
-				sql = handleOrCriterion(context, (OrSearchCriterion) criterion, writers);
+				sql = handleOrCriterion(context, (OrSearchCriterion) criterion, readers);
 			} else {
 				throw new PersistenceException(String.format("criterion %s is not supported", criterion));
 			}
@@ -1138,8 +1062,8 @@ public class JdbcPersistenceHandler implements PersistenceHandler {
 		}
 	}
 
-	private String handleOrCriterion(PersistenceContext context, OrSearchCriterion groupCriterion,
-			List<PersistenceWriter> writers) throws PersistenceException {
+	private String handleOrCriterion(JdbcPersistenceContext context, OrSearchCriterion groupCriterion,
+			List<Pair<Property<?>, PropertyReader<?>>> readers) throws PersistenceException {
 
 		List<String> sqls = new ArrayList<>();
 
@@ -1148,13 +1072,13 @@ public class JdbcPersistenceHandler implements PersistenceHandler {
 			String sql = null;
 
 			if (criterion instanceof SimpleSearchCriterion) {
-				sql = handleSimpleCriterion(context, (SimpleSearchCriterion<?>) criterion, writers);
+				sql = handleSimpleCriterion(context, (SimpleSearchCriterion<?>) criterion, readers);
 			} else if (criterion instanceof NotSearchCriterion) {
-				sql = handleNotCriterion(context, (NotSearchCriterion) criterion, writers);
+				sql = handleNotCriterion(context, (NotSearchCriterion) criterion, readers);
 			} else if (criterion instanceof AndSearchCriterion) {
-				sql = handleAndCriterion(context, (AndSearchCriterion) criterion, writers);
+				sql = handleAndCriterion(context, (AndSearchCriterion) criterion, readers);
 			} else if (criterion instanceof OrSearchCriterion) {
-				sql = handleOrCriterion(context, (OrSearchCriterion) criterion, writers);
+				sql = handleOrCriterion(context, (OrSearchCriterion) criterion, readers);
 			} else {
 				throw new PersistenceException(String.format("criterion %s is not supported", criterion));
 			}
@@ -1173,7 +1097,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler {
 		}
 	}
 
-	private String handleSortings(PersistenceContext context, Map<Property<?>, Order> sortings)
+	private String handleSortings(JdbcPersistenceContext context, Map<Property<?>, Order> sortings)
 			throws PersistenceException {
 
 		List<String> sqls = new ArrayList<>();
@@ -1183,7 +1107,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler {
 			Property<?> property = sorting.getKey();
 			String order = getOrder(sorting.getValue());
 
-			List<String> columns = getColumns(context, property.getName(), property.getType());
+			List<String> columns = getColumns(context, property);
 
 			for (String column : columns) {
 				sqls.add(String.format("%s %s", column, order));
