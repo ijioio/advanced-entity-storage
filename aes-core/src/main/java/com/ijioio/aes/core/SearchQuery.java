@@ -1,6 +1,7 @@
 package com.ijioio.aes.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -121,6 +122,84 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		}
 
 		/**
+		 * Adds equals search criterion.
+		 *
+		 * @param property for condition
+		 * @param value for condition
+		 * @return this builder object for chaining
+		 */
+		public <T> SearchQueryGroupBuilder<P> eq(Property<T> property, T value) {
+
+			criterions.add(SimpleSearchCriterion.eq(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds not equals search criterion.
+		 *
+		 * @param property for condition
+		 * @param value for condition
+		 * @return this builder object for chaining
+		 */
+		public <T> SearchQueryGroupBuilder<P> ne(Property<T> property, T value) {
+
+			criterions.add(SimpleSearchCriterion.ne(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds greater search criterion.
+		 *
+		 * @param property for condition
+		 * @param value for condition
+		 * @return this builder object for chaining
+		 */
+		public <T> SearchQueryGroupBuilder<P> gt(Property<T> property, T value) {
+
+			criterions.add(SimpleSearchCriterion.gt(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds greater or equals search criterion.
+		 *
+		 * @param property for condition
+		 * @param value for condition
+		 * @return this builder object for chaining
+		 */
+		public <T> SearchQueryGroupBuilder<P> ge(Property<T> property, T value) {
+
+			criterions.add(SimpleSearchCriterion.ge(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds lower search criterion.
+		 *
+		 * @param property for condition
+		 * @param value for condition
+		 * @return this builder object for chaining
+		 */
+		public <T> SearchQueryGroupBuilder<P> lt(Property<T> property, T value) {
+
+			criterions.add(SimpleSearchCriterion.lt(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds lower or equals search criterion.
+		 *
+		 * @param property for condition
+		 * @param value for condition
+		 * @return this builder object for chaining
+		 */
+		public <T> SearchQueryGroupBuilder<P> le(Property<T> property, T value) {
+
+			criterions.add(SimpleSearchCriterion.le(property, value));
+			return this;
+		}
+
+		/**
 		 * Adds simple search criterion.
 		 *
 		 * @param property for condition
@@ -131,6 +210,19 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		public <T> SearchQueryGroupBuilder<P> simple(Property<T> property, Operation operation, T value) {
 
 			criterions.add(SimpleSearchCriterion.of(property, operation, value));
+			return this;
+		}
+
+		/**
+		 * Adds {@code NOT} search criterion populated with indicated
+		 * {@code criterions}.
+		 *
+		 * @param criterions to add
+		 * @return builder object for chaining
+		 */
+		public SearchQueryGroupBuilder<P> not(Collection<SearchCriterion> criterions) {
+
+			this.criterions.add(NotSearchCriterion.of(criterions));
 			return this;
 		}
 
@@ -148,6 +240,19 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		}
 
 		/**
+		 * Adds {@code AND} search criterion populated with indicated
+		 * {@code criterions}.
+		 *
+		 * @param criterions to add
+		 * @return builder object for chaining
+		 */
+		public SearchQueryGroupBuilder<P> and(Collection<SearchCriterion> criterions) {
+
+			this.criterions.add(AndSearchCriterion.of(criterions));
+			return this;
+		}
+
+		/**
 		 * Adds {@code AND} search criterion.
 		 *
 		 * <p>
@@ -158,6 +263,18 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		 */
 		public SearchQueryGroupBuilder<SearchQueryGroupBuilder<P>> and() {
 			return SearchQueryGroupBuilder.of(this, items -> criterions.add(AndSearchCriterion.of(items)));
+		}
+
+		/**
+		 * Adds {@code OR} search criterion populated with indicated {@code criterions}.
+		 *
+		 * @param criterions to add
+		 * @return builder object for chaining
+		 */
+		public SearchQueryGroupBuilder<P> or(Collection<SearchCriterion> criterions) {
+
+			this.criterions.add(OrSearchCriterion.of(criterions));
+			return this;
 		}
 
 		/**
@@ -273,6 +390,84 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		}
 
 		/**
+		 * Adds equals search criterion.
+		 *
+		 * @param property for condition
+		 * @param value for condition
+		 * @return this builder object for chaining
+		 */
+		public <T> SearchQueryBuilder<I> eq(Property<T> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.eq(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds not equals search criterion.
+		 *
+		 * @param property for condition
+		 * @param value for condition
+		 * @return this builder object for chaining
+		 */
+		public <T> SearchQueryBuilder<I> ne(Property<T> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.ne(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds greater search criterion.
+		 *
+		 * @param property for condition
+		 * @param value for condition
+		 * @return this builder object for chaining
+		 */
+		public <T> SearchQueryBuilder<I> gt(Property<T> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.gt(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds greater or equals search criterion.
+		 *
+		 * @param property for condition
+		 * @param value for condition
+		 * @return this builder object for chaining
+		 */
+		public <T> SearchQueryBuilder<I> ge(Property<T> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.ge(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds lower search criterion.
+		 *
+		 * @param property for condition
+		 * @param value for condition
+		 * @return this builder object for chaining
+		 */
+		public <T> SearchQueryBuilder<I> lt(Property<T> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.lt(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds lower or equals search criterion.
+		 *
+		 * @param property for condition
+		 * @param value for condition
+		 * @return this builder object for chaining
+		 */
+		public <T> SearchQueryBuilder<I> le(Property<T> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.le(property, value));
+			return this;
+		}
+
+		/**
 		 * Adds simple search criterion.
 		 *
 		 * @param property for condition
@@ -282,7 +477,20 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		 */
 		public <T> SearchQueryBuilder<I> simple(Property<T> property, Operation operation, T value) {
 
-			criterions.add(SimpleSearchCriterion.of(property, operation, value));
+			this.criterions.add(SimpleSearchCriterion.of(property, operation, value));
+			return this;
+		}
+
+		/**
+		 * Adds {@code MOT} search criterion populated with indicated
+		 * {@code criterions}.
+		 *
+		 * @param criterions to add
+		 * @return builder object for chaining
+		 */
+		public SearchQueryBuilder<I> not(Collection<SearchCriterion> criterions) {
+
+			this.criterions.add(NotSearchCriterion.of(criterions));
 			return this;
 		}
 
@@ -300,6 +508,19 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		}
 
 		/**
+		 * Adds {@code AND} search criterion populated with indicated
+		 * {@code criterions}.
+		 *
+		 * @param criterions to add
+		 * @return builder object for chaining
+		 */
+		public SearchQueryBuilder<I> and(Collection<SearchCriterion> criterions) {
+
+			this.criterions.add(AndSearchCriterion.of(criterions));
+			return this;
+		}
+
+		/**
 		 * Adds {@code AND} search criterion.
 		 *
 		 * <p>
@@ -310,6 +531,18 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		 */
 		public SearchQueryGroupBuilder<SearchQueryBuilder<I>> and() {
 			return SearchQueryGroupBuilder.of(this, items -> criterions.add(AndSearchCriterion.of(items)));
+		}
+
+		/**
+		 * Adds {@code OR} search criterion populated with indicated {@code criterions}.
+		 *
+		 * @param criterions to add
+		 * @return builder object for chaining
+		 */
+		public SearchQueryBuilder<I> or(Collection<SearchCriterion> criterions) {
+
+			this.criterions.add(OrSearchCriterion.of(criterions));
+			return this;
 		}
 
 		/**
@@ -334,7 +567,7 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		 */
 		public SearchQueryBuilder<I> sorting(Property<?> property, Order order) {
 
-			sortings.put(property, order);
+			this.sortings.put(property, order);
 			return this;
 		}
 

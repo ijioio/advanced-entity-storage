@@ -1,6 +1,7 @@
 package com.ijioio.aes.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -18,10 +19,33 @@ public class SearchCriterion {
 
 	/**
 	 * Class represents simple search criterion. It holds simple search criterion
-	 * data, i.e. {@code
-	 * column}, {@code operation} and {@code value}.
+	 * data, i.e. {@code column}, {@code operation} and {@code value}.
 	 */
 	public static class SimpleSearchCriterion<T> extends SearchCriterion {
+
+		public static <T> SimpleSearchCriterion<T> eq(Property<T> property, T value) {
+			return new SimpleSearchCriterion<>(property, Operation.EQUALS, value);
+		}
+
+		public static <T> SimpleSearchCriterion<T> ne(Property<T> property, T value) {
+			return new SimpleSearchCriterion<>(property, Operation.NOT_EQUALS, value);
+		}
+
+		public static <T> SimpleSearchCriterion<T> gt(Property<T> property, T value) {
+			return new SimpleSearchCriterion<>(property, Operation.GREATER, value);
+		}
+
+		public static <T> SimpleSearchCriterion<T> ge(Property<T> property, T value) {
+			return new SimpleSearchCriterion<>(property, Operation.GREATER_OR_EQUALS, value);
+		}
+
+		public static <T> SimpleSearchCriterion<T> lt(Property<T> property, T value) {
+			return new SimpleSearchCriterion<>(property, Operation.LOWER, value);
+		}
+
+		public static <T> SimpleSearchCriterion<T> le(Property<T> property, T value) {
+			return new SimpleSearchCriterion<>(property, Operation.LOWER_OR_EQUALS, value);
+		}
 
 		public static <T> SimpleSearchCriterion<T> of(Property<T> property, Operation operation, T value) {
 			return new SimpleSearchCriterion<>(property, operation, value);
@@ -65,13 +89,13 @@ public class SearchCriterion {
 	 */
 	public static class NotSearchCriterion extends SearchCriterion {
 
-		public static NotSearchCriterion of(List<SearchCriterion> criterions) {
+		public static NotSearchCriterion of(Collection<SearchCriterion> criterions) {
 			return new NotSearchCriterion(criterions);
 		}
 
 		private final List<SearchCriterion> criterions = new ArrayList<>();
 
-		private NotSearchCriterion(List<SearchCriterion> criterions) {
+		private NotSearchCriterion(Collection<SearchCriterion> criterions) {
 
 			this.criterions.clear();
 			this.criterions.addAll(criterions);
@@ -93,13 +117,13 @@ public class SearchCriterion {
 	 */
 	public static class AndSearchCriterion extends SearchCriterion {
 
-		public static AndSearchCriterion of(List<SearchCriterion> criterions) {
+		public static AndSearchCriterion of(Collection<SearchCriterion> criterions) {
 			return new AndSearchCriterion(criterions);
 		}
 
 		private final List<SearchCriterion> criterions = new ArrayList<>();
 
-		private AndSearchCriterion(List<SearchCriterion> criterions) {
+		private AndSearchCriterion(Collection<SearchCriterion> criterions) {
 
 			this.criterions.clear();
 			this.criterions.addAll(criterions);
@@ -121,13 +145,13 @@ public class SearchCriterion {
 	 */
 	public static class OrSearchCriterion extends SearchCriterion {
 
-		public static OrSearchCriterion of(List<SearchCriterion> criterions) {
+		public static OrSearchCriterion of(Collection<SearchCriterion> criterions) {
 			return new OrSearchCriterion(criterions);
 		}
 
 		private final List<SearchCriterion> criterions = new ArrayList<>();
 
-		private OrSearchCriterion(List<SearchCriterion> criterions) {
+		private OrSearchCriterion(Collection<SearchCriterion> criterions) {
 
 			this.criterions.clear();
 			this.criterions.addAll(criterions);
