@@ -125,6 +125,16 @@ public class TypeUtil {
 	public static final String PROPERTY_TYPE_NAME = "com.ijioio.aes.core.Property";
 
 	/**
+	 * Fully qualified name for property writer.
+	 */
+	public static final String PROPERTY_WRITER_TYPE_NAME = "com.ijioio.aes.core.PropertyWriter";
+
+	/**
+	 * Fully qualified name for property reader.
+	 */
+	public static final String PROPERTY_READER_TYPE_NAME = "com.ijioio.aes.core.PropertyReader";
+
+	/**
 	 * Fully qualified name for entity reference type.
 	 */
 	public static final String ENTITY_REFERENCE_TYPE_NAME = "com.ijioio.aes.core.EntityReference";
@@ -168,21 +178,6 @@ public class TypeUtil {
 	 * Fully qualified name for persistence exception.
 	 */
 	public static final String PERSISTENCE_EXCEPTION_TYPE_NAME = "com.ijioio.aes.core.persistence.PersistenceException";
-
-	/**
-	 * Fully qualified name for persistence column provider.
-	 */
-	public static final String PERSISTENCE_COLUMN_PROVIDER_TYPE_NAME = "com.ijioio.aes.core.persistence.PersistenceColumnProvider";
-
-	/**
-	 * Fully qualified name for persistence writer.
-	 */
-	public static final String PERSISTENCE_WRITER_TYPE_NAME = "com.ijioio.aes.core.persistence.PersistenceWriter";
-
-	/**
-	 * Fully qualified name for persistence reader.
-	 */
-	public static final String PERSISTENCE_READER_TYPE_NAME = "com.ijioio.aes.core.persistence.PersistenceReader";
 
 	private static final Pattern pattern = Pattern.compile("\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*"
 			+ "(\\.\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*)*");
