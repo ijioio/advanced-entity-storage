@@ -9,11 +9,11 @@ public class Property<T> {
 		return (Property<A>) new Property<>(name, type);
 	}
 
-	private final String name;
+	protected final String name;
 
-	private final Class<T> type;
+	protected final Class<T> type;
 
-	private Property(String name, Class<T> type) {
+	protected Property(String name, Class<T> type) {
 
 		this.name = name;
 		this.type = type;

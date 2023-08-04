@@ -205,10 +205,14 @@ public class CodeGenTypeUtil {
 			return Collections.emptyList();
 		}
 
+		public default List<TypeName> getParameterizedParameters() {
+			return Collections.emptyList();
+		}
+
 		public default TypeName getParameterizedType() {
 
 			TypeName type = getType();
-			List<TypeName> parameters = getParameters();
+			List<TypeName> parameters = getParameterizedParameters();
 
 			return parameters.size() > 0 ? ParameterizedTypeName.get((ClassName) type,
 					parameters.stream().toArray(size -> new TypeName[size])) : type;
@@ -217,7 +221,7 @@ public class CodeGenTypeUtil {
 		public default TypeName getParameterizedImplementationType() {
 
 			TypeName type = getImplementationType();
-			List<TypeName> parameters = getParameters();
+			List<TypeName> parameters = getParameterizedParameters();
 
 			return parameters.size() > 0 ? ParameterizedTypeName.get((ClassName) type,
 					parameters.stream().toArray(size -> new TypeName[size])) : type;
@@ -495,6 +499,14 @@ public class CodeGenTypeUtil {
 
 			@Override
 			public List<TypeName> getParameters() {
+
+				return type.isReference() ? Collections.singletonList(ClassName.bestGuess(name))
+						: parameters.stream().map(item -> getTypeHandler(item, Collections.emptyList()).getType())
+								.collect(Collectors.toList());
+			}
+
+			@Override
+			public List<TypeName> getParameterizedParameters() {
 
 				return type.isReference() ? Collections.singletonList(ClassName.bestGuess(name))
 						: parameters.stream()
