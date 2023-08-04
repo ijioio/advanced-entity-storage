@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,50 +19,50 @@ import com.ijioio.aes.core.EntityReference;
 import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceContext;
 import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandler;
 import com.ijioio.aes.sandbox.test.persistence.BasePersistenceTest;
-import com.ijioio.test.model.PropertyStringCreatePersistence;
-import com.ijioio.test.model.PropertyStringCreatePersistenceIndex;
+import com.ijioio.test.model.PropertyStringListCreatePersistence;
+import com.ijioio.test.model.PropertyStringListCreatePersistenceIndex;
 
-public class PropertyStringCreatePersistenceTest extends BasePersistenceTest {
+public class PropertyStringListCreatePersistenceTest extends BasePersistenceTest {
 
 	@Entity( //
 			name = PropertyStringCreatePersistencePrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueString", type = @Type(name = Type.STRING)) //
+					@EntityProperty(name = "valueStringList", type = @Type(name = Type.LIST), parameters = @Type(name = Type.STRING)) //
 			}, //
 			indexes = { //
 					@EntityIndex( //
 							name = PropertyStringCreatePersistencePrototype.INDEX_NAME, //
 							properties = { //
-									@EntityIndexProperty(name = "valueString", type = @Type(name = Type.STRING)) //
+									@EntityIndexProperty(name = "valueStringList", type = @Type(name = Type.LIST), parameters = @Type(name = Type.STRING)) //
 							} //
 					) //
 			} //
 	)
 	public static interface PropertyStringCreatePersistencePrototype {
 
-		public static final String NAME = "com.ijioio.test.model.PropertyStringCreatePersistence";
+		public static final String NAME = "com.ijioio.test.model.PropertyStringListCreatePersistence";
 
-		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyStringCreatePersistenceIndex";
+		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyStringListCreatePersistenceIndex";
 	}
 
 	private Path path;
 
-	private PropertyStringCreatePersistenceIndex index;
+	private PropertyStringListCreatePersistenceIndex index;
 
 	@BeforeEach
 	public void before() throws Exception {
 
 		path = Paths.get(getClass().getClassLoader()
-				.getResource("persistence/index/property/property-string-create-persistence.sql").toURI());
+				.getResource("persistence/index/property/property-string-list-create-persistence.sql").toURI());
 
 		executeSql(connection, path);
 
-		index = new PropertyStringCreatePersistenceIndex();
+		index = new PropertyStringListCreatePersistenceIndex();
 
-		index.setId("property-string-create-persistence-index");
-		index.setSource(
-				EntityReference.of("property-string-create-persistence", PropertyStringCreatePersistence.class));
-		index.setValueString("value");
+		index.setId("property-string-list-create-persistence-index");
+		index.setSource(EntityReference.of("property-string-list-create-persistence",
+				PropertyStringListCreatePersistence.class));
+		index.setValueStringList(Arrays.asList("value1", "value2", "value3"));
 	}
 
 	@Test
@@ -72,7 +73,7 @@ public class PropertyStringCreatePersistenceTest extends BasePersistenceTest {
 		handler.create(JdbcPersistenceContext.of(connection), index);
 
 		try (PreparedStatement statement = connection.prepareStatement(
-				String.format("select * from %s", PropertyStringCreatePersistenceIndex.class.getSimpleName()))) {
+				String.format("select * from %s", PropertyStringListCreatePersistenceIndex.class.getSimpleName()))) {
 
 			try (ResultSet resultSet = statement.executeQuery()) {
 
@@ -81,7 +82,8 @@ public class PropertyStringCreatePersistenceTest extends BasePersistenceTest {
 				Assertions.assertEquals(index.getId(), resultSet.getString("id"));
 				Assertions.assertEquals(index.getSource().getId(), resultSet.getString("sourceId"));
 				Assertions.assertEquals(index.getSource().getType().getName(), resultSet.getString("sourceType"));
-				Assertions.assertEquals(index.getValueString(), resultSet.getString("valueString"));
+				Assertions.assertEquals(index.getValueStringList(),
+						Arrays.asList((String[]) resultSet.getArray("valueStringList").getArray()));
 
 				Assertions.assertTrue(resultSet.isLast());
 			}
