@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -83,7 +84,8 @@ public class PropertyStringListCreatePersistenceTest extends BasePersistenceTest
 				Assertions.assertEquals(index.getSource().getId(), resultSet.getString("sourceId"));
 				Assertions.assertEquals(index.getSource().getType().getName(), resultSet.getString("sourceType"));
 				Assertions.assertEquals(index.getValueStringList(),
-						Arrays.asList((String[]) resultSet.getArray("valueStringList").getArray()));
+						Arrays.stream((Object[]) resultSet.getArray("valueStringList").getArray())
+								.map(item -> (String) item).collect(Collectors.toList()));
 
 				Assertions.assertTrue(resultSet.isLast());
 			}
