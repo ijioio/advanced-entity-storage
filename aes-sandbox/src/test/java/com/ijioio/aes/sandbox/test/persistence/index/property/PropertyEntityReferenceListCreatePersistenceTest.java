@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -89,10 +90,16 @@ public class PropertyEntityReferenceListCreatePersistenceTest extends BasePersis
 				Assertions.assertEquals(index.getId(), resultSet.getString("id"));
 				Assertions.assertEquals(index.getSource().getId(), resultSet.getString("sourceId"));
 				Assertions.assertEquals(index.getSource().getType().getName(), resultSet.getString("sourceType"));
-//				Assertions.assertEquals(index.getValueEntityReferenceList().getId(),
-//						resultSet.getString("valueEntityReferenceListId"));
-//				Assertions.assertEquals(index.getValueEntityReferenceList().getType().getName(),
-//						resultSet.getString("valueEntityReferenceListType"));
+				Assertions.assertEquals(
+						index.getValueEntityReferenceList().stream().map(item -> item.getId())
+								.collect(Collectors.toList()),
+						Arrays.stream((Object[]) resultSet.getArray("valueEntityReferenceListId").getArray())
+								.map(item -> (String) item).collect(Collectors.toList()));
+				Assertions.assertEquals(
+						index.getValueEntityReferenceList().stream().map(item -> item.getType().getName())
+								.collect(Collectors.toList()),
+						Arrays.stream((Object[]) resultSet.getArray("valueEntityReferenceListType").getArray())
+								.map(item -> (String) item).collect(Collectors.toList()));
 
 				Assertions.assertTrue(resultSet.isLast());
 			}

@@ -27,7 +27,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.ijioio.aes.core.CollectionProperty;
 import com.ijioio.aes.core.EntityIndex;
 import com.ijioio.aes.core.EntityReference;
 import com.ijioio.aes.core.Operation;
@@ -41,6 +40,7 @@ import com.ijioio.aes.core.SearchCriterion.NotSearchCriterion;
 import com.ijioio.aes.core.SearchCriterion.OrSearchCriterion;
 import com.ijioio.aes.core.SearchCriterion.SimpleSearchCriterion;
 import com.ijioio.aes.core.SearchQuery;
+import com.ijioio.aes.core.TypeReference;
 import com.ijioio.aes.core.persistence.PersistenceException;
 import com.ijioio.aes.core.persistence.PersistenceHandler;
 import com.ijioio.aes.core.util.TupleUtil.Pair;
@@ -394,9 +394,8 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 		}
 
 		@Override
-		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-				CollectionProperty<? extends Collection<String>, String> property, Collection<String> value)
-				throws PersistenceException {
+		public void writeCollection(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
+				Property<? extends Collection<String>> property, Collection<String> value) throws PersistenceException {
 
 			PreparedStatement statement = context.getStatement();
 
@@ -422,20 +421,21 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 		};
 
 		@Override
-		public Collection<String> read(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-				CollectionProperty<? extends Collection<String>, String> property, Collection<String> value)
-				throws PersistenceException {
+		public Collection<String> readCollection(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
+				Property<? extends Collection<String>> property, Collection<String> value) throws PersistenceException {
 
 			ResultSet resultSet = context.getResultSet();
 
 			try {
 
-				Collection<String> collection = List.class.isAssignableFrom(property.getType()) ? new ArrayList<>()
+				Collection<String> collection = List.class.isAssignableFrom(property.getType().getRawType())
+						? new ArrayList<>()
 						: new LinkedHashSet<>();
 
 				collection.clear();
 				collection.addAll(
-						Arrays.asList((String[]) resultSet.getObject(context.getNextIndex(), Array.class).getArray()));
+						Arrays.stream((Object[]) resultSet.getObject(context.getNextIndex(), Array.class).getArray())
+								.map(item -> (String) item).collect(Collectors.toList()));
 
 				return collection;
 
@@ -645,7 +645,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 
 			try {
 				return Optional.ofNullable(resultSet.getObject(context.getNextIndex(), String.class))
-						.map(item -> Enum.valueOf(property.getType(), item)).orElse(null);
+						.map(item -> Enum.valueOf(property.getType().getRawType(), item)).orElse(null);
 			} catch (SQLException e) {
 				throw new PersistenceException(e);
 			}
@@ -665,12 +665,10 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 		public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
 				Property<Collection> property) {
 
-			CollectionProperty<Collection, ?> collectionProperty = (CollectionProperty<Collection, ?>) property;
+			JdbcPersistenceValueHandler elementHandler = handler
+					.getValueHandler(property.getType().getParameterTypes()[0].getRawType());
 
-			JdbcPersistenceValueHandler elementHandler = handler.getValueHandler(collectionProperty.getElementType());
-
-			return elementHandler.getColumns(context, handler,
-					Property.of(collectionProperty.getName(), collectionProperty.getElementType()));
+			return elementHandler.getColumns(context, handler, property);
 		}
 
 		@SuppressWarnings("unchecked")
@@ -678,11 +676,10 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, Property<Collection> property,
 				Collection value) throws PersistenceException {
 
-			CollectionProperty<Collection, ?> collectionProperty = (CollectionProperty<Collection, ?>) property;
+			JdbcPersistenceValueHandler elementHandler = handler
+					.getValueHandler(property.getType().getParameterTypes()[0].getRawType());
 
-			JdbcPersistenceValueHandler elementHandler = handler.getValueHandler(collectionProperty.getElementType());
-
-			elementHandler.write(context, handler, collectionProperty, value);
+			elementHandler.writeCollection(context, handler, property, value);
 		}
 
 		@SuppressWarnings("unchecked")
@@ -690,11 +687,10 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 		public Collection read(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
 				Property<Collection> property, Collection value) throws PersistenceException {
 
-			CollectionProperty<Collection, ?> collectionProperty = (CollectionProperty<Collection, ?>) property;
+			JdbcPersistenceValueHandler elementHandler = handler
+					.getValueHandler(property.getType().getParameterTypes()[0].getRawType());
 
-			JdbcPersistenceValueHandler elementHandler = handler.getValueHandler(collectionProperty.getElementType());
-
-			return elementHandler.read(context, handler, collectionProperty, value);
+			return elementHandler.readCollection(context, handler, property, value);
 		}
 	};
 
@@ -710,11 +706,13 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 		public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
 				Property<EntityReference> property) {
 
-			Property<String> idProperty = Property.of(String.format("%sId", property.getName()), String.class);
-			Property<String> typeProperty = Property.of(String.format("%sType", property.getName()), String.class);
+			Property<String> idProperty = Property.of(String.format("%sId", property.getName()),
+					TypeReference.of(String.class));
+			Property<String> typeProperty = Property.of(String.format("%sType", property.getName()),
+					TypeReference.of(String.class));
 
-			JdbcPersistenceValueHandler<String> idHandler = handler.getValueHandler(idProperty.getType());
-			JdbcPersistenceValueHandler<String> typeHandler = handler.getValueHandler(typeProperty.getType());
+			JdbcPersistenceValueHandler<String> idHandler = handler.getValueHandler(String.class);
+			JdbcPersistenceValueHandler<String> typeHandler = handler.getValueHandler(String.class);
 
 			return Stream
 					.of(idHandler.getColumns(context, handler, idProperty),
@@ -726,28 +724,32 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
 				Property<EntityReference> property, EntityReference value) throws PersistenceException {
 
-			Property<String> idProperty = Property.of(String.format("%sId", property.getName()), String.class);
-			Property<String> typeProperty = Property.of(String.format("%sType", property.getName()), String.class);
+			Property<String> idProperty = Property.of(String.format("%sId", property.getName()),
+					TypeReference.of(String.class));
+			Property<String> typeProperty = Property.of(String.format("%sType", property.getName()),
+					TypeReference.of(String.class));
 
-			JdbcPersistenceValueHandler<String> idHandler = handler.getValueHandler(idProperty.getType());
-			JdbcPersistenceValueHandler<String> typeHandler = handler.getValueHandler(typeProperty.getType());
+			JdbcPersistenceValueHandler<String> idHandler = handler.getValueHandler(String.class);
+			JdbcPersistenceValueHandler<String> typeHandler = handler.getValueHandler(String.class);
 
 			idHandler.write(context, handler, idProperty, value != null ? value.getId() : null);
 			typeHandler.write(context, handler, typeProperty, value != null ? value.getType().getName() : null);
 		}
 
 		@Override
-		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-				CollectionProperty<? extends Collection<EntityReference>, EntityReference> property,
-				Collection<EntityReference> values) throws PersistenceException {
+		public void writeCollection(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
+				Property<? extends Collection<EntityReference>> property, Collection<EntityReference> values)
+				throws PersistenceException {
 
-			CollectionProperty<List<String>, String> idProperty = CollectionProperty
-					.of(String.format("%sId", property.getName()), List.class, String.class);
-			CollectionProperty<List<String>, String> typeProperty = CollectionProperty
-					.of(String.format("%sType", property.getName()), List.class, String.class);
+			Property<List<String>> idProperty = Property.of(String.format("%sId", property.getName()),
+					new TypeReference<List<String>>() {
+					});
+			Property<List<String>> typeProperty = Property.of(String.format("%sType", property.getName()),
+					new TypeReference<List<String>>() {
+					});
 
-			JdbcPersistenceValueHandler<String> idHandler = handler.getValueHandler(idProperty.getElementType());
-			JdbcPersistenceValueHandler<String> typeHandler = handler.getValueHandler(typeProperty.getElementType());
+			JdbcPersistenceValueHandler<String> idHandler = handler.getValueHandler(String.class);
+			JdbcPersistenceValueHandler<String> typeHandler = handler.getValueHandler(String.class);
 
 			List<String> idValues = new ArrayList<>();
 			List<String> typeValues = new ArrayList<>();
@@ -758,8 +760,8 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 				typeValues.add(value != null ? value.getType().getName() : null);
 			}
 
-			idHandler.write(context, handler, idProperty, idValues);
-			typeHandler.write(context, handler, typeProperty, typeValues);
+			idHandler.writeCollection(context, handler, idProperty, idValues);
+			typeHandler.writeCollection(context, handler, typeProperty, typeValues);
 		}
 
 		@SuppressWarnings("unchecked")
@@ -769,11 +771,13 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 
 			try {
 
-				Property<String> idProperty = Property.of(String.format("%sId", property.getName()), String.class);
-				Property<String> typeProperty = Property.of(String.format("%sType", property.getName()), String.class);
+				Property<String> idProperty = Property.of(String.format("%sId", property.getName()),
+						TypeReference.of(String.class));
+				Property<String> typeProperty = Property.of(String.format("%sType", property.getName()),
+						TypeReference.of(String.class));
 
-				JdbcPersistenceValueHandler<String> idHandler = handler.getValueHandler(idProperty.getType());
-				JdbcPersistenceValueHandler<String> typeHandler = handler.getValueHandler(typeProperty.getType());
+				JdbcPersistenceValueHandler<String> idHandler = handler.getValueHandler(String.class);
+				JdbcPersistenceValueHandler<String> typeHandler = handler.getValueHandler(String.class);
 
 				String idValue = idHandler.read(context, handler, idProperty, null);
 				Class typeValue = Class.forName(typeHandler.read(context, handler, typeProperty, null));
@@ -787,27 +791,29 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public Collection<EntityReference> read(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-				CollectionProperty<? extends Collection<EntityReference>, EntityReference> property,
+		public Collection<EntityReference> readCollection(JdbcPersistenceContext context,
+				JdbcPersistenceHandler handler, Property<? extends Collection<EntityReference>> property,
 				Collection<EntityReference> value) throws PersistenceException {
 
 			try {
 
-				CollectionProperty<List<String>, String> idProperty = CollectionProperty
-						.of(String.format("%sId", property.getName()), List.class, String.class);
-				CollectionProperty<List<String>, String> typeProperty = CollectionProperty
-						.of(String.format("%sType", property.getName()), List.class, String.class);
+				Property<List<String>> idProperty = Property.of(String.format("%sId", property.getName()),
+						new TypeReference<List<String>>() {
+						});
+				Property<List<String>> typeProperty = Property.of(String.format("%sType", property.getName()),
+						new TypeReference<List<String>>() {
+						});
 
-				JdbcPersistenceValueHandler<String> idHandler = handler.getValueHandler(idProperty.getElementType());
-				JdbcPersistenceValueHandler<String> typeHandler = handler
-						.getValueHandler(typeProperty.getElementType());
+				JdbcPersistenceValueHandler<String> idHandler = handler.getValueHandler(String.class);
+				JdbcPersistenceValueHandler<String> typeHandler = handler.getValueHandler(String.class);
 
-				List<String> idValues = (List<String>) idHandler.read(context, handler, idProperty, null);
-				List<String> typeValues = (List<String>) typeHandler.read(context, handler, typeProperty, null);
+				List<String> idValues = (List<String>) idHandler.readCollection(context, handler, idProperty, null);
+				List<String> typeValues = (List<String>) typeHandler.readCollection(context, handler, typeProperty,
+						null);
 
 				// TODO: check on size equality!
 
-				Collection<EntityReference> collection = List.class.isAssignableFrom(property.getType())
+				Collection<EntityReference> collection = List.class.isAssignableFrom(property.getType().getRawType())
 						? new ArrayList<>()
 						: new LinkedHashSet<>();
 
@@ -1027,7 +1033,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 	private <T> List<String> getColumns(JdbcPersistenceContext context, Property<T> property)
 			throws PersistenceException {
 
-		JdbcPersistenceValueHandler<T> handler = getValueHandler(property.getType());
+		JdbcPersistenceValueHandler<T> handler = getValueHandler(property.getType().getRawType());
 
 		if (handler != null) {
 			return handler.getColumns(context, this, property);
@@ -1038,7 +1044,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 
 	private <T> void write(JdbcPersistenceContext context, Property<T> property, T value) throws PersistenceException {
 
-		JdbcPersistenceValueHandler<T> handler = getValueHandler(property.getType());
+		JdbcPersistenceValueHandler<T> handler = getValueHandler(property.getType().getRawType());
 
 		if (handler != null) {
 			handler.write(context, this, property, value);
@@ -1049,7 +1055,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 
 	private <T> T read(JdbcPersistenceContext context, Property<T> property, T value) throws PersistenceException {
 
-		JdbcPersistenceValueHandler<T> handler = getValueHandler(property.getType());
+		JdbcPersistenceValueHandler<T> handler = getValueHandler(property.getType().getRawType());
 
 		if (handler != null) {
 			return handler.read(context, this, property, value);

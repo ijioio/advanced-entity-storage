@@ -13,9 +13,12 @@ public abstract class BaseEntityIndex<E extends Entity> extends BaseIdentity imp
 
 	public static class Properties {
 
-		public static final Property<String> id = Property.of("id", String.class);
+		public static final Property<String> id = Property.of("id", new TypeReference<String>() {
+		});
 
-		public static final Property<EntityReference<?>> source = Property.of("source", EntityReference.class);
+		public static final Property<EntityReference<? extends Entity>> source = Property.of("source",
+				new TypeReference<EntityReference<? extends Entity>>() {
+				});
 
 		private static final List<Property<?>> values = new ArrayList<>();
 
