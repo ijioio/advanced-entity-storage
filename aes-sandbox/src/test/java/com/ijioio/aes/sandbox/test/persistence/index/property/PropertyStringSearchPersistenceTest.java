@@ -1,4 +1,4 @@
-package com.ijioio.aes.sandbox.test.persistence.property;
+package com.ijioio.aes.sandbox.test.persistence.index.property;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -57,8 +57,8 @@ public class PropertyStringSearchPersistenceTest extends BasePersistenceTest {
 	@BeforeEach
 	public void before() throws Exception {
 
-		path = Paths.get(
-				getClass().getClassLoader().getResource("persistence/property-string-search-persistence.sql").toURI());
+		path = Paths.get(getClass().getClassLoader()
+				.getResource("persistence/index/property/property-string-search-persistence.sql").toURI());
 
 		executeSql(connection, path);
 

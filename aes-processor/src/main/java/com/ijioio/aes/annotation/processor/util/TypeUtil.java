@@ -120,6 +120,11 @@ public class TypeUtil {
 	public static final String PROPERTY_TYPE_NAME = "com.ijioio.aes.core.Property";
 
 	/**
+	 * Fully qualified name for collection property type.
+	 */
+	public static final String COLLECTION_PROPERTY_TYPE_NAME = "com.ijioio.aes.core.CollectionProperty";
+
+	/**
 	 * Fully qualified name for property writer.
 	 */
 	public static final String PROPERTY_WRITER_TYPE_NAME = "com.ijioio.aes.core.PropertyWriter";
