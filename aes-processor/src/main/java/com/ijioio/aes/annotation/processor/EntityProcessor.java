@@ -481,32 +481,19 @@ public class EntityProcessor extends AbstractProcessor {
 
 			CodeGenTypeHandler handler = CodeGenTypeUtil.getTypeHandler(property.getType(), property.getParameters());
 
-			if (handler.getType() == CodeGenTypeUtil.LIST_TYPE_NAME) {
-
-				fields.add(FieldSpec
-						.builder(ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME),
-								handler.getType().isPrimitive() ? handler.getType().box()
-										: handler.getParameterizedType()),
-								property.getName())
-						.addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-						.initializer("$T.of($S, $T.class, $T.class)",
-								ClassName.bestGuess(TypeUtil.COLLECTION_PROPERTY_TYPE_NAME), property.getName(),
-								handler.getType(), handler.getParameters().get(0))
-						.build());
-
-			} else {
-
-				fields.add(FieldSpec
-						.builder(ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME),
-								handler.getType().isPrimitive() ? handler.getType().box()
-										: handler.getParameterizedType()),
-								property.getName())
-						.addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-						.initializer("$T.of($S, $T.class)", ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME),
-								property.getName(),
-								handler.getType().isPrimitive() ? handler.getType().box() : handler.getType())
-						.build());
-			}
+			fields.add(
+					FieldSpec
+							.builder(ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME),
+									handler.getType().isPrimitive() ? handler.getType().box()
+											: handler.getParameterizedType()),
+									property.getName())
+							.addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+							.initializer("$T.of($S, new $T() {})", ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME),
+									property.getName(),
+									ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.TYPE_REFERENCE_TYPE_NAME),
+											handler.getType().isPrimitive() ? handler.getType().box()
+													: handler.getParameterizedType()))
+							.build());
 
 			codeBlockBuilder.addStatement("values.add($L)", property.getName());
 		}
