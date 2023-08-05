@@ -4,16 +4,15 @@ import java.util.Objects;
 
 public class Property<T> {
 
-	@SuppressWarnings("unchecked")
-	public static <T, A extends T> Property<A> of(String name, Class<T> type) {
-		return (Property<A>) new Property<>(name, type);
+	public static <T> Property<T> of(String name, TypeReference<T> type) {
+		return new Property<T>(name, type);
 	}
 
-	protected final String name;
+	private final String name;
 
-	protected final Class<T> type;
+	private final TypeReference<T> type;
 
-	protected Property(String name, Class<T> type) {
+	private Property(String name, TypeReference<T> type) {
 
 		this.name = name;
 		this.type = type;
@@ -23,7 +22,7 @@ public class Property<T> {
 		return name;
 	}
 
-	public Class<T> getType() {
+	public TypeReference<T> getType() {
 		return type;
 	}
 
