@@ -25,19 +25,20 @@ import com.ijioio.test.model.PropertyEntityReferenceCreatePersistenceIndex;
 public class PropertyEntityReferenceCreatePersistenceTest extends BasePersistenceTest {
 
 	public static class Some extends BaseEntity {
-		// Empty
+
+		public static final String NAME = "com.ijioio.aes.sandbox.test.persistence.index.property.PropertyEntityReferenceCreatePersistenceTest.Some";
 	}
 
 	@Entity( //
 			name = PropertyEntityReferenceCreatePersistencePrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueEntityReference", type = @Type(name = Type.ENTITY_REFERENCE), parameters = @Type(name = "com.ijioio.aes.sandbox.test.persistence.index.property.PropertyEntityReferenceCreatePersistenceTest.Some")) //
+					@EntityProperty(name = "valueEntityReference", type = @Type(name = Type.ENTITY_REFERENCE), parameters = @Type(name = Some.NAME)) //
 			}, //
 			indexes = { //
 					@EntityIndex( //
 							name = PropertyEntityReferenceCreatePersistencePrototype.INDEX_NAME, //
 							properties = { //
-									@EntityIndexProperty(name = "valueEntityReference", type = @Type(name = Type.ENTITY_REFERENCE), parameters = @Type(name = "com.ijioio.aes.sandbox.test.persistence.index.property.PropertyEntityReferenceCreatePersistenceTest.Some")) //
+									@EntityIndexProperty(name = "valueEntityReference", type = @Type(name = Type.ENTITY_REFERENCE), parameters = @Type(name = Some.NAME)) //
 							} //
 					) //
 			} //
