@@ -402,8 +402,6 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 			PreparedStatement statement = context.getStatement();
 
 			try {
-//				statement.setArray(context.getNextIndex(), statement.getConnection()
-//						.createArrayOf(JDBCType.valueOf(Types.VARCHAR).getName(), values.toArray()));
 				statement.setObject(context.getNextIndex(), statement.getConnection()
 						.createArrayOf(JDBCType.valueOf(Types.VARCHAR).getName(), values.toArray()), Types.ARRAY);
 			} catch (SQLException e) {
