@@ -3,6 +3,7 @@ package com.ijioio.aes.sandbox.test.persistence.index.property;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
@@ -29,19 +30,20 @@ import com.ijioio.test.model.PropertyEntityReferenceSearchPersistenceIndex;
 public class PropertyEntityReferenceSearchPersistenceTest extends BasePersistenceTest {
 
 	public static class Some extends BaseEntity {
-		// Empty
+
+		public static final String NAME = "com.ijioio.aes.sandbox.test.persistence.index.property.PropertyEntityReferenceSearchPersistenceTest.Some";
 	}
 
 	@Entity( //
 			name = PropertyEntityReferenceSearchPersistencePrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueEntityReference", type = @Type(name = Type.ENTITY_REFERENCE), parameters = @Type(name = "com.ijioio.aes.sandbox.test.persistence.index.property.PropertyEntityReferenceSearchPersistenceTest.Some")) //
+					@EntityProperty(name = "valueEntityReference", type = @Type(name = Type.ENTITY_REFERENCE), parameters = @Type(name = Some.NAME)) //
 			}, //
 			indexes = { //
 					@EntityIndex( //
 							name = PropertyEntityReferenceSearchPersistencePrototype.INDEX_NAME, //
 							properties = { //
-									@EntityIndexProperty(name = "valueEntityReference", type = @Type(name = Type.ENTITY_REFERENCE), parameters = @Type(name = "com.ijioio.aes.sandbox.test.persistence.index.property.PropertyEntityReferenceSearchPersistenceTest.Some")) //
+									@EntityIndexProperty(name = "valueEntityReference", type = @Type(name = Type.ENTITY_REFERENCE), parameters = @Type(name = Some.NAME)) //
 							} //
 					) //
 			} //
@@ -96,6 +98,30 @@ public class PropertyEntityReferenceSearchPersistenceTest extends BasePersistenc
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC).build();
 
 		List<PropertyEntityReferenceSearchPersistenceIndex> expectedIndexes = indexes;
+		List<PropertyEntityReferenceSearchPersistenceIndex> actualIndexes = handler
+				.search(JdbcPersistenceContext.of(connection), query);
+
+		check(expectedIndexes, actualIndexes);
+	}
+
+	@Test
+	public void testSearchEquals() throws Exception {
+
+		JdbcPersistenceHandler handler = new JdbcPersistenceHandler();
+
+		for (PropertyEntityReferenceSearchPersistenceIndex index : indexes) {
+			handler.create(JdbcPersistenceContext.of(connection), index);
+		}
+
+		PropertyEntityReferenceSearchPersistenceIndex selectedIndex = indexes.get(random.nextInt(indexes.size()));
+
+		SearchQuery<PropertyEntityReferenceSearchPersistenceIndex> query = SearchQueryBuilder
+				.of(PropertyEntityReferenceSearchPersistenceIndex.class)
+				.eq(PropertyEntityReferenceSearchPersistenceIndex.Properties.valueEntityReference,
+						selectedIndex.getValueEntityReference())
+				.sorting(BaseEntityIndex.Properties.id, Order.ASC).build();
+
+		List<PropertyEntityReferenceSearchPersistenceIndex> expectedIndexes = Collections.singletonList(selectedIndex);
 		List<PropertyEntityReferenceSearchPersistenceIndex> actualIndexes = handler
 				.search(JdbcPersistenceContext.of(connection), query);
 
