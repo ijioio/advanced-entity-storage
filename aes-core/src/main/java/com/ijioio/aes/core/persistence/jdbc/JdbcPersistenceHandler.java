@@ -1075,7 +1075,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 
 					while (resultSet.next()) {
 
-						I index = query.getType().newInstance();
+						I index = createIndex(query.getType());
 
 						Collection<Property<?>> properties = index.getProperties();
 
@@ -1110,7 +1110,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 				}
 			}
 
-		} catch (IllegalAccessException | InstantiationException | SQLException e) {
+		} catch (SQLException e) {
 			throw new PersistenceException(e);
 		}
 	}
@@ -1150,6 +1150,15 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 		}
 	}
 
+	private <I extends EntityIndex<?>> I createIndex(Class<I> type) throws PersistenceException {
+
+		try {
+			return type.newInstance();
+		} catch (IllegalAccessException | InstantiationException e) {
+			throw new PersistenceException(e);
+		}
+	}
+
 	private <I extends EntityIndex<?>> String handleDeleteQuery(JdbcPersistenceContext context, SearchQuery<I> query,
 			List<Pair<Property<?>, PropertyReader<?>>> readers) throws PersistenceException {
 
@@ -1169,12 +1178,23 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 	private <I extends EntityIndex<?>> String handleSearchQuery(JdbcPersistenceContext context, SearchQuery<I> query,
 			List<Pair<Property<?>, PropertyReader<?>>> readers) throws PersistenceException {
 
+		I index = createIndex(query.getType());
+
+		Collection<Property<?>> properties = index.getProperties();
+
+		List<String> columns = new ArrayList<>();
+
+		for (Property<?> property : properties) {
+			columns.addAll(getColumns(context, property, false));
+		}
+
 		String conditions = handleAndCriterion(context, AndSearchCriterion.of(query.getCriterions()), readers);
 		String sortings = handleSortings(context, query.getSortings());
 
 		StringBuilder sql = new StringBuilder();
 
-		sql.append(String.format("select * from %s", query.getType().getSimpleName()));
+		sql.append(String.format("select %s from %s", columns.stream().collect(Collectors.joining(", ")),
+				query.getType().getSimpleName()));
 
 		if (conditions != null) {
 			sql.append(String.format(" where %s", conditions));
