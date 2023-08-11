@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -20,50 +21,50 @@ import com.ijioio.aes.core.EntityReference;
 import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceContext;
 import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandler;
 import com.ijioio.aes.sandbox.test.persistence.BasePersistenceTest;
-import com.ijioio.test.model.PropertyStringListCreatePersistence;
-import com.ijioio.test.model.PropertyStringListCreatePersistenceIndex;
+import com.ijioio.test.model.PropertyClassListCreatePersistence;
+import com.ijioio.test.model.PropertyClassListCreatePersistenceIndex;
 
-public class PropertyStringListCreatePersistenceTest extends BasePersistenceTest {
+public class PropertyClassListCreatePersistenceTest extends BasePersistenceTest {
 
 	@Entity( //
-			name = PropertyStringCreatePersistencePrototype.NAME, //
+			name = PropertyClassListCreatePersistencePrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueStringList", type = @Type(name = Type.LIST), parameters = @Type(name = Type.STRING)) //
+					@EntityProperty(name = "valueClassList", type = @Type(name = Type.LIST), parameters = @Type(name = Type.CLASS)) //
 			}, //
 			indexes = { //
 					@EntityIndex( //
-							name = PropertyStringCreatePersistencePrototype.INDEX_NAME, //
+							name = PropertyClassListCreatePersistencePrototype.INDEX_NAME, //
 							properties = { //
-									@EntityIndexProperty(name = "valueStringList", type = @Type(name = Type.LIST), parameters = @Type(name = Type.STRING)) //
+									@EntityIndexProperty(name = "valueClassList", type = @Type(name = Type.LIST), parameters = @Type(name = Type.CLASS)) //
 							} //
 					) //
 			} //
 	)
-	public static interface PropertyStringCreatePersistencePrototype {
+	public static interface PropertyClassListCreatePersistencePrototype {
 
-		public static final String NAME = "com.ijioio.test.model.PropertyStringListCreatePersistence";
+		public static final String NAME = "com.ijioio.test.model.PropertyClassListCreatePersistence";
 
-		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyStringListCreatePersistenceIndex";
+		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyClassListCreatePersistenceIndex";
 	}
 
 	private Path path;
 
-	private PropertyStringListCreatePersistenceIndex index;
+	private PropertyClassListCreatePersistenceIndex index;
 
 	@BeforeEach
 	public void before() throws Exception {
 
 		path = Paths.get(getClass().getClassLoader()
-				.getResource("persistence/index/property/property-string-list-create-persistence.sql").toURI());
+				.getResource("persistence/index/property/property-class-list-create-persistence.sql").toURI());
 
 		executeSql(connection, path);
 
-		index = new PropertyStringListCreatePersistenceIndex();
+		index = new PropertyClassListCreatePersistenceIndex();
 
-		index.setId("property-string-list-create-persistence-index");
-		index.setSource(EntityReference.of("property-string-list-create-persistence",
-				PropertyStringListCreatePersistence.class));
-		index.setValueStringList(Arrays.asList("value1", "value2", "value3"));
+		index.setId("property-class-list-create-persistence-index");
+		index.setSource(
+				EntityReference.of("property-class-list-create-persistence", PropertyClassListCreatePersistence.class));
+		index.setValueClassList(Arrays.asList(String.class, Number.class, Instant.class));
 	}
 
 	@Test
@@ -74,7 +75,7 @@ public class PropertyStringListCreatePersistenceTest extends BasePersistenceTest
 		handler.create(JdbcPersistenceContext.of(connection), index);
 
 		try (PreparedStatement statement = connection.prepareStatement(
-				String.format("select * from %s", PropertyStringListCreatePersistenceIndex.class.getSimpleName()))) {
+				String.format("select * from %s", PropertyClassListCreatePersistenceIndex.class.getSimpleName()))) {
 
 			try (ResultSet resultSet = statement.executeQuery()) {
 
@@ -83,8 +84,9 @@ public class PropertyStringListCreatePersistenceTest extends BasePersistenceTest
 				Assertions.assertEquals(index.getId(), resultSet.getString("id"));
 				Assertions.assertEquals(index.getSource().getId(), resultSet.getString("sourceId"));
 				Assertions.assertEquals(index.getSource().getType().getName(), resultSet.getString("sourceType"));
-				Assertions.assertEquals(index.getValueStringList(),
-						Arrays.asList((Object[]) resultSet.getArray("valueStringList").getArray()));
+				Assertions.assertEquals(
+						index.getValueClassList().stream().map(item -> item.getName()).collect(Collectors.toList()),
+						Arrays.asList((Object[]) resultSet.getArray("valueClassList").getArray()));
 
 				Assertions.assertTrue(resultSet.isLast());
 			}

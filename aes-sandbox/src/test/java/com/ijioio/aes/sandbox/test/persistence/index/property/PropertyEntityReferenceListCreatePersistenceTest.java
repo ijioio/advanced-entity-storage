@@ -94,13 +94,11 @@ public class PropertyEntityReferenceListCreatePersistenceTest extends BasePersis
 				Assertions.assertEquals(
 						index.getValueEntityReferenceList().stream().map(item -> item.getId())
 								.collect(Collectors.toList()),
-						Arrays.stream((Object[]) resultSet.getArray("valueEntityReferenceListId").getArray())
-								.map(item -> (String) item).collect(Collectors.toList()));
+						Arrays.asList((Object[]) resultSet.getArray("valueEntityReferenceListId").getArray()));
 				Assertions.assertEquals(
 						index.getValueEntityReferenceList().stream().map(item -> item.getType().getName())
 								.collect(Collectors.toList()),
-						Arrays.stream((Object[]) resultSet.getArray("valueEntityReferenceListType").getArray())
-								.map(item -> (String) item).collect(Collectors.toList()));
+						Arrays.asList((Object[]) resultSet.getArray("valueEntityReferenceListType").getArray()));
 
 				Assertions.assertTrue(resultSet.isLast());
 			}
