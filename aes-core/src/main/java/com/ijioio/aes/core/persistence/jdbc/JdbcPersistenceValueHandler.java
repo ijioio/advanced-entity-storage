@@ -10,14 +10,15 @@ public interface JdbcPersistenceValueHandler<T> {
 
 	public Class<T> getType();
 
-	public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-			Property<T> property);
+	public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, Property<T> property,
+			boolean search);
 
-	public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, Property<T> property, T value)
-			throws PersistenceException;
+	public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, Property<T> property, T value,
+			boolean search) throws PersistenceException;
 
 	public default void writeCollection(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-			Property<? extends Collection<T>> property, Collection<T> values) throws PersistenceException {
+			Property<? extends Collection<T>> property, Collection<T> values, boolean search)
+			throws PersistenceException {
 		throw new UnsupportedOperationException();
 	}
 
