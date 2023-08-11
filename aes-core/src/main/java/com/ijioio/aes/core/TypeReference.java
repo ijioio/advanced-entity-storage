@@ -19,6 +19,10 @@ public abstract class TypeReference<T> {
 		return new SimpleTypeReference<>(type);
 	}
 
+	public static <T> TypeReference<Class<T>> classOf(TypeReference<T> type) {
+		return new SimpleTypeReference<>(new WrappedParameterizedType(null, Class.class, type.getType()));
+	}
+
 	private final Type type;
 
 	protected TypeReference() {
@@ -31,14 +35,14 @@ public abstract class TypeReference<T> {
 
 		this.type = ((ParameterizedType) superType).getActualTypeArguments()[0];
 
-		checkType(type);
+//		checkType(type);
 	}
 
 	protected TypeReference(Type type) {
 
 		this.type = type;
 
-		checkType(type);
+//		checkType(type);
 	}
 
 	private void checkType(Type type) {
@@ -240,6 +244,77 @@ public abstract class TypeReference<T> {
 
 		R getDefaultValue() {
 			return null;
+		}
+	}
+
+	private static class WrappedParameterizedType implements ParameterizedType {
+
+		private final Type ownerType;
+
+		private final Class<?> rawType;
+
+		private final Type[] typeArguments;
+
+		private WrappedParameterizedType(Type ownerType, Class<?> rawType, Type... typeArguments) {
+
+			this.ownerType = ownerType;
+			this.rawType = rawType;
+			this.typeArguments = typeArguments;
+		}
+
+		@Override
+		public Type[] getActualTypeArguments() {
+			return typeArguments;
+		}
+
+		@Override
+		public Type getRawType() {
+			return rawType;
+		}
+
+		@Override
+		public Type getOwnerType() {
+			return ownerType;
+		}
+
+		@Override
+		public int hashCode() {
+
+			final int prime = 31;
+
+			int result = 1;
+
+			result = prime * result + Arrays.hashCode(typeArguments);
+			result = prime * result + Objects.hash(ownerType, rawType);
+
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+
+			if (this == obj) {
+				return true;
+			}
+
+			if (obj == null) {
+				return false;
+			}
+
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+
+			ParameterizedType other = (ParameterizedType) obj;
+
+			return Objects.equals(ownerType, other.getOwnerType()) && Objects.equals(rawType, other.getRawType())
+					&& Arrays.equals(typeArguments, other.getActualTypeArguments());
+		}
+
+		@Override
+		public String toString() {
+			return "WrappedParameterizedType [ownerType=" + ownerType + ", rawType=" + rawType + ", typeArguments="
+					+ Arrays.toString(typeArguments) + "]";
 		}
 	}
 }

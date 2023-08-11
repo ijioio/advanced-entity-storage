@@ -17,7 +17,7 @@ public interface JdbcPersistenceValueHandler<T> {
 			throws PersistenceException;
 
 	public default void writeCollection(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-			Property<? extends Collection<T>> property, Collection<T> value) throws PersistenceException {
+			Property<? extends Collection<T>> property, Collection<T> values) throws PersistenceException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -25,7 +25,7 @@ public interface JdbcPersistenceValueHandler<T> {
 			throws PersistenceException;
 
 	public default Collection<T> readCollection(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-			Property<? extends Collection<T>> property, Collection<T> value) throws PersistenceException {
+			Property<? extends Collection<T>> property, Collection<T> values) throws PersistenceException {
 		throw new UnsupportedOperationException();
 	}
 }
