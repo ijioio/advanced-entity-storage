@@ -7,6 +7,5 @@ public enum Operation {
 	LOWER,
 	LOWER_OR_EQUALS,
 	GREATER,
-	GREATER_OR_EQUALS,
-	IN;
+	GREATER_OR_EQUALS;
 }
