@@ -1,6 +1,5 @@
 package com.ijioio.aes.annotation.processor;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -8,13 +7,13 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 
 import com.ijioio.aes.annotation.Attribute;
 import com.ijioio.aes.annotation.processor.exception.EntityIndexPropertyIllegalStateException;
+import com.ijioio.aes.annotation.processor.exception.EntityPropertyIllegalStateException;
 import com.ijioio.aes.annotation.processor.exception.ProcessorException;
 import com.ijioio.aes.annotation.processor.util.ProcessorUtil;
 import com.ijioio.aes.annotation.processor.util.TextUtil;
@@ -34,9 +33,13 @@ public class EntityIndexPropertyMetadata {
 
 	private String name;
 
-	private TypeMetadata type;
+	private String type;
 
-	private final List<TypeMetadata> parameters = new ArrayList<>();
+	private boolean list;
+
+	private boolean set;
+
+	private boolean reference;
 
 	private final Set<Attribute> attributes = new HashSet<>();
 
@@ -57,24 +60,19 @@ public class EntityIndexPropertyMetadata {
 
 			} else if (key.getSimpleName().contentEquals("type")) {
 
-				AnnotationMirror annotationMirror = ProcessorUtil.annotationVisitor.visit(value);
+				type = ProcessorUtil.stringVisitor.visit(value);
 
-				type = TypeMetadata.of(environment, context.withAnnotationMirror(annotationMirror));
+			} else if (key.getSimpleName().contentEquals("list")) {
 
-			} else if (key.getSimpleName().contentEquals("parameters")) {
+				list = ProcessorUtil.booleanVisitor.visit(value).booleanValue();
 
-				List<? extends AnnotationValue> annotationValues = ProcessorUtil.arrayVisitor.visit(value);
+			} else if (key.getSimpleName().contentEquals("set")) {
 
-				parameters.clear();
+				set = ProcessorUtil.booleanVisitor.visit(value).booleanValue();
 
-				for (AnnotationValue annotationValue : annotationValues) {
+			} else if (key.getSimpleName().contentEquals("reference")) {
 
-					AnnotationMirror annotationMirror = ProcessorUtil.annotationVisitor.visit(annotationValue);
-
-					TypeMetadata type = TypeMetadata.of(environment, context.withAnnotationMirror(annotationMirror));
-
-					parameters.add(type);
-				}
+				reference = ProcessorUtil.booleanVisitor.visit(value).booleanValue();
 
 			} else if (key.getSimpleName().contentEquals("attributes")) {
 
@@ -105,9 +103,16 @@ public class EntityIndexPropertyMetadata {
 					MessageContext.of(context.getElement(), context.getAnnotationMirror(), null));
 		}
 
-		if (type == null) {
-			throw new EntityIndexPropertyIllegalStateException(
+		if (TextUtil.isBlank(type)) {
+			throw new EntityPropertyIllegalStateException(
 					String.format("Type of the entity index property is not defined"),
+					MessageContext.of(context.getElement(), context.getAnnotationMirror(), null));
+		}
+
+		if (list && set) {
+			throw new EntityPropertyIllegalStateException(
+					String.format(
+							"Entity index property is not allowed to be declared as list and set at the same time"),
 					MessageContext.of(context.getElement(), context.getAnnotationMirror(), null));
 		}
 	}
@@ -116,17 +121,25 @@ public class EntityIndexPropertyMetadata {
 		return name;
 	}
 
-	public TypeMetadata getType() {
+	public String getType() {
 		return type;
 	}
 
-	public List<TypeMetadata> getParameters() {
-		return parameters;
+	public boolean isList() {
+		return list;
+	}
+
+	public boolean isSet() {
+		return set;
+	}
+
+	public boolean isReference() {
+		return reference;
 	}
 
 	@Override
 	public String toString() {
-		return "EntityIndexPropertyMetadata [name=" + name + ", type=" + type + ", parameters=" + parameters
-				+ ", attributes=" + attributes + "]";
+		return "EntityIndexPropertyMetadata [name=" + name + ", type=" + type + ", list=" + list + ", set=" + set
+				+ ", reference=" + reference + ", attributes=" + attributes + "]";
 	}
 }
