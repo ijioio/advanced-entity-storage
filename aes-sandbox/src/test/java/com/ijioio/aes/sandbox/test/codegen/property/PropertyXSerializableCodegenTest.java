@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
-import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.XSerializable;
 import com.ijioio.aes.core.serialization.SerializationContext;
 import com.ijioio.aes.core.serialization.SerializationException;
@@ -46,7 +45,7 @@ public class PropertyXSerializableCodegenTest extends BaseCodegenTest {
 	@Entity( //
 			name = PropertyXSerializableCodegenPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueXSerializableObject", type = @Type(name = "com.ijioio.aes.sandbox.test.codegen.property.PropertyXSerializableCodegenTest.XSerializableObject")) //
+					@EntityProperty(name = "valueXSerializableObject", type = "com.ijioio.aes.sandbox.test.codegen.property.PropertyXSerializableCodegenTest.XSerializableObject") //
 			} //
 	)
 	public static interface PropertyXSerializableCodegenPrototype {

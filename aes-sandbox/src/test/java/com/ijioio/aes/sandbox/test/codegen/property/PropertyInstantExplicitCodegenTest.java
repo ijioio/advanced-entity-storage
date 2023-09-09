@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
-import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.sandbox.test.codegen.BaseCodegenTest;
 import com.ijioio.test.model.PropertyInstantExplicitCodegen;
 
@@ -18,7 +17,7 @@ public class PropertyInstantExplicitCodegenTest extends BaseCodegenTest {
 	@Entity( //
 			name = PropertyInstantExplicitCodegenPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueInstant", type = @Type(name = "java.time.Instant")) //
+					@EntityProperty(name = "valueInstant", type = "java.time.Instant") //
 			} //
 	)
 	public static interface PropertyInstantExplicitCodegenPrototype {

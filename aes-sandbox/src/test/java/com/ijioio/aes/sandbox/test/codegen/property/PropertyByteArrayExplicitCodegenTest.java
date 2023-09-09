@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
-import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.sandbox.test.codegen.BaseCodegenTest;
 import com.ijioio.test.model.PropertyByteArrayExplicitCodegen;
 
@@ -17,7 +16,7 @@ public class PropertyByteArrayExplicitCodegenTest extends BaseCodegenTest {
 	@Entity( //
 			name = PropertyByteArrayExplicitCodegenPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueByteArray", type = @Type(name = "[B")) //
+					@EntityProperty(name = "valueByteArray", type = "[B") //
 			} //
 	)
 	public static interface PropertyByteArrayExplicitCodegenPrototype {

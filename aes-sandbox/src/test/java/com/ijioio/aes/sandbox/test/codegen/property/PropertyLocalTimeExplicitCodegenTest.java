@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
-import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.sandbox.test.codegen.BaseCodegenTest;
 import com.ijioio.test.model.PropertyLocalTimeExplicitCodegen;
 
@@ -18,7 +17,7 @@ public class PropertyLocalTimeExplicitCodegenTest extends BaseCodegenTest {
 	@Entity( //
 			name = PropertyLocalTimeExplicitCodegenPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueLocalTime", type = @Type(name = "java.time.LocalTime")) //
+					@EntityProperty(name = "valueLocalTime", type = "java.time.LocalTime") //
 			} //
 	)
 	public static interface PropertyLocalTimeExplicitCodegenPrototype {

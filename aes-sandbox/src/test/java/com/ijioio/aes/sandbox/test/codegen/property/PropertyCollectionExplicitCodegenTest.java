@@ -18,13 +18,21 @@ public class PropertyCollectionExplicitCodegenTest extends BaseCodegenTest {
 
 	@Entity( //
 			name = PropertyCollectionExplicitCodegenPrototype.NAME, //
+			types = { //
+					@Type(name = "List<String>", type = "java.util.List", parameters = Type.STRING), //
+					@Type(name = "List<Month>", type = "java.util.List", parameters = "java.time.Month"), //
+					@Type(name = "List<Object>", type = "java.util.List", parameters = "java.lang.Object"), //
+					@Type(name = "Set<String>", type = "java.util.Set", parameters = Type.STRING), //
+					@Type(name = "Set<Month>", type = "java.util.Set", parameters = "java.time.Month"), //
+					@Type(name = "Set<Object>", type = "java.util.Set", parameters = "java.lang.Object") //
+			}, //
 			properties = { //
-					@EntityProperty(name = "valueStringList", type = @Type(name = "java.util.List"), parameters = @Type(name = Type.STRING)), //
-					@EntityProperty(name = "valueEnumList", type = @Type(name = "java.util.List"), parameters = @Type(name = "java.time.Month")), //
-					@EntityProperty(name = "valueObjectList", type = @Type(name = "java.util.List"), parameters = @Type(name = "java.lang.Object")), //
-					@EntityProperty(name = "valueStringSet", type = @Type(name = "java.util.Set"), parameters = @Type(name = Type.STRING)), //
-					@EntityProperty(name = "valueEnumSet", type = @Type(name = "java.util.Set"), parameters = @Type(name = "java.time.Month")), //
-					@EntityProperty(name = "valueObjectSet", type = @Type(name = "java.util.Set"), parameters = @Type(name = "java.lang.Object")) //
+					@EntityProperty(name = "valueStringList", type = "List<String>"), //
+					@EntityProperty(name = "valueEnumList", type = "List<Month>"), //
+					@EntityProperty(name = "valueObjectList", type = "List<Object>"), //
+					@EntityProperty(name = "valueStringSet", type = "Set<String>"), //
+					@EntityProperty(name = "valueEnumSet", type = "Set<Month>"), //
+					@EntityProperty(name = "valueObjectSet", type = "Set<Object>") //
 			} //
 	)
 	public static interface PropertyCollectionExplicitCodegenPrototype {

@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
-import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.sandbox.test.codegen.BaseCodegenTest;
 import com.ijioio.test.model.PropertyEnumCodegen;
 
@@ -18,7 +17,7 @@ public class PropertyEnumCodegenTest extends BaseCodegenTest {
 	@Entity( //
 			name = PropertyEnumCodegenPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueEnum", type = @Type(name = "java.time.Month")) //
+					@EntityProperty(name = "valueEnum", type = "java.time.Month") //
 			} //
 	)
 	public static interface PropertyEnumCodegenPrototype {

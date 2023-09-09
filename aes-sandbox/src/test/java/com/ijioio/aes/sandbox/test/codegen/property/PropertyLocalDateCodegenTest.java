@@ -18,7 +18,7 @@ public class PropertyLocalDateCodegenTest extends BaseCodegenTest {
 	@Entity( //
 			name = PropertyLocalDateCodegenPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueLocalDate", type = @Type(name = Type.LOCAL_DATE)) //
+					@EntityProperty(name = "valueLocalDate", type = Type.LOCAL_DATE) //
 			} //
 	)
 	public static interface PropertyLocalDateCodegenPrototype {

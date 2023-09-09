@@ -17,7 +17,7 @@ public class PropertyStringCodegenTest extends BaseCodegenTest {
 	@Entity( //
 			name = PropertyStringCodegenPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueString", type = @Type(name = Type.STRING)) //
+					@EntityProperty(name = "valueString", type = Type.STRING) //
 			} //
 	)
 	public static interface PropertyStringCodegenPrototype {

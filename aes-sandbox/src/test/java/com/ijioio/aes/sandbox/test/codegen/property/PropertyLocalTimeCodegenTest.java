@@ -18,7 +18,7 @@ public class PropertyLocalTimeCodegenTest extends BaseCodegenTest {
 	@Entity( //
 			name = PropertyLocalTimeCodegenPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueLocalTime", type = @Type(name = Type.LOCAL_TIME)) //
+					@EntityProperty(name = "valueLocalTime", type = Type.LOCAL_TIME) //
 			} //
 	)
 	public static interface PropertyLocalTimeCodegenPrototype {
