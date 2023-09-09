@@ -11,9 +11,13 @@ public @interface EntityIndexProperty {
 
 	public String name();
 
-	public Type type();
+	public String type();
 
-	public Type[] parameters() default {};
+	public boolean list() default false;
+	
+	public boolean set() default false;
+	
+	public boolean reference() default false;
 
 	public Attribute[] attributes() default {};
 }

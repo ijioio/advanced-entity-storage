@@ -49,5 +49,7 @@ public @interface Type {
 
 	public String name();
 
-	public boolean reference() default false;
+	public String type();
+
+	public String[] parameters() default {};
 }
