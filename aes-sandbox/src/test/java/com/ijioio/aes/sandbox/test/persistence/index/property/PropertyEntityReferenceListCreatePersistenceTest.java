@@ -33,14 +33,18 @@ public class PropertyEntityReferenceListCreatePersistenceTest extends BasePersis
 
 	@Entity( //
 			name = PropertyEntityReferenceListCreatePersistencePrototype.NAME, //
+			types = { //
+					@Type(name = "EntityReference<Some>", type = Type.ENTITY_REFERENCE, parameters = Some.NAME), //
+					@Type(name = "List<EntityReference<Some>>", type = Type.LIST, parameters = "EntityReference<Some>") //
+			}, //
 			properties = { //
-					@EntityProperty(name = "valueEntityReferenceList", type = @Type(name = Type.LIST), parameters = @Type(name = Some.NAME, reference = true)) //
+					@EntityProperty(name = "valueEntityReferenceList", type = "List<EntityReference<Some>>") //
 			}, //
 			indexes = { //
 					@EntityIndex( //
 							name = PropertyEntityReferenceListCreatePersistencePrototype.INDEX_NAME, //
 							properties = { //
-									@EntityIndexProperty(name = "valueEntityReferenceList", type = @Type(name = Type.LIST), parameters = @Type(name = Some.NAME, reference = true)) //
+									@EntityIndexProperty(name = "valueEntityReferenceList", type = "List<EntityReference<Some>>") //
 							} //
 					) //
 			} //

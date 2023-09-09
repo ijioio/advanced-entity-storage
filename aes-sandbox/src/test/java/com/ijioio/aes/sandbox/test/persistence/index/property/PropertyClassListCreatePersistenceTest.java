@@ -4,7 +4,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -28,14 +27,18 @@ public class PropertyClassListCreatePersistenceTest extends BasePersistenceTest 
 
 	@Entity( //
 			name = PropertyClassListCreatePersistencePrototype.NAME, //
+			types = { //
+					@Type(name = "Class<String>", type = Type.CLASS, parameters = Type.STRING), //
+					@Type(name = "List<Class<String>>", type = Type.LIST, parameters = "Class<String>") //
+			}, //
 			properties = { //
-					@EntityProperty(name = "valueClassList", type = @Type(name = Type.LIST), parameters = @Type(name = Type.CLASS)) //
+					@EntityProperty(name = "valueClassList", type = "List<Class<String>>") //
 			}, //
 			indexes = { //
 					@EntityIndex( //
 							name = PropertyClassListCreatePersistencePrototype.INDEX_NAME, //
 							properties = { //
-									@EntityIndexProperty(name = "valueClassList", type = @Type(name = Type.LIST), parameters = @Type(name = Type.CLASS)) //
+									@EntityIndexProperty(name = "valueClassList", type = "List<Class<String>>") //
 							} //
 					) //
 			} //
@@ -64,7 +67,7 @@ public class PropertyClassListCreatePersistenceTest extends BasePersistenceTest 
 		index.setId("property-class-list-create-persistence-index");
 		index.setSource(
 				EntityReference.of("property-class-list-create-persistence", PropertyClassListCreatePersistence.class));
-		index.setValueClassList(Arrays.asList(String.class, Number.class, Instant.class));
+		index.setValueClassList(Arrays.asList(String.class, String.class, String.class));
 	}
 
 	@Test

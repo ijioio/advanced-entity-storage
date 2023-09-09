@@ -25,14 +25,17 @@ public class PropertyClassCreatePersistenceTest extends BasePersistenceTest {
 
 	@Entity( //
 			name = PropertyClassCreatePersistencePrototype.NAME, //
+			types = { //
+					@Type(name = "Class<String>", type = Type.CLASS, parameters = Type.STRING) //
+			}, //
 			properties = { //
-					@EntityProperty(name = "valueClass", type = @Type(name = Type.CLASS), parameters = @Type(name = Type.STRING)) //
+					@EntityProperty(name = "valueClass", type = "Class<String>") //
 			}, //
 			indexes = { //
 					@EntityIndex( //
 							name = PropertyClassCreatePersistencePrototype.INDEX_NAME, //
 							properties = { //
-									@EntityIndexProperty(name = "valueClass", type = @Type(name = Type.CLASS), parameters = @Type(name = Type.STRING)) //
+									@EntityIndexProperty(name = "valueClass", type = "Class<String>") //
 							} //
 					) //
 			} //
