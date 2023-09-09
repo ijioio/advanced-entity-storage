@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
-import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
 import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
@@ -23,7 +22,7 @@ public class PropertyInstantExplicitSerializationTest extends BaseSerializationT
 	@Entity( //
 			name = PropertyInstantExplicitSerializationPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueInstant", type = @Type(name = "java.time.Instant")) //
+					@EntityProperty(name = "valueInstant", type = "java.time.Instant") //
 			} //
 	)
 	public static interface PropertyInstantExplicitSerializationPrototype {

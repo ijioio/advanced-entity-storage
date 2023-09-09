@@ -20,7 +20,7 @@ public class PropertyStringSerializationTest extends BaseSerializationTest {
 	@Entity( //
 			name = PropertyStringSerializationPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueString", type = @Type(name = Type.STRING)) //
+					@EntityProperty(name = "valueString", type = Type.STRING) //
 			} //
 	)
 	public static interface PropertyStringSerializationPrototype {

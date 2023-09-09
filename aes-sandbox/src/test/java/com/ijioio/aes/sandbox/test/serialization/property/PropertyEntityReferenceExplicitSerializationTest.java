@@ -25,8 +25,11 @@ public class PropertyEntityReferenceExplicitSerializationTest extends BaseSerial
 
 	@Entity( //
 			name = PropertyEntityReferenceExplicitSerializationPrototype.NAME, //
+			types = { //
+					@Type(name = "EntityReference<Some>", type = "com.ijioio.aes.core.EntityReference", parameters = "com.ijioio.aes.sandbox.test.serialization.property.PropertyEntityReferenceExplicitSerializationTest.Some") //
+			}, //
 			properties = { //
-					@EntityProperty(name = "valueEntityReference", type = @Type(name = "com.ijioio.aes.core.EntityReference"), parameters = @Type(name = "com.ijioio.aes.sandbox.test.serialization.property.PropertyEntityReferenceExplicitSerializationTest.Some")) //
+					@EntityProperty(name = "valueEntityReference", type = "EntityReference<Some>") //
 			} //
 	)
 	public static interface PropertyEntityReferenceExplicitSerializationPrototype {

@@ -21,7 +21,7 @@ public class PropertyByteArraySerializationTest extends BaseSerializationTest {
 	@Entity( //
 			name = PropertyByteArraySerializationPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueByteArray", type = @Type(name = Type.BYTE_ARRAY)) //
+					@EntityProperty(name = "valueByteArray", type = Type.BYTE_ARRAY) //
 			} //
 	)
 	public static interface PropertyByteArraySerializationPrototype {

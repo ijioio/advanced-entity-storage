@@ -23,15 +23,17 @@ public class PropertyMapFinalSerializationTest extends BaseSerializationTest {
 
 	@Entity( //
 			name = PropertyMapFinalSerializationPrototype.NAME, //
+			types = { //
+					@Type(name = "Map<String, String>", type = Type.MAP, parameters = { Type.STRING, Type.STRING }), //
+					@Type(name = "Map<Month, Month>", type = Type.MAP, parameters = { "java.time.Month",
+							"java.time.Month" }), //
+					@Type(name = "Map<Object, Object>", type = Type.MAP, parameters = { "java.lang.Object",
+							"java.lang.Object" }) //
+			}, //
 			properties = { //
-					@EntityProperty(name = "valueStringMap", type = @Type(name = Type.MAP), parameters = {
-							@Type(name = Type.STRING), @Type(name = Type.STRING) }, attributes = Attribute.FINAL), //
-					@EntityProperty(name = "valueEnumMap", type = @Type(name = Type.MAP), parameters = {
-							@Type(name = "java.time.Month"),
-							@Type(name = "java.time.Month") }, attributes = Attribute.FINAL), //
-					@EntityProperty(name = "valueObjectMap", type = @Type(name = Type.MAP), parameters = {
-							@Type(name = "java.lang.Object"),
-							@Type(name = "java.lang.Object") }, attributes = Attribute.FINAL) //
+					@EntityProperty(name = "valueStringMap", type = "Map<String, String>", attributes = Attribute.FINAL), //
+					@EntityProperty(name = "valueEnumMap", type = "Map<Month, Month>", attributes = Attribute.FINAL), //
+					@EntityProperty(name = "valueObjectMap", type = "Map<Object, Object>", attributes = Attribute.FINAL) //
 			} //
 	)
 	public static interface PropertyMapFinalSerializationPrototype {

@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
-import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
 import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
@@ -20,14 +19,14 @@ public class PropertyPrimitiveExplicitSerializationTest extends BaseSerializatio
 	@Entity( //
 			name = PropertyPrimitiveExplicitSerializationPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueBoolean", type = @Type(name = "boolean")), //
-					@EntityProperty(name = "valueChar", type = @Type(name = "char")), //
-					@EntityProperty(name = "valueByte", type = @Type(name = "byte")), //
-					@EntityProperty(name = "valueShort", type = @Type(name = "short")), //
-					@EntityProperty(name = "valueInt", type = @Type(name = "int")), //
-					@EntityProperty(name = "valueLong", type = @Type(name = "long")), //
-					@EntityProperty(name = "valueFloat", type = @Type(name = "float")), //
-					@EntityProperty(name = "valueDouble", type = @Type(name = "double")) //
+					@EntityProperty(name = "valueBoolean", type = "boolean"), //
+					@EntityProperty(name = "valueChar", type = "char"), //
+					@EntityProperty(name = "valueByte", type = "byte"), //
+					@EntityProperty(name = "valueShort", type = "short"), //
+					@EntityProperty(name = "valueInt", type = "int"), //
+					@EntityProperty(name = "valueLong", type = "long"), //
+					@EntityProperty(name = "valueFloat", type = "float"), //
+					@EntityProperty(name = "valueDouble", type = "double") //
 			} //
 	)
 	public static interface PropertyPrimitiveExplicitSerializationPrototype {

@@ -25,13 +25,21 @@ public class PropertyCollectionSerializationTest extends BaseSerializationTest {
 
 	@Entity( //
 			name = PropertyCollectionSerializationPrototype.NAME, //
+			types = { //
+					@Type(name = "List<String>", type = Type.LIST, parameters = Type.STRING), //
+					@Type(name = "List<Month>", type = Type.LIST, parameters = "java.time.Month"), //
+					@Type(name = "List<Object>", type = Type.LIST, parameters = "java.lang.Object"), //
+					@Type(name = "Set<String>", type = Type.SET, parameters = Type.STRING), //
+					@Type(name = "Set<Month>", type = Type.SET, parameters = "java.time.Month"), //
+					@Type(name = "Set<Object>", type = Type.SET, parameters = "java.lang.Object") //
+			}, //
 			properties = { //
-					@EntityProperty(name = "valueStringList", type = @Type(name = Type.LIST), parameters = @Type(name = Type.STRING)), //
-					@EntityProperty(name = "valueEnumList", type = @Type(name = Type.LIST), parameters = @Type(name = "java.time.Month")), //
-					@EntityProperty(name = "valueObjectList", type = @Type(name = Type.LIST), parameters = @Type(name = "java.lang.Object")), //
-					@EntityProperty(name = "valueStringSet", type = @Type(name = Type.SET), parameters = @Type(name = Type.STRING)), //
-					@EntityProperty(name = "valueEnumSet", type = @Type(name = Type.SET), parameters = @Type(name = "java.time.Month")), //
-					@EntityProperty(name = "valueObjectSet", type = @Type(name = Type.SET), parameters = @Type(name = "java.lang.Object")) //
+					@EntityProperty(name = "valueStringList", type = "List<String>"), //
+					@EntityProperty(name = "valueEnumList", type = "List<Month>"), //
+					@EntityProperty(name = "valueObjectList", type = "List<Object>"), //
+					@EntityProperty(name = "valueStringSet", type = "Set<String>"), //
+					@EntityProperty(name = "valueEnumSet", type = "Set<Month>"), //
+					@EntityProperty(name = "valueObjectSet", type = "Set<Object>") //
 			} //
 	)
 	public static interface PropertyCollectionSerializationPrototype {

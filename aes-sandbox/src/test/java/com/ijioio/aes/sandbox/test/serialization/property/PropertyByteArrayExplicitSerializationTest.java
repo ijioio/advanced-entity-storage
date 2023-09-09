@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
-import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
 import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
@@ -21,7 +20,7 @@ public class PropertyByteArrayExplicitSerializationTest extends BaseSerializatio
 	@Entity( //
 			name = PropertyByteArrayExplicitSerializationPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueByteArray", type = @Type(name = "[B")) //
+					@EntityProperty(name = "valueByteArray", type = "[B") //
 			} //
 	)
 	public static interface PropertyByteArrayExplicitSerializationPrototype {

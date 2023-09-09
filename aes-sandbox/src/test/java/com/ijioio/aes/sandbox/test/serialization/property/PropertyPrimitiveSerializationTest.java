@@ -20,14 +20,14 @@ public class PropertyPrimitiveSerializationTest extends BaseSerializationTest {
 	@Entity( //
 			name = PropertyPrimitiveSerializationPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueBoolean", type = @Type(name = Type.BOOLEAN)), //
-					@EntityProperty(name = "valueChar", type = @Type(name = Type.CHAR)), //
-					@EntityProperty(name = "valueByte", type = @Type(name = Type.BYTE)), //
-					@EntityProperty(name = "valueShort", type = @Type(name = Type.SHORT)), //
-					@EntityProperty(name = "valueInt", type = @Type(name = Type.INT)), //
-					@EntityProperty(name = "valueLong", type = @Type(name = Type.LONG)), //
-					@EntityProperty(name = "valueFloat", type = @Type(name = Type.FLOAT)), //
-					@EntityProperty(name = "valueDouble", type = @Type(name = Type.DOUBLE)) //
+					@EntityProperty(name = "valueBoolean", type = Type.BOOLEAN), //
+					@EntityProperty(name = "valueChar", type = Type.CHAR), //
+					@EntityProperty(name = "valueByte", type = Type.BYTE), //
+					@EntityProperty(name = "valueShort", type = Type.SHORT), //
+					@EntityProperty(name = "valueInt", type = Type.INT), //
+					@EntityProperty(name = "valueLong", type = Type.LONG), //
+					@EntityProperty(name = "valueFloat", type = Type.FLOAT), //
+					@EntityProperty(name = "valueDouble", type = Type.DOUBLE) //
 			} //
 	)
 	public static interface PropertyPrimitiveSerializationPrototype {
