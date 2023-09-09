@@ -123,7 +123,7 @@ public class EntityProcessor extends AbstractProcessor {
 
 		for (EntityPropertyMetadata property : properties) {
 
-			CodeGenTypeHandler handler = CodeGenTypeUtil.getTypeHandler(property.getType(), property.getParameters());
+			CodeGenTypeHandler handler = CodeGenTypeUtil.getTypeHandler(property.getType(), entity.getTypes());
 
 			if (handler.isBoolean()) {
 				methods.add(MethodSpec.methodBuilder(String.format("is%s", TextUtil.capitalize(property.getName())))
@@ -284,7 +284,7 @@ public class EntityProcessor extends AbstractProcessor {
 
 		for (EntityIndexPropertyMetadata property : properties) {
 
-			CodeGenTypeHandler handler = CodeGenTypeUtil.getTypeHandler(property.getType(), property.getParameters());
+			CodeGenTypeHandler handler = CodeGenTypeUtil.getTypeHandler(property.getType(), entity.getTypes());
 
 			fields.add(FieldSpec.builder(handler.getParameterizedType(), property.getName())
 					.addModifiers(Modifier.PRIVATE).build());
@@ -352,7 +352,7 @@ public class EntityProcessor extends AbstractProcessor {
 
 		for (EntityIndexPropertyMetadata property : properties) {
 
-			CodeGenTypeHandler handler = CodeGenTypeUtil.getTypeHandler(property.getType(), property.getParameters());
+			CodeGenTypeHandler handler = CodeGenTypeUtil.getTypeHandler(property.getType(), entity.getTypes());
 
 //			if (property.isFinal()) {
 //				codeBlockBuilder.addStatement("writers.put($T.$S, ($T value) -> {})",
@@ -407,7 +407,7 @@ public class EntityProcessor extends AbstractProcessor {
 
 		for (EntityIndexPropertyMetadata property : properties) {
 
-			CodeGenTypeHandler handler = CodeGenTypeUtil.getTypeHandler(property.getType(), property.getParameters());
+			CodeGenTypeHandler handler = CodeGenTypeUtil.getTypeHandler(property.getType(), entity.getTypes());
 
 			codeBlockBuilder.addStatement("readers.put($T.$L, () -> $L)", ClassName.bestGuess("Properties"),
 					property.getName(), property.getName());
@@ -479,7 +479,7 @@ public class EntityProcessor extends AbstractProcessor {
 
 		for (EntityIndexPropertyMetadata property : properties) {
 
-			CodeGenTypeHandler handler = CodeGenTypeUtil.getTypeHandler(property.getType(), property.getParameters());
+			CodeGenTypeHandler handler = CodeGenTypeUtil.getTypeHandler(property.getType(), entity.getTypes());
 
 			fields.add(
 					FieldSpec

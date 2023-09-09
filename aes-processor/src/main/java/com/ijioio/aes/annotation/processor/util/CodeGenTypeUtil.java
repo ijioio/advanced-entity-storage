@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -390,9 +391,25 @@ public class CodeGenTypeUtil {
 		}
 	};
 
-	public static CodeGenTypeHandler getTypeHandler(TypeMetadata type, List<TypeMetadata> parameters) {
+	public static TypeMetadata resolveType(String type, Map<String, TypeMetadata> types) {
 
-		String name = type.getName();
+		return Optional.ofNullable(resolveType(types.get(type), types))
+				.orElse(TypeMetadata.of(type, type, Collections.emptyList()));
+	}
+
+	private static TypeMetadata resolveType(TypeMetadata type, Map<String, TypeMetadata> types) {
+
+		return Optional.ofNullable(type).map(item -> resolveType(types.get(item.getType()), types)).orElse(type);
+	}
+
+	public static CodeGenTypeHandler getTypeHandler(String type, Map<String, TypeMetadata> types) {
+
+		return getTypeHandler(resolveType(type, types), types);
+	}
+
+	public static CodeGenTypeHandler getTypeHandler(TypeMetadata type, Map<String, TypeMetadata> types) {
+
+		String name = type.getType();
 
 		if (name.equals(Type.BOOLEAN) || name.equals(TypeUtil.BOOLEAN_TYPE_NAME)) {
 			return BOOLEAN_TYPE_HANDLER;
@@ -471,8 +488,7 @@ public class CodeGenTypeUtil {
 					return MAP_TYPE_NAME;
 				}
 
-				if (name.equals(Type.ENTITY_REFERENCE) || name.equals(TypeUtil.ENTITY_REFERENCE_TYPE_NAME)
-						|| type.isReference()) {
+				if (name.equals(Type.ENTITY_REFERENCE) || name.equals(TypeUtil.ENTITY_REFERENCE_TYPE_NAME)) {
 					return ENTITY_REFERENCE_TYPE_NAME;
 				}
 
@@ -500,18 +516,15 @@ public class CodeGenTypeUtil {
 			@Override
 			public List<TypeName> getParameters() {
 
-				return type.isReference() ? Collections.singletonList(ClassName.bestGuess(name))
-						: parameters.stream().map(item -> getTypeHandler(item, Collections.emptyList()).getType())
-								.collect(Collectors.toList());
+				return type.getParameters().stream().map(item -> resolveType(item, types))
+						.map(item -> getTypeHandler(item, types).getType()).collect(Collectors.toList());
 			}
 
 			@Override
 			public List<TypeName> getParameterizedParameters() {
 
-				return type.isReference() ? Collections.singletonList(ClassName.bestGuess(name))
-						: parameters.stream()
-								.map(item -> getTypeHandler(item, Collections.emptyList()).getParameterizedType())
-								.collect(Collectors.toList());
+				return type.getParameters().stream().map(item -> resolveType(item, types))
+						.map(item -> getTypeHandler(item, types).getParameterizedType()).collect(Collectors.toList());
 			}
 		};
 	}
