@@ -7,7 +7,7 @@ import com.ijioio.aes.annotation.Type;
 @Entity( //
 		name = SandboxChildPrototype.NAME, //
 		properties = { //
-				@EntityProperty(name = "valueString", type = @Type(name = Type.STRING)) //
+				@EntityProperty(name = "valueString", type = Type.STRING) //
 		} //
 )
 public interface SandboxChildPrototype {
