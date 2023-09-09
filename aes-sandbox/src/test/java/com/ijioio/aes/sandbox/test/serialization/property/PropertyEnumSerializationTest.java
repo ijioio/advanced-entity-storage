@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
-import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
 import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
@@ -21,7 +20,7 @@ public class PropertyEnumSerializationTest extends BaseSerializationTest {
 	@Entity( //
 			name = PropertyEnumSerializationPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueEnum", type = @Type(name = "java.time.Month")) //
+					@EntityProperty(name = "valueEnum", type = "java.time.Month") //
 			} //
 	)
 	public static interface PropertyEnumSerializationPrototype {

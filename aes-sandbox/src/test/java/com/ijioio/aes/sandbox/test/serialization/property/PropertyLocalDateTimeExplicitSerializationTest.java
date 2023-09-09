@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
-import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
 import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
@@ -22,7 +21,7 @@ public class PropertyLocalDateTimeExplicitSerializationTest extends BaseSerializ
 	@Entity( //
 			name = PropertyLocalDateTimeExplicitSerializationPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueLocalDateTime", type = @Type(name = "java.time.LocalDateTime")) //
+					@EntityProperty(name = "valueLocalDateTime", type = "java.time.LocalDateTime") //
 			} //
 	)
 	public static interface PropertyLocalDateTimeExplicitSerializationPrototype {

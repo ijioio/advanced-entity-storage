@@ -23,7 +23,7 @@ public class PropertyInstantSerializationTest extends BaseSerializationTest {
 	@Entity( //
 			name = PropertyInstantSerializationPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueInstant", type = @Type(name = Type.INSTANT)) //
+					@EntityProperty(name = "valueInstant", type = Type.INSTANT) //
 			} //
 	)
 	public static interface PropertyInstantSerializationPrototype {

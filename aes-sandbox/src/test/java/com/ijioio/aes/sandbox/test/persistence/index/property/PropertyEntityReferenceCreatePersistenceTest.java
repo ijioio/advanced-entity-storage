@@ -31,14 +31,17 @@ public class PropertyEntityReferenceCreatePersistenceTest extends BasePersistenc
 
 	@Entity( //
 			name = PropertyEntityReferenceCreatePersistencePrototype.NAME, //
+			types = { //
+					@Type(name = "EntityReference<Some>", type = Type.ENTITY_REFERENCE, parameters = Some.NAME) //
+			}, //
 			properties = { //
-					@EntityProperty(name = "valueEntityReference", type = @Type(name = Type.ENTITY_REFERENCE), parameters = @Type(name = Some.NAME)) //
+					@EntityProperty(name = "valueEntityReference", type = "EntityReference<Some>") //
 			}, //
 			indexes = { //
 					@EntityIndex( //
 							name = PropertyEntityReferenceCreatePersistencePrototype.INDEX_NAME, //
 							properties = { //
-									@EntityIndexProperty(name = "valueEntityReference", type = @Type(name = Type.ENTITY_REFERENCE), parameters = @Type(name = Some.NAME)) //
+									@EntityIndexProperty(name = "valueEntityReference", type = "EntityReference<Some>") //
 							} //
 					) //
 			} //

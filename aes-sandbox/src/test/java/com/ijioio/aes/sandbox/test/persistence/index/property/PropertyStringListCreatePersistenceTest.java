@@ -5,7 +5,6 @@ import java.nio.file.Paths;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,14 +26,17 @@ public class PropertyStringListCreatePersistenceTest extends BasePersistenceTest
 
 	@Entity( //
 			name = PropertyStringCreatePersistencePrototype.NAME, //
+			types = { //
+					@Type(name = "List<String>", type = Type.LIST, parameters = Type.STRING) //
+			}, //
 			properties = { //
-					@EntityProperty(name = "valueStringList", type = @Type(name = Type.LIST), parameters = @Type(name = Type.STRING)) //
+					@EntityProperty(name = "valueStringList", type = "List<String>") //
 			}, //
 			indexes = { //
 					@EntityIndex( //
 							name = PropertyStringCreatePersistencePrototype.INDEX_NAME, //
 							properties = { //
-									@EntityIndexProperty(name = "valueStringList", type = @Type(name = Type.LIST), parameters = @Type(name = Type.STRING)) //
+									@EntityIndexProperty(name = "valueStringList", type = "List<String>") //
 							} //
 					) //
 			} //

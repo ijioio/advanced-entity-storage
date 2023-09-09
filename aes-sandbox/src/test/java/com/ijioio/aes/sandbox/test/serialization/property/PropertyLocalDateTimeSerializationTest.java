@@ -22,7 +22,7 @@ public class PropertyLocalDateTimeSerializationTest extends BaseSerializationTes
 	@Entity( //
 			name = PropertyLocalDateTimeSerializationPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueLocalDateTime", type = @Type(name = Type.LOCAL_DATE_TIME)) //
+					@EntityProperty(name = "valueLocalDateTime", type = Type.LOCAL_DATE_TIME) //
 			} //
 	)
 	public static interface PropertyLocalDateTimeSerializationPrototype {

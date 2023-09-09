@@ -60,23 +60,32 @@ public class PropertyIdentitySerializationTest extends BaseSerializationTest {
 
 	@Entity( //
 			name = PropertyIdentitySerializationPrototype.NAME, //
+			types = { //
+					@Type(name = "List<IdentityFoo>", type = Type.LIST, parameters = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityFoo"), //
+					@Type(name = "List<IdentityBar>", type = Type.LIST, parameters = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityBar"), //
+					@Type(name = "List<Object>", type = Type.LIST, parameters = "java.lang.Object"), //
+					@Type(name = "Set<IdentityFoo>", type = Type.SET, parameters = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityFoo"), //
+					@Type(name = "Set<IdentityBar>", type = Type.SET, parameters = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityBar"), //
+					@Type(name = "Set<Object>", type = Type.SET, parameters = "java.lang.Object"), //
+					@Type(name = "Map<String, IdentityFoo>", type = Type.MAP, parameters = { Type.STRING,
+							"com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityFoo" }), //
+					@Type(name = "Map<String, IdentityBar>", type = Type.MAP, parameters = { Type.STRING,
+							"com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityBar" }), //
+					@Type(name = "Map<String, Object>", type = Type.MAP, parameters = { Type.STRING,
+							"java.lang.Object" }) //
+			}, //
 			properties = { //
-					@EntityProperty(name = "valueIdentityFoo", type = @Type(name = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityFoo")), //
-					@EntityProperty(name = "valueIdentityBar", type = @Type(name = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityBar")), //
-					@EntityProperty(name = "valueIdentityFooList", type = @Type(name = Type.LIST), parameters = @Type(name = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityFoo")), //
-					@EntityProperty(name = "valueIdentityBarList", type = @Type(name = Type.LIST), parameters = @Type(name = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityBar")), //
-					@EntityProperty(name = "valueIdentityMixList", type = @Type(name = Type.LIST), parameters = @Type(name = "java.lang.Object")), //
-					@EntityProperty(name = "valueIdentityFooSet", type = @Type(name = Type.SET), parameters = @Type(name = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityFoo")), //
-					@EntityProperty(name = "valueIdentityBarSet", type = @Type(name = Type.SET), parameters = @Type(name = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityBar")), //
-					@EntityProperty(name = "valueIdentityMixSet", type = @Type(name = Type.SET), parameters = @Type(name = "java.lang.Object")), //
-					@EntityProperty(name = "valueIdentityFooMap", type = @Type(name = Type.MAP), parameters = {
-							@Type(name = Type.STRING),
-							@Type(name = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityFoo") }), //
-					@EntityProperty(name = "valueIdentityBarMap", type = @Type(name = Type.MAP), parameters = {
-							@Type(name = Type.STRING),
-							@Type(name = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityBar") }), //
-					@EntityProperty(name = "valueIdentityMixMap", type = @Type(name = Type.MAP), parameters = {
-							@Type(name = Type.STRING), @Type(name = "java.lang.Object") }) //
+					@EntityProperty(name = "valueIdentityFoo", type = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityFoo"), //
+					@EntityProperty(name = "valueIdentityBar", type = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityBar"), //
+					@EntityProperty(name = "valueIdentityFooList", type = "List<IdentityFoo>"), //
+					@EntityProperty(name = "valueIdentityBarList", type = "List<IdentityBar>"), //
+					@EntityProperty(name = "valueIdentityMixList", type = "List<Object>"), //
+					@EntityProperty(name = "valueIdentityFooSet", type = "Set<IdentityFoo>"), //
+					@EntityProperty(name = "valueIdentityBarSet", type = "Set<IdentityBar>"), //
+					@EntityProperty(name = "valueIdentityMixSet", type = "Set<Object>"), //
+					@EntityProperty(name = "valueIdentityFooMap", type = "Map<String, IdentityFoo>"), //
+					@EntityProperty(name = "valueIdentityBarMap", type = "Map<String, IdentityBar>"), //
+					@EntityProperty(name = "valueIdentityMixMap", type = "Map<String, Object>") //
 			} //
 	)
 	public static interface PropertyIdentitySerializationPrototype {

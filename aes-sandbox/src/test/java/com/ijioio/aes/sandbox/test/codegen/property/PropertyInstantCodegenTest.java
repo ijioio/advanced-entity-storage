@@ -18,7 +18,7 @@ public class PropertyInstantCodegenTest extends BaseCodegenTest {
 	@Entity( //
 			name = PropertyInstantCodegenPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueInstant", type = @Type(name = Type.INSTANT)) //
+					@EntityProperty(name = "valueInstant", type = Type.INSTANT) //
 			} //
 	)
 	public static interface PropertyInstantCodegenPrototype {

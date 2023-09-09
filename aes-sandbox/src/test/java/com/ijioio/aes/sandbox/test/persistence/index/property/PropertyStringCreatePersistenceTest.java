@@ -26,13 +26,13 @@ public class PropertyStringCreatePersistenceTest extends BasePersistenceTest {
 	@Entity( //
 			name = PropertyStringCreatePersistencePrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueString", type = @Type(name = Type.STRING)) //
+					@EntityProperty(name = "valueString", type = Type.STRING) //
 			}, //
 			indexes = { //
 					@EntityIndex( //
 							name = PropertyStringCreatePersistencePrototype.INDEX_NAME, //
 							properties = { //
-									@EntityIndexProperty(name = "valueString", type = @Type(name = Type.STRING)) //
+									@EntityIndexProperty(name = "valueString", type = Type.STRING) //
 							} //
 					) //
 			} //

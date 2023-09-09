@@ -22,13 +22,17 @@ public class PropertyMapSerializationTest extends BaseSerializationTest {
 
 	@Entity( //
 			name = PropertyMapSerializationPrototype.NAME, //
+			types = { //
+					@Type(name = "Map<String, String>", type = Type.MAP, parameters = { Type.STRING, Type.STRING }), //
+					@Type(name = "Map<Month, Month>", type = Type.MAP, parameters = { "java.time.Month",
+							"java.time.Month" }), //
+					@Type(name = "Map<Object, Object>", type = Type.MAP, parameters = { "java.lang.Object",
+							"java.lang.Object" }) //
+			}, //
 			properties = { //
-					@EntityProperty(name = "valueStringMap", type = @Type(name = Type.MAP), parameters = {
-							@Type(name = Type.STRING), @Type(name = Type.STRING) }), //
-					@EntityProperty(name = "valueEnumMap", type = @Type(name = Type.MAP), parameters = {
-							@Type(name = "java.time.Month"), @Type(name = "java.time.Month") }), //
-					@EntityProperty(name = "valueObjectMap", type = @Type(name = Type.MAP), parameters = {
-							@Type(name = "java.lang.Object"), @Type(name = "java.lang.Object") }) //
+					@EntityProperty(name = "valueStringMap", type = "Map<String, String>"), //
+					@EntityProperty(name = "valueEnumMap", type = "Map<Month, Month>"), //
+					@EntityProperty(name = "valueObjectMap", type = "Map<Object, Object>") //
 			} //
 	)
 	public static interface PropertyMapSerializationPrototype {

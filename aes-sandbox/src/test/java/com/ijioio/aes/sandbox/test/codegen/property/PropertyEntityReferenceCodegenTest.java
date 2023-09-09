@@ -22,8 +22,11 @@ public class PropertyEntityReferenceCodegenTest extends BaseCodegenTest {
 
 	@Entity( //
 			name = PropertyEntityReferenceCodegenPrototype.NAME, //
+			types = { //
+					@Type(name = "EntityReference<Some>", type = Type.ENTITY_REFERENCE, parameters = "com.ijioio.aes.sandbox.test.codegen.property.PropertyEntityReferenceCodegenTest.Some") //
+			}, //
 			properties = { //
-					@EntityProperty(name = "valueEntityReference", type = @Type(name = Type.ENTITY_REFERENCE), parameters = @Type(name = "com.ijioio.aes.sandbox.test.codegen.property.PropertyEntityReferenceCodegenTest.Some")) //
+					@EntityProperty(name = "valueEntityReference", type = "EntityReference<Some>") //
 			} //
 	)
 	public static interface PropertyEntityReferenceCodegenPrototype {

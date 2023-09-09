@@ -36,14 +36,17 @@ public class PropertyEntityReferenceSearchPersistenceTest extends BasePersistenc
 
 	@Entity( //
 			name = PropertyEntityReferenceSearchPersistencePrototype.NAME, //
+			types = { //
+					@Type(name = "EntityReference<Some>", type = Type.ENTITY_REFERENCE, parameters = Some.NAME) //
+			}, //
 			properties = { //
-					@EntityProperty(name = "valueEntityReference", type = @Type(name = Type.ENTITY_REFERENCE), parameters = @Type(name = Some.NAME)) //
+					@EntityProperty(name = "valueEntityReference", type = "EntityReference<Some>") //
 			}, //
 			indexes = { //
 					@EntityIndex( //
 							name = PropertyEntityReferenceSearchPersistencePrototype.INDEX_NAME, //
 							properties = { //
-									@EntityIndexProperty(name = "valueEntityReference", type = @Type(name = Type.ENTITY_REFERENCE), parameters = @Type(name = Some.NAME)) //
+									@EntityIndexProperty(name = "valueEntityReference", type = "EntityReference<Some>") //
 							} //
 					) //
 			} //

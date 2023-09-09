@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
-import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.XSerializable;
 import com.ijioio.aes.core.serialization.SerializationContext;
 import com.ijioio.aes.core.serialization.SerializationException;
@@ -50,7 +49,7 @@ public class PropertyXSerializableSerializationTest extends BaseSerializationTes
 	@Entity( //
 			name = PropertyXSerializableSerializationPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueXSerializableObject", type = @Type(name = "com.ijioio.aes.sandbox.test.serialization.property.PropertyXSerializableSerializationTest.XSerializableObject")) //
+					@EntityProperty(name = "valueXSerializableObject", type = "com.ijioio.aes.sandbox.test.serialization.property.PropertyXSerializableSerializationTest.XSerializableObject") //
 			} //
 	)
 	public static interface PropertyXSerializableSerializationPrototype {

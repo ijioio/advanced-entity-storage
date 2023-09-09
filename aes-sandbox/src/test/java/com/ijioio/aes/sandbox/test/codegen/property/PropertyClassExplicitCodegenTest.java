@@ -16,8 +16,11 @@ public class PropertyClassExplicitCodegenTest extends BaseCodegenTest {
 
 	@Entity( //
 			name = PropertyClassExplicitCodegenPrototype.NAME, //
+			types = { //
+					@Type(name = "Class<String>", type = "java.lang.Class", parameters = Type.STRING) //
+			}, //
 			properties = { //
-					@EntityProperty(name = "valueClass", type = @Type(name = "java.lang.Class"), parameters = @Type(name = Type.STRING)) //
+					@EntityProperty(name = "valueClass", type = "Class<String>") //
 			} //
 	)
 	public static interface PropertyClassExplicitCodegenPrototype {

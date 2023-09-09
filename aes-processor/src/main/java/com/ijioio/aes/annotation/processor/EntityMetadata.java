@@ -45,6 +45,8 @@ public class EntityMetadata {
 
 	private final Set<Attribute> attributes = new HashSet<>();
 
+	private final Map<String, TypeMetadata> types = new LinkedHashMap<>();
+
 	private final Map<String, EntityPropertyMetadata> properties = new LinkedHashMap<>();
 
 	private final Map<String, EntityIndexMetadata> indexes = new LinkedHashMap<>();
@@ -138,6 +140,27 @@ public class EntityMetadata {
 					attributes.add(attribute);
 				}
 
+			} else if (key.getSimpleName().contentEquals("types")) {
+
+				List<? extends AnnotationValue> annotationValues = ProcessorUtil.arrayVisitor.visit(value);
+
+				types.clear();
+
+				for (AnnotationValue annotationValue : annotationValues) {
+
+					AnnotationMirror annotationMirror = ProcessorUtil.annotationVisitor.visit(annotationValue);
+
+					TypeMetadata type = TypeMetadata.of(environment, context.withAnnotationMirror(annotationMirror));
+
+					if (types.containsKey(type.getName())) {
+						throw new EntityIllegalStateException(
+								String.format("Type %s is already defined for the entity", type.getName()),
+								MessageContext.of(context.getElement(), annotationMirror, annotationValue));
+					}
+
+					types.put(type.getName(), type);
+				}
+
 			} else if (key.getSimpleName().contentEquals("properties")) {
 
 				List<? extends AnnotationValue> annotationValues = ProcessorUtil.arrayVisitor.visit(value);
@@ -215,6 +238,10 @@ public class EntityMetadata {
 		return properties;
 	}
 
+	public Map<String, TypeMetadata> getTypes() {
+		return types;
+	}
+
 	public Map<String, EntityIndexMetadata> getIndexes() {
 		return indexes;
 	}
@@ -226,6 +253,6 @@ public class EntityMetadata {
 	@Override
 	public String toString() {
 		return "EntityMetadata [name=" + name + ", parent=" + parent + ", interfaces=" + interfaces + ", attributes="
-				+ attributes + ", properties=" + properties + ", indexes=" + indexes + "]";
+				+ attributes + ", types=" + types + ", properties=" + properties + ", indexes=" + indexes + "]";
 	}
 }

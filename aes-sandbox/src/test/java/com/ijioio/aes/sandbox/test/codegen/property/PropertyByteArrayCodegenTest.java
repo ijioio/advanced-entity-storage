@@ -17,7 +17,7 @@ public class PropertyByteArrayCodegenTest extends BaseCodegenTest {
 	@Entity( //
 			name = PropertyByteArrayCodegenPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueByteArray", type = @Type(name = Type.BYTE_ARRAY)) //
+					@EntityProperty(name = "valueByteArray", type = Type.BYTE_ARRAY) //
 			} //
 	)
 	public static interface PropertyByteArrayCodegenPrototype {

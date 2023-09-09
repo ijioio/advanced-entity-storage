@@ -17,13 +17,18 @@ public class PropertyMapExplicitCodegenTest extends BaseCodegenTest {
 
 	@Entity( //
 			name = PropertyMapExplicitCodegenPrototype.NAME, //
+			types = { //
+					@Type(name = "Map<String, String>", type = "java.util.Map", parameters = { Type.STRING,
+							Type.STRING }), //
+					@Type(name = "Map<Month, Month>", type = "java.util.Map", parameters = { "java.time.Month",
+							"java.time.Month" }), //
+					@Type(name = "Map<Object, Object>", type = "java.util.Map", parameters = { "java.lang.Object",
+							"java.lang.Object" }) //
+			}, //
 			properties = { //
-					@EntityProperty(name = "valueStringMap", type = @Type(name = "java.util.Map"), parameters = {
-							@Type(name = Type.STRING), @Type(name = Type.STRING) }), //
-					@EntityProperty(name = "valueEnumMap", type = @Type(name = "java.util.Map"), parameters = {
-							@Type(name = "java.time.Month"), @Type(name = "java.time.Month") }), //
-					@EntityProperty(name = "valueObjectMap", type = @Type(name = "java.util.Map"), parameters = {
-							@Type(name = "java.lang.Object"), @Type(name = "java.lang.Object") }) //
+					@EntityProperty(name = "valueStringMap", type = "Map<String, String>"), //
+					@EntityProperty(name = "valueEnumMap", type = "Map<Month, Month>"), //
+					@EntityProperty(name = "valueObjectMap", type = "Map<Object, Object>") //
 			} //
 	)
 	public static interface PropertyMapExplicitCodegenPrototype {

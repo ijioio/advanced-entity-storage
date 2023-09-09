@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
-import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.XSerializable;
 import com.ijioio.aes.core.serialization.SerializationContext;
 import com.ijioio.aes.core.serialization.SerializationException;
@@ -186,9 +185,9 @@ public class PropertyPrioritySerializationTest extends BaseSerializationTest {
 	@Entity( //
 			name = PropertyPrioritySerializationPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueXSerializableList", type = @Type(name = "com.ijioio.aes.sandbox.test.serialization.property.PropertyPrioritySerializationTest.XSerializableList")), //
-					@EntityProperty(name = "valueXSerializableSet", type = @Type(name = "com.ijioio.aes.sandbox.test.serialization.property.PropertyPrioritySerializationTest.XSerializableSet")), //
-					@EntityProperty(name = "valueXSerializableMap", type = @Type(name = "com.ijioio.aes.sandbox.test.serialization.property.PropertyPrioritySerializationTest.XSerializableMap")) //
+					@EntityProperty(name = "valueXSerializableList", type = "com.ijioio.aes.sandbox.test.serialization.property.PropertyPrioritySerializationTest.XSerializableList"), //
+					@EntityProperty(name = "valueXSerializableSet", type = "com.ijioio.aes.sandbox.test.serialization.property.PropertyPrioritySerializationTest.XSerializableSet"), //
+					@EntityProperty(name = "valueXSerializableMap", type = "com.ijioio.aes.sandbox.test.serialization.property.PropertyPrioritySerializationTest.XSerializableMap") //
 			} //
 	)
 	public static interface PropertyPrioritySerializationPrototype {

@@ -29,13 +29,13 @@ public class PropertyStringDeletePersistenceTest extends BasePersistenceTest {
 	@Entity( //
 			name = PropertyStringDeletePersistencePrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueString", type = @Type(name = Type.STRING)) //
+					@EntityProperty(name = "valueString", type = Type.STRING) //
 			}, //
 			indexes = { //
 					@EntityIndex( //
 							name = PropertyStringDeletePersistencePrototype.INDEX_NAME, //
 							properties = { //
-									@EntityIndexProperty(name = "valueString", type = @Type(name = Type.STRING)) //
+									@EntityIndexProperty(name = "valueString", type = Type.STRING) //
 							} //
 					) //
 			} //

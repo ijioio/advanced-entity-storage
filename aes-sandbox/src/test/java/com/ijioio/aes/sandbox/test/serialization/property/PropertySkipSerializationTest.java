@@ -25,12 +25,16 @@ public class PropertySkipSerializationTest extends BaseSerializationTest {
 
 	@Entity( //
 			name = PropertySkipSerializationPrototype.NAME, //
+			types = { //
+					@Type(name = "List<String>", type = Type.LIST, parameters = Type.STRING), //
+					@Type(name = "Set<String>", type = Type.SET, parameters = Type.STRING), //
+					@Type(name = "Map<String, String>", type = Type.MAP, parameters = { Type.STRING, Type.STRING }) //
+			}, //
 			properties = { //
-					@EntityProperty(name = "valueString", type = @Type(name = Type.STRING)), //
-					@EntityProperty(name = "valueStringList", type = @Type(name = Type.LIST), parameters = @Type(name = Type.STRING)), //
-					@EntityProperty(name = "valueStringSet", type = @Type(name = Type.SET), parameters = @Type(name = Type.STRING)), //
-					@EntityProperty(name = "valueStringMap", type = @Type(name = Type.MAP), parameters = {
-							@Type(name = Type.STRING), @Type(name = Type.STRING) }) //
+					@EntityProperty(name = "valueString", type = Type.STRING), //
+					@EntityProperty(name = "valueStringList", type = "List<String>"), //
+					@EntityProperty(name = "valueStringSet", type = "Set<String>"), //
+					@EntityProperty(name = "valueStringMap", type = "Map<String, String>") //
 			} //
 	)
 	public static interface PropertySkipSerializationPrototype {
