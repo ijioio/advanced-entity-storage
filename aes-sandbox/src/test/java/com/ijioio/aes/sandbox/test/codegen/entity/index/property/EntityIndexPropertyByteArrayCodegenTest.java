@@ -20,7 +20,7 @@ public class EntityIndexPropertyByteArrayCodegenTest extends BaseCodegenTest {
 			indexes = @EntityIndex( //
 					name = EntityIndexPropertyByteArrayCodegenPrototype.INDEX_NAME, //
 					properties = { //
-							@EntityIndexProperty(name = "valueByteArray", type = @Type(name = Type.BYTE_ARRAY)) //
+							@EntityIndexProperty(name = "valueByteArray", type = Type.BYTE_ARRAY) //
 					} //
 			) //
 	)
