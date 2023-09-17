@@ -58,12 +58,16 @@ public class PropertyEntityReferenceSearchPersistenceTest extends BasePersistenc
 		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyEntityReferenceSearchPersistenceIndex";
 	}
 
+	private JdbcPersistenceHandler handler;
+
 	private Path path;
 
 	private List<PropertyEntityReferenceSearchPersistenceIndex> indexes;
 
 	@BeforeEach
 	public void before() throws Exception {
+
+		handler = new JdbcPersistenceHandler();
 
 		path = Paths.get(getClass().getClassLoader()
 				.getResource("persistence/index/property/property-entity-reference-search-persistence.sql").toURI());
@@ -90,8 +94,6 @@ public class PropertyEntityReferenceSearchPersistenceTest extends BasePersistenc
 	@Test
 	public void testSearch() throws Exception {
 
-		JdbcPersistenceHandler handler = new JdbcPersistenceHandler();
-
 		for (PropertyEntityReferenceSearchPersistenceIndex index : indexes) {
 			handler.create(JdbcPersistenceContext.of(connection), index);
 		}
@@ -109,8 +111,6 @@ public class PropertyEntityReferenceSearchPersistenceTest extends BasePersistenc
 
 	@Test
 	public void testSearchEquals() throws Exception {
-
-		JdbcPersistenceHandler handler = new JdbcPersistenceHandler();
 
 		for (PropertyEntityReferenceSearchPersistenceIndex index : indexes) {
 			handler.create(JdbcPersistenceContext.of(connection), index);

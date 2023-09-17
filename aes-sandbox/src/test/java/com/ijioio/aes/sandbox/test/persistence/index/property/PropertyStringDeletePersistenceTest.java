@@ -47,12 +47,16 @@ public class PropertyStringDeletePersistenceTest extends BasePersistenceTest {
 		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyStringDeletePersistenceIndex";
 	}
 
+	private JdbcPersistenceHandler handler;
+
 	private Path path;
 
 	private List<PropertyStringDeletePersistenceIndex> indexes;
 
 	@BeforeEach
 	public void before() throws Exception {
+
+		handler = new JdbcPersistenceHandler();
 
 		path = Paths.get(getClass().getClassLoader()
 				.getResource("persistence/index/property/property-string-delete-persistence.sql").toURI());
@@ -78,8 +82,6 @@ public class PropertyStringDeletePersistenceTest extends BasePersistenceTest {
 
 	@Test
 	public void testDelete() throws Exception {
-
-		JdbcPersistenceHandler handler = new JdbcPersistenceHandler();
 
 		for (PropertyStringDeletePersistenceIndex index : indexes) {
 			handler.create(JdbcPersistenceContext.of(connection), index);

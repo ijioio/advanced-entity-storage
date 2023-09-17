@@ -1,5 +1,5 @@
-drop table if exists PropertyStringListCreatePersistenceIndex;
-create table PropertyStringListCreatePersistenceIndex(
+drop table if exists PropertyStringListSearchPersistenceIndex;
+create table PropertyStringListSearchPersistenceIndex(
 	id varchar(256) primary key,
 	sourceSearchId varchar(256) not null,
 	sourceId varchar(256) not null,

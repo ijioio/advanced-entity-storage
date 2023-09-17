@@ -50,12 +50,16 @@ public class PropertyStringSearchPersistenceTest extends BasePersistenceTest {
 		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyStringSearchPersistenceIndex";
 	}
 
+	private JdbcPersistenceHandler handler;
+
 	private Path path;
 
 	private List<PropertyStringSearchPersistenceIndex> indexes;
 
 	@BeforeEach
 	public void before() throws Exception {
+
+		handler = new JdbcPersistenceHandler();
 
 		path = Paths.get(getClass().getClassLoader()
 				.getResource("persistence/index/property/property-string-search-persistence.sql").toURI());
@@ -82,8 +86,6 @@ public class PropertyStringSearchPersistenceTest extends BasePersistenceTest {
 	@Test
 	public void testSearch() throws Exception {
 
-		JdbcPersistenceHandler handler = new JdbcPersistenceHandler();
-
 		for (PropertyStringSearchPersistenceIndex index : indexes) {
 			handler.create(JdbcPersistenceContext.of(connection), index);
 		}
@@ -101,8 +103,6 @@ public class PropertyStringSearchPersistenceTest extends BasePersistenceTest {
 
 	@Test
 	public void testSearchEquals() throws Exception {
-
-		JdbcPersistenceHandler handler = new JdbcPersistenceHandler();
 
 		for (PropertyStringSearchPersistenceIndex index : indexes) {
 			handler.create(JdbcPersistenceContext.of(connection), index);
@@ -129,8 +129,6 @@ public class PropertyStringSearchPersistenceTest extends BasePersistenceTest {
 
 	@Test
 	public void testSearchNotEquals() throws Exception {
-
-		JdbcPersistenceHandler handler = new JdbcPersistenceHandler();
 
 		for (PropertyStringSearchPersistenceIndex index : indexes) {
 			handler.create(JdbcPersistenceContext.of(connection), index);
@@ -159,8 +157,6 @@ public class PropertyStringSearchPersistenceTest extends BasePersistenceTest {
 	@Test
 	public void testSearchGreater() throws Exception {
 
-		JdbcPersistenceHandler handler = new JdbcPersistenceHandler();
-
 		for (PropertyStringSearchPersistenceIndex index : indexes) {
 			handler.create(JdbcPersistenceContext.of(connection), index);
 		}
@@ -183,8 +179,6 @@ public class PropertyStringSearchPersistenceTest extends BasePersistenceTest {
 
 	@Test
 	public void testSearchGreaterOrEquals() throws Exception {
-
-		JdbcPersistenceHandler handler = new JdbcPersistenceHandler();
 
 		for (PropertyStringSearchPersistenceIndex index : indexes) {
 			handler.create(JdbcPersistenceContext.of(connection), index);
@@ -209,8 +203,6 @@ public class PropertyStringSearchPersistenceTest extends BasePersistenceTest {
 	@Test
 	public void testSearchLower() throws Exception {
 
-		JdbcPersistenceHandler handler = new JdbcPersistenceHandler();
-
 		for (PropertyStringSearchPersistenceIndex index : indexes) {
 			handler.create(JdbcPersistenceContext.of(connection), index);
 		}
@@ -233,8 +225,6 @@ public class PropertyStringSearchPersistenceTest extends BasePersistenceTest {
 
 	@Test
 	public void testSearchLowerOrEquals() throws Exception {
-
-		JdbcPersistenceHandler handler = new JdbcPersistenceHandler();
 
 		for (PropertyStringSearchPersistenceIndex index : indexes) {
 			handler.create(JdbcPersistenceContext.of(connection), index);

@@ -44,12 +44,16 @@ public class PropertyStringCreatePersistenceTest extends BasePersistenceTest {
 		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyStringCreatePersistenceIndex";
 	}
 
+	private JdbcPersistenceHandler handler;
+
 	private Path path;
 
 	private PropertyStringCreatePersistenceIndex index;
 
 	@BeforeEach
 	public void before() throws Exception {
+
+		handler = new JdbcPersistenceHandler();
 
 		path = Paths.get(getClass().getClassLoader()
 				.getResource("persistence/index/property/property-string-create-persistence.sql").toURI());
@@ -67,8 +71,6 @@ public class PropertyStringCreatePersistenceTest extends BasePersistenceTest {
 	@Test
 	public void testCreate() throws Exception {
 
-		JdbcPersistenceHandler handler = new JdbcPersistenceHandler();
-
 		handler.create(JdbcPersistenceContext.of(connection), index);
 
 		try (PreparedStatement statement = connection.prepareStatement(
@@ -79,6 +81,8 @@ public class PropertyStringCreatePersistenceTest extends BasePersistenceTest {
 				Assertions.assertTrue(resultSet.next());
 
 				Assertions.assertEquals(index.getId(), resultSet.getString("id"));
+				Assertions.assertEquals(getEntityReferenceSearchId(index.getSource()),
+						resultSet.getString("sourceSearchId"));
 				Assertions.assertEquals(index.getSource().getId(), resultSet.getString("sourceId"));
 				Assertions.assertEquals(index.getSource().getType().getName(), resultSet.getString("sourceType"));
 				Assertions.assertEquals(index.getValueString(), resultSet.getString("valueString"));

@@ -56,12 +56,16 @@ public class PropertyEntityReferenceListCreatePersistenceTest extends BasePersis
 		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyEntityReferenceListCreatePersistenceIndex";
 	}
 
+	private JdbcPersistenceHandler handler;
+
 	private Path path;
 
 	private PropertyEntityReferenceListCreatePersistenceIndex index;
 
 	@BeforeEach
 	public void before() throws Exception {
+
+		handler = new JdbcPersistenceHandler();
 
 		path = Paths.get(getClass().getClassLoader()
 				.getResource("persistence/index/property/property-entity-reference-list-create-persistence.sql")
@@ -81,8 +85,6 @@ public class PropertyEntityReferenceListCreatePersistenceTest extends BasePersis
 	@Test
 	public void testCreate() throws Exception {
 
-		JdbcPersistenceHandler handler = new JdbcPersistenceHandler();
-
 		handler.create(JdbcPersistenceContext.of(connection), index);
 
 		try (PreparedStatement statement = connection.prepareStatement(String.format("select * from %s",
@@ -93,8 +95,14 @@ public class PropertyEntityReferenceListCreatePersistenceTest extends BasePersis
 				Assertions.assertTrue(resultSet.next());
 
 				Assertions.assertEquals(index.getId(), resultSet.getString("id"));
+				Assertions.assertEquals(getEntityReferenceSearchId(index.getSource()),
+						resultSet.getString("sourceSearchId"));
 				Assertions.assertEquals(index.getSource().getId(), resultSet.getString("sourceId"));
 				Assertions.assertEquals(index.getSource().getType().getName(), resultSet.getString("sourceType"));
+				Assertions.assertEquals(
+						index.getValueEntityReferenceList().stream().map(item -> getEntityReferenceSearchId(item))
+								.collect(Collectors.toList()),
+						Arrays.asList((Object[]) resultSet.getArray("valueEntityReferenceListSearchId").getArray()));
 				Assertions.assertEquals(
 						index.getValueEntityReferenceList().stream().map(item -> item.getId())
 								.collect(Collectors.toList()),
