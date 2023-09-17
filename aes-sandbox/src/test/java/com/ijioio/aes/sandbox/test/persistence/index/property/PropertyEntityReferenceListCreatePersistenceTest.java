@@ -95,14 +95,8 @@ public class PropertyEntityReferenceListCreatePersistenceTest extends BasePersis
 				Assertions.assertTrue(resultSet.next());
 
 				Assertions.assertEquals(index.getId(), resultSet.getString("id"));
-				Assertions.assertEquals(getEntityReferenceSearchId(index.getSource()),
-						resultSet.getString("sourceSearchId"));
 				Assertions.assertEquals(index.getSource().getId(), resultSet.getString("sourceId"));
 				Assertions.assertEquals(index.getSource().getType().getName(), resultSet.getString("sourceType"));
-				Assertions.assertEquals(
-						index.getValueEntityReferenceList().stream().map(item -> getEntityReferenceSearchId(item))
-								.collect(Collectors.toList()),
-						Arrays.asList((Object[]) resultSet.getArray("valueEntityReferenceListSearchId").getArray()));
 				Assertions.assertEquals(
 						index.getValueEntityReferenceList().stream().map(item -> item.getId())
 								.collect(Collectors.toList()),

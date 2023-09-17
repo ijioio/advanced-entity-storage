@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import com.ijioio.aes.core.EntityIndex;
@@ -800,21 +799,14 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 		public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
 				TypeReference<EntityReference> type, boolean search) {
 
-			TypeReference<String> searchIdProperty = TypeReference.of(String.class);
 			TypeReference<String> idProperty = TypeReference.of(String.class);
 			TypeReference<Class> typeProperty = TypeReference.of(Class.class);
 
-			JdbcPersistenceValueHandler<String> searchIdHandler = handler
-					.getValueHandler(searchIdProperty.getRawType());
 			JdbcPersistenceValueHandler<String> idHandler = handler.getValueHandler(idProperty.getRawType());
 			JdbcPersistenceValueHandler<Class> typeHandler = handler.getValueHandler(typeProperty.getRawType());
 
 			return Stream
-					.of(searchIdHandler.getColumns(context, handler, String.format("%sSearchId", name), idProperty,
-							search),
-							search ? Collections.<String>emptyList()
-									: idHandler.getColumns(context, handler, String.format("%sId", name), idProperty,
-											search),
+					.of(idHandler.getColumns(context, handler, String.format("%sId", name), idProperty, search),
 							search ? Collections.<String>emptyList()
 									: typeHandler.getColumns(context, handler, String.format("%sType", name),
 											typeProperty, search))
@@ -826,21 +818,15 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 				TypeReference<EntityReference> type, EntityReference value, boolean search)
 				throws PersistenceException {
 
-			TypeReference<String> searchIdProperty = TypeReference.of(String.class);
 			TypeReference<String> idProperty = TypeReference.of(String.class);
 			TypeReference<Class> typeProperty = TypeReference.of(Class.class);
 
-			JdbcPersistenceValueHandler<String> searchIdHandler = handler
-					.getValueHandler(searchIdProperty.getRawType());
 			JdbcPersistenceValueHandler<String> idHandler = handler.getValueHandler(idProperty.getRawType());
 			JdbcPersistenceValueHandler<Class> typeHandler = handler.getValueHandler(typeProperty.getRawType());
 
-			searchIdHandler.write(context, handler, searchIdProperty, value != null ? getSearchId(value) : null,
-					search);
+			idHandler.write(context, handler, idProperty, value != null ? value.getId() : null, search);
 
 			if (!search) {
-
-				idHandler.write(context, handler, idProperty, value != null ? value.getId() : null, search);
 				typeHandler.write(context, handler, typeProperty, value != null ? value.getType() : null, search);
 			}
 		}
@@ -850,34 +836,26 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 				TypeReference<? extends Collection<EntityReference>> type, Collection<EntityReference> values,
 				boolean search) throws PersistenceException {
 
-			TypeReference<List<String>> searchIdType = new TypeReference<List<String>>() {
-			};
 			TypeReference<List<String>> idType = new TypeReference<List<String>>() {
 			};
 			TypeReference<List<Class>> typeType = new TypeReference<List<Class>>() {
 			};
 
-			JdbcPersistenceValueHandler<List<String>> searchIdHandler = handler
-					.getValueHandler(searchIdType.getRawType());
 			JdbcPersistenceValueHandler<List<String>> idHandler = handler.getValueHandler(idType.getRawType());
 			JdbcPersistenceValueHandler<List<Class>> typeHandler = handler.getValueHandler(typeType.getRawType());
 
-			List<String> searchIdValues = new ArrayList<>();
 			List<String> idValues = new ArrayList<>();
 			List<Class> typeValues = new ArrayList<>();
 
 			for (EntityReference value : values) {
 
-				searchIdValues.add(value != null ? getSearchId(value) : null);
 				idValues.add(value != null ? value.getId() : null);
 				typeValues.add(value != null ? value.getType() : null);
 			}
 
-			searchIdHandler.write(context, handler, searchIdType, searchIdValues, search);
+			idHandler.write(context, handler, idType, idValues, search);
 
 			if (!search) {
-
-				idHandler.write(context, handler, idType, idValues, search);
 				typeHandler.write(context, handler, typeType, typeValues, search);
 			}
 		}
@@ -887,17 +865,12 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 		public EntityReference read(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
 				TypeReference<EntityReference> type, EntityReference value) throws PersistenceException {
 
-			TypeReference<String> searchIdProperty = TypeReference.of(String.class);
 			TypeReference<String> idType = TypeReference.of(String.class);
 			TypeReference<Class> typeType = TypeReference.of(Class.class);
 
-			JdbcPersistenceValueHandler<String> searchIdHandler = handler
-					.getValueHandler(searchIdProperty.getRawType());
 			JdbcPersistenceValueHandler<String> idHandler = handler.getValueHandler(idType.getRawType());
 			JdbcPersistenceValueHandler<Class> typeHandler = handler.getValueHandler(typeType.getRawType());
 
-			@SuppressWarnings("unused")
-			String searchIdValue = searchIdHandler.read(context, handler, idType, null);
 			String idValue = idHandler.read(context, handler, idType, null);
 			Class typeValue = typeHandler.read(context, handler, typeType, null);
 
@@ -910,25 +883,19 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 				JdbcPersistenceHandler handler, TypeReference<? extends Collection<EntityReference>> type,
 				Collection<EntityReference> values) throws PersistenceException {
 
-			TypeReference<List<String>> searchIdType = new TypeReference<List<String>>() {
-			};
 			TypeReference<List<String>> idType = new TypeReference<List<String>>() {
 			};
 			TypeReference<List<Class>> typeType = new TypeReference<List<Class>>() {
 			};
 
-			JdbcPersistenceValueHandler<List<String>> searchIdHandler = handler
-					.getValueHandler(searchIdType.getRawType());
 			JdbcPersistenceValueHandler<List<String>> idHandler = handler.getValueHandler(idType.getRawType());
 			JdbcPersistenceValueHandler<List<Class>> typeHandler = handler.getValueHandler(typeType.getRawType());
 
-			@SuppressWarnings("unused")
-			Collection<String> searchIdValues = searchIdHandler.read(context, handler, searchIdType, null);
 			Collection<String> idValues = idHandler.read(context, handler, idType, null);
 			Collection<Class> typeValues = typeHandler.read(context, handler, typeType, null);
 
-			if (IntStream.of(searchIdValues.size(), idValues.size(), typeValues.size()).distinct().count() > 1) {
-				throw new PersistenceException("counts of search ids, ids and types are not matches");
+			if (idValues.size() != typeValues.size()) {
+				throw new PersistenceException("count of ids not matches count of types");
 			}
 
 			Collection<EntityReference> collection = List.class.isAssignableFrom(type.getRawType()) ? new ArrayList<>()
@@ -942,12 +909,6 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 			}
 
 			return collection;
-		}
-
-		private String getSearchId(EntityReference value) {
-
-			return String.format("%s|%s", value.getId(),
-					Optional.ofNullable(value.getType()).map(item -> item.getName()).orElse(null));
 		}
 	};
 
