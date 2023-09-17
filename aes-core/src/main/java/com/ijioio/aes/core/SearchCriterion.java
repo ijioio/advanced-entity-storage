@@ -19,57 +19,85 @@ public class SearchCriterion {
 
 	/**
 	 * Class represents simple search criterion. It holds simple search criterion
-	 * data, i.e. {@code column}, {@code operation} and {@code value}.
+	 * data, i.e. {@code property}, {@code operation}, {@code type} of the value and
+	 * {@code value}.
 	 */
-	public static class SimpleSearchCriterion<T> extends SearchCriterion {
+	public static class SimpleSearchCriterion<P, T> extends SearchCriterion {
 
-		public static <T> SimpleSearchCriterion<T> eq(Property<T> property, T value) {
-			return new SimpleSearchCriterion<>(property, Operation.EQUALS, value);
+		public static <T> SimpleSearchCriterion<T, T> eq(Property<T> property, T value) {
+			return new SimpleSearchCriterion<>(property, Operation.EQUALS, property.getType(), value);
 		}
 
-		public static <T> SimpleSearchCriterion<T> ne(Property<T> property, T value) {
-			return new SimpleSearchCriterion<>(property, Operation.NOT_EQUALS, value);
+		public static <T> SimpleSearchCriterion<T, T> ne(Property<T> property, T value) {
+			return new SimpleSearchCriterion<>(property, Operation.NOT_EQUALS, property.getType(), value);
 		}
 
-		public static <T> SimpleSearchCriterion<T> gt(Property<T> property, T value) {
-			return new SimpleSearchCriterion<>(property, Operation.GREATER, value);
+		public static <T> SimpleSearchCriterion<T, T> gt(Property<T> property, T value) {
+			return new SimpleSearchCriterion<>(property, Operation.GREATER, property.getType(), value);
 		}
 
-		public static <T> SimpleSearchCriterion<T> ge(Property<T> property, T value) {
-			return new SimpleSearchCriterion<>(property, Operation.GREATER_OR_EQUALS, value);
+		public static <T> SimpleSearchCriterion<T, T> ge(Property<T> property, T value) {
+			return new SimpleSearchCriterion<>(property, Operation.GREATER_OR_EQUALS, property.getType(), value);
 		}
 
-		public static <T> SimpleSearchCriterion<T> lt(Property<T> property, T value) {
-			return new SimpleSearchCriterion<>(property, Operation.LOWER, value);
+		public static <T> SimpleSearchCriterion<T, T> lt(Property<T> property, T value) {
+			return new SimpleSearchCriterion<>(property, Operation.LOWER, property.getType(), value);
 		}
 
-		public static <T> SimpleSearchCriterion<T> le(Property<T> property, T value) {
-			return new SimpleSearchCriterion<>(property, Operation.LOWER_OR_EQUALS, value);
+		public static <T> SimpleSearchCriterion<T, T> le(Property<T> property, T value) {
+			return new SimpleSearchCriterion<>(property, Operation.LOWER_OR_EQUALS, property.getType(), value);
 		}
 
-		public static <T> SimpleSearchCriterion<T> of(Property<T> property, Operation operation, T value) {
-			return new SimpleSearchCriterion<>(property, operation, value);
+		@SuppressWarnings("unchecked")
+		public static <C extends Collection<T>, T> SimpleSearchCriterion<C, T> anyeq(Property<C> property, T value) {
+			return new SimpleSearchCriterion<>(property, Operation.ANY_EQUALS,
+					property.getType().getParameterTypes()[0], value);
 		}
 
-		private final Property<T> property;
+		@SuppressWarnings("unchecked")
+		public static <C extends Collection<T>, T> SimpleSearchCriterion<C, T> anyne(Property<C> property, T value) {
+			return new SimpleSearchCriterion<>(property, Operation.ANY_NOT_EQUALS,
+					property.getType().getParameterTypes()[0], value);
+		}
+
+		@SuppressWarnings("unchecked")
+		public static <C extends Collection<T>, T> SimpleSearchCriterion<C, T> alleq(Property<C> property, T value) {
+			return new SimpleSearchCriterion<>(property, Operation.ALL_EQUALS,
+					property.getType().getParameterTypes()[0], value);
+		}
+
+		@SuppressWarnings("unchecked")
+		public static <C extends Collection<T>, T> SimpleSearchCriterion<C, T> allne(Property<C> property, T value) {
+			return new SimpleSearchCriterion<>(property, Operation.ALL_NOT_EQUALS,
+					property.getType().getParameterTypes()[0], value);
+		}
+
+		private final Property<P> property;
 
 		private final Operation operation;
 
+		private final TypeReference<T> type;
+
 		private final T value;
 
-		private SimpleSearchCriterion(Property<T> property, Operation operation, T value) {
+		private SimpleSearchCriterion(Property<P> property, Operation operation, TypeReference<T> type, T value) {
 
 			this.property = property;
 			this.operation = operation;
+			this.type = type;
 			this.value = value;
 		}
 
-		public Property<T> getProperty() {
+		public Property<P> getProperty() {
 			return property;
 		}
 
 		public Operation getOperation() {
 			return operation;
+		}
+
+		public TypeReference<T> getType() {
+			return type;
 		}
 
 		public T getValue() {
@@ -78,8 +106,8 @@ public class SearchCriterion {
 
 		@Override
 		public String toString() {
-			return "SimpleSearchCriterion [property=" + property + ", operation=" + operation + ", value=" + value
-					+ "]";
+			return "SimpleSearchCriterion [property=" + property + ", operation=" + operation + ", type=" + type
+					+ ", value=" + value + "]";
 		}
 	}
 
