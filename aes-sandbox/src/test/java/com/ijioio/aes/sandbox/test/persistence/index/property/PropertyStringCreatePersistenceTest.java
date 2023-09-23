@@ -89,4 +89,28 @@ public class PropertyStringCreatePersistenceTest extends BasePersistenceTest {
 			}
 		}
 	}
+
+	@Test
+	public void testCreateNull() throws Exception {
+
+		index.setValueString(null);
+
+		handler.create(JdbcPersistenceContext.of(connection), index);
+
+		try (PreparedStatement statement = connection.prepareStatement(
+				String.format("select * from %s", PropertyStringCreatePersistenceIndex.class.getSimpleName()))) {
+
+			try (ResultSet resultSet = statement.executeQuery()) {
+
+				Assertions.assertTrue(resultSet.next());
+
+				Assertions.assertEquals(index.getId(), resultSet.getString("id"));
+				Assertions.assertEquals(index.getSource().getId(), resultSet.getString("sourceId"));
+				Assertions.assertEquals(index.getSource().getType().getName(), resultSet.getString("sourceType"));
+				Assertions.assertEquals(index.getValueString(), resultSet.getString("valueString"));
+
+				Assertions.assertTrue(resultSet.isLast());
+			}
+		}
+	}
 }

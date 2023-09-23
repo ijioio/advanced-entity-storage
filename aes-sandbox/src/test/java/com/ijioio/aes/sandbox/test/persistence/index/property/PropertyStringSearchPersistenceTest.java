@@ -3,6 +3,7 @@ package com.ijioio.aes.sandbox.test.persistence.index.property;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,9 +19,9 @@ import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.BaseEntityIndex;
 import com.ijioio.aes.core.EntityReference;
 import com.ijioio.aes.core.Order;
-import com.ijioio.aes.core.SearchCriterion.SimpleSearchCriterion;
 import com.ijioio.aes.core.SearchQuery;
 import com.ijioio.aes.core.SearchQuery.SearchQueryBuilder;
+import com.ijioio.aes.core.persistence.PersistenceException;
 import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceContext;
 import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandler;
 import com.ijioio.aes.sandbox.test.persistence.BasePersistenceTest;
@@ -102,25 +103,67 @@ public class PropertyStringSearchPersistenceTest extends BasePersistenceTest {
 	}
 
 	@Test
+	public void testSearchNull() throws Exception {
+
+		for (PropertyStringSearchPersistenceIndex index : indexes) {
+
+			index.setValueString(null);
+
+			handler.create(JdbcPersistenceContext.of(connection), index);
+		}
+
+		SearchQuery<PropertyStringSearchPersistenceIndex> query = SearchQueryBuilder
+				.of(PropertyStringSearchPersistenceIndex.class).sorting(BaseEntityIndex.Properties.id, Order.ASC)
+				.build();
+
+		List<PropertyStringSearchPersistenceIndex> expectedIndexes = indexes;
+		List<PropertyStringSearchPersistenceIndex> actualIndexes = handler.search(JdbcPersistenceContext.of(connection),
+				query);
+
+		check(expectedIndexes, actualIndexes);
+	}
+
+	@Test
 	public void testSearchEquals() throws Exception {
+
+		PropertyStringSearchPersistenceIndex selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
 		for (PropertyStringSearchPersistenceIndex index : indexes) {
 			handler.create(JdbcPersistenceContext.of(connection), index);
 		}
 
-		List<PropertyStringSearchPersistenceIndex> selectedIndexes = random
-				.ints(random.nextInt(indexes.size()) + 1, 0, indexes.size()).distinct().sorted()
-				.mapToObj(item -> indexes.get(item)).collect(Collectors.toList());
+		SearchQuery<PropertyStringSearchPersistenceIndex> query = SearchQueryBuilder
+				.of(PropertyStringSearchPersistenceIndex.class)
+				.eq(PropertyStringSearchPersistenceIndex.Properties.valueString, selectedIndex.getValueString())
+				.sorting(BaseEntityIndex.Properties.id, Order.ASC).build();
+
+		List<PropertyStringSearchPersistenceIndex> expectedIndexes = Collections.singletonList(selectedIndex);
+		List<PropertyStringSearchPersistenceIndex> actualIndexes = handler.search(JdbcPersistenceContext.of(connection),
+				query);
+
+		check(expectedIndexes, actualIndexes);
+	}
+
+	@Test
+	public void testSearchEqualsNull() throws Exception {
+
+		PropertyStringSearchPersistenceIndex selectedIndex = indexes.get(random.nextInt(indexes.size()));
+
+		for (PropertyStringSearchPersistenceIndex index : indexes) {
+
+			if (index == selectedIndex) {
+				index.setValueString(null);
+			}
+
+			handler.create(JdbcPersistenceContext.of(connection), index);
+		}
 
 		SearchQuery<PropertyStringSearchPersistenceIndex> query = SearchQueryBuilder
 				.of(PropertyStringSearchPersistenceIndex.class)
-				.or(selectedIndexes.stream()
-						.map(item -> SimpleSearchCriterion
-								.eq(PropertyStringSearchPersistenceIndex.Properties.valueString, item.getValueString()))
-						.collect(Collectors.toList()))
+				.eq(PropertyStringSearchPersistenceIndex.Properties.valueString, selectedIndex.getValueString())
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC).build();
 
-		List<PropertyStringSearchPersistenceIndex> expectedIndexes = selectedIndexes;
+		List<PropertyStringSearchPersistenceIndex> expectedIndexes = Collections.singletonList(selectedIndex);
 		List<PropertyStringSearchPersistenceIndex> actualIndexes = handler.search(JdbcPersistenceContext.of(connection),
 				query);
 
@@ -130,24 +173,46 @@ public class PropertyStringSearchPersistenceTest extends BasePersistenceTest {
 	@Test
 	public void testSearchNotEquals() throws Exception {
 
+		PropertyStringSearchPersistenceIndex selectedIndex = indexes.get(random.nextInt(indexes.size()));
+
 		for (PropertyStringSearchPersistenceIndex index : indexes) {
 			handler.create(JdbcPersistenceContext.of(connection), index);
 		}
 
-		List<PropertyStringSearchPersistenceIndex> selectedIndexes = random
-				.ints(random.nextInt(indexes.size()) + 1, 0, indexes.size()).distinct().sorted()
-				.mapToObj(item -> indexes.get(item)).collect(Collectors.toList());
-
 		SearchQuery<PropertyStringSearchPersistenceIndex> query = SearchQueryBuilder
 				.of(PropertyStringSearchPersistenceIndex.class)
-				.and(selectedIndexes.stream()
-						.map(item -> SimpleSearchCriterion
-								.ne(PropertyStringSearchPersistenceIndex.Properties.valueString, item.getValueString()))
-						.collect(Collectors.toList()))
+				.ne(PropertyStringSearchPersistenceIndex.Properties.valueString, selectedIndex.getValueString())
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC).build();
 
 		List<PropertyStringSearchPersistenceIndex> expectedIndexes = indexes.stream()
-				.filter(item -> !selectedIndexes.contains(item)).collect(Collectors.toList());
+				.filter(item -> item != selectedIndex).collect(Collectors.toList());
+		List<PropertyStringSearchPersistenceIndex> actualIndexes = handler.search(JdbcPersistenceContext.of(connection),
+				query);
+
+		check(expectedIndexes, actualIndexes);
+	}
+
+	@Test
+	public void testSearchNotEqualsNull() throws Exception {
+
+		PropertyStringSearchPersistenceIndex selectedIndex = indexes.get(random.nextInt(indexes.size()));
+
+		for (PropertyStringSearchPersistenceIndex index : indexes) {
+
+			if (index == selectedIndex) {
+				index.setValueString(null);
+			}
+
+			handler.create(JdbcPersistenceContext.of(connection), index);
+		}
+
+		SearchQuery<PropertyStringSearchPersistenceIndex> query = SearchQueryBuilder
+				.of(PropertyStringSearchPersistenceIndex.class)
+				.ne(PropertyStringSearchPersistenceIndex.Properties.valueString, selectedIndex.getValueString())
+				.sorting(BaseEntityIndex.Properties.id, Order.ASC).build();
+
+		List<PropertyStringSearchPersistenceIndex> expectedIndexes = indexes.stream()
+				.filter(item -> item != selectedIndex).collect(Collectors.toList());
 		List<PropertyStringSearchPersistenceIndex> actualIndexes = handler.search(JdbcPersistenceContext.of(connection),
 				query);
 
@@ -157,11 +222,11 @@ public class PropertyStringSearchPersistenceTest extends BasePersistenceTest {
 	@Test
 	public void testSearchGreater() throws Exception {
 
+		PropertyStringSearchPersistenceIndex selectedIndex = indexes.get(random.nextInt(indexes.size()));
+
 		for (PropertyStringSearchPersistenceIndex index : indexes) {
 			handler.create(JdbcPersistenceContext.of(connection), index);
 		}
-
-		PropertyStringSearchPersistenceIndex selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
 		SearchQuery<PropertyStringSearchPersistenceIndex> query = SearchQueryBuilder
 				.of(PropertyStringSearchPersistenceIndex.class)
@@ -178,13 +243,38 @@ public class PropertyStringSearchPersistenceTest extends BasePersistenceTest {
 	}
 
 	@Test
+	public void testSearchGreaterNull() throws Exception {
+
+		PropertyStringSearchPersistenceIndex selectedIndex = indexes.get(random.nextInt(indexes.size()));
+
+		for (PropertyStringSearchPersistenceIndex index : indexes) {
+
+			if (index == selectedIndex) {
+				index.setValueString(null);
+			}
+
+			handler.create(JdbcPersistenceContext.of(connection), index);
+		}
+
+		SearchQuery<PropertyStringSearchPersistenceIndex> query = SearchQueryBuilder
+				.of(PropertyStringSearchPersistenceIndex.class)
+				.gt(PropertyStringSearchPersistenceIndex.Properties.valueString, selectedIndex.getValueString())
+				.sorting(BaseEntityIndex.Properties.id, Order.ASC).build();
+
+		PersistenceException exception = Assertions.assertThrows(PersistenceException.class,
+				() -> handler.search(JdbcPersistenceContext.of(connection), query));
+
+		Assertions.assertEquals("operation GREATER for value null is not supported", exception.getMessage());
+	}
+
+	@Test
 	public void testSearchGreaterOrEquals() throws Exception {
+
+		PropertyStringSearchPersistenceIndex selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
 		for (PropertyStringSearchPersistenceIndex index : indexes) {
 			handler.create(JdbcPersistenceContext.of(connection), index);
 		}
-
-		PropertyStringSearchPersistenceIndex selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
 		SearchQuery<PropertyStringSearchPersistenceIndex> query = SearchQueryBuilder
 				.of(PropertyStringSearchPersistenceIndex.class)
@@ -201,13 +291,38 @@ public class PropertyStringSearchPersistenceTest extends BasePersistenceTest {
 	}
 
 	@Test
+	public void testSearchGreaterOrEqualsNull() throws Exception {
+
+		PropertyStringSearchPersistenceIndex selectedIndex = indexes.get(random.nextInt(indexes.size()));
+
+		for (PropertyStringSearchPersistenceIndex index : indexes) {
+
+			if (index == selectedIndex) {
+				index.setValueString(null);
+			}
+
+			handler.create(JdbcPersistenceContext.of(connection), index);
+		}
+
+		SearchQuery<PropertyStringSearchPersistenceIndex> query = SearchQueryBuilder
+				.of(PropertyStringSearchPersistenceIndex.class)
+				.ge(PropertyStringSearchPersistenceIndex.Properties.valueString, selectedIndex.getValueString())
+				.sorting(BaseEntityIndex.Properties.id, Order.ASC).build();
+
+		PersistenceException exception = Assertions.assertThrows(PersistenceException.class,
+				() -> handler.search(JdbcPersistenceContext.of(connection), query));
+
+		Assertions.assertEquals("operation GREATER_OR_EQUALS for value null is not supported", exception.getMessage());
+	}
+
+	@Test
 	public void testSearchLower() throws Exception {
+
+		PropertyStringSearchPersistenceIndex selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
 		for (PropertyStringSearchPersistenceIndex index : indexes) {
 			handler.create(JdbcPersistenceContext.of(connection), index);
 		}
-
-		PropertyStringSearchPersistenceIndex selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
 		SearchQuery<PropertyStringSearchPersistenceIndex> query = SearchQueryBuilder
 				.of(PropertyStringSearchPersistenceIndex.class)
@@ -224,13 +339,38 @@ public class PropertyStringSearchPersistenceTest extends BasePersistenceTest {
 	}
 
 	@Test
+	public void testSearchLowerNull() throws Exception {
+
+		PropertyStringSearchPersistenceIndex selectedIndex = indexes.get(random.nextInt(indexes.size()));
+
+		for (PropertyStringSearchPersistenceIndex index : indexes) {
+
+			if (index == selectedIndex) {
+				index.setValueString(null);
+			}
+
+			handler.create(JdbcPersistenceContext.of(connection), index);
+		}
+
+		SearchQuery<PropertyStringSearchPersistenceIndex> query = SearchQueryBuilder
+				.of(PropertyStringSearchPersistenceIndex.class)
+				.lt(PropertyStringSearchPersistenceIndex.Properties.valueString, selectedIndex.getValueString())
+				.sorting(BaseEntityIndex.Properties.id, Order.ASC).build();
+
+		PersistenceException exception = Assertions.assertThrows(PersistenceException.class,
+				() -> handler.search(JdbcPersistenceContext.of(connection), query));
+
+		Assertions.assertEquals("operation LOWER for value null is not supported", exception.getMessage());
+	}
+
+	@Test
 	public void testSearchLowerOrEquals() throws Exception {
+
+		PropertyStringSearchPersistenceIndex selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
 		for (PropertyStringSearchPersistenceIndex index : indexes) {
 			handler.create(JdbcPersistenceContext.of(connection), index);
 		}
-
-		PropertyStringSearchPersistenceIndex selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
 		SearchQuery<PropertyStringSearchPersistenceIndex> query = SearchQueryBuilder
 				.of(PropertyStringSearchPersistenceIndex.class)
@@ -244,6 +384,31 @@ public class PropertyStringSearchPersistenceTest extends BasePersistenceTest {
 				query);
 
 		check(expectedIndexes, actualIndexes);
+	}
+
+	@Test
+	public void testSearchLowerOrEqualsNull() throws Exception {
+
+		PropertyStringSearchPersistenceIndex selectedIndex = indexes.get(random.nextInt(indexes.size()));
+
+		for (PropertyStringSearchPersistenceIndex index : indexes) {
+
+			if (index == selectedIndex) {
+				index.setValueString(null);
+			}
+
+			handler.create(JdbcPersistenceContext.of(connection), index);
+		}
+
+		SearchQuery<PropertyStringSearchPersistenceIndex> query = SearchQueryBuilder
+				.of(PropertyStringSearchPersistenceIndex.class)
+				.le(PropertyStringSearchPersistenceIndex.Properties.valueString, selectedIndex.getValueString())
+				.sorting(BaseEntityIndex.Properties.id, Order.ASC).build();
+
+		PersistenceException exception = Assertions.assertThrows(PersistenceException.class,
+				() -> handler.search(JdbcPersistenceContext.of(connection), query));
+
+		Assertions.assertEquals("operation LOWER_OR_EQUALS for value null is not supported", exception.getMessage());
 	}
 
 	private void check(List<PropertyStringSearchPersistenceIndex> expectedIndexes,
