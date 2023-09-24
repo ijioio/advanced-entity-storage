@@ -1,13 +1,8 @@
 package com.ijioio.aes.sandbox.test.persistence.index.property;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityIndex;
@@ -15,13 +10,11 @@ import com.ijioio.aes.annotation.EntityIndexProperty;
 import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.EntityReference;
-import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceContext;
-import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandler;
-import com.ijioio.aes.sandbox.test.persistence.BasePersistenceTest;
 import com.ijioio.test.model.PropertyStringCreatePersistence;
 import com.ijioio.test.model.PropertyStringCreatePersistenceIndex;
 
-public class PropertyStringCreatePersistenceTest extends BasePersistenceTest {
+public class PropertyStringCreatePersistenceTest
+		extends BasePropertyCreatePersistenceTest<PropertyStringCreatePersistenceIndex, String> {
 
 	@Entity( //
 			name = PropertyStringCreatePersistencePrototype.NAME, //
@@ -44,73 +37,42 @@ public class PropertyStringCreatePersistenceTest extends BasePersistenceTest {
 		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyStringCreatePersistenceIndex";
 	}
 
-	private JdbcPersistenceHandler handler;
+	@Override
+	protected String getSqlScriptPath() {
+		return "persistence/index/property/property-string-create-persistence.sql";
+	}
 
-	private Path path;
+	@Override
+	protected String getTableName() {
+		return PropertyStringCreatePersistenceIndex.class.getSimpleName();
+	}
 
-	private PropertyStringCreatePersistenceIndex index;
+	@Override
+	protected PropertyStringCreatePersistenceIndex createIndex() {
 
-	@BeforeEach
-	public void before() throws Exception {
-
-		handler = new JdbcPersistenceHandler();
-
-		path = Paths.get(getClass().getClassLoader()
-				.getResource("persistence/index/property/property-string-create-persistence.sql").toURI());
-
-		executeSql(connection, path);
-
-		index = new PropertyStringCreatePersistenceIndex();
+		PropertyStringCreatePersistenceIndex index = new PropertyStringCreatePersistenceIndex();
 
 		index.setId("property-string-create-persistence-index");
 		index.setSource(
 				EntityReference.of("property-string-create-persistence", PropertyStringCreatePersistence.class));
 		index.setValueString("value");
+
+		return index;
 	}
 
-	@Test
-	public void testCreate() throws Exception {
-
-		handler.create(JdbcPersistenceContext.of(connection), index);
-
-		try (PreparedStatement statement = connection.prepareStatement(
-				String.format("select * from %s", PropertyStringCreatePersistenceIndex.class.getSimpleName()))) {
-
-			try (ResultSet resultSet = statement.executeQuery()) {
-
-				Assertions.assertTrue(resultSet.next());
-
-				Assertions.assertEquals(index.getId(), resultSet.getString("id"));
-				Assertions.assertEquals(index.getSource().getId(), resultSet.getString("sourceId"));
-				Assertions.assertEquals(index.getSource().getType().getName(), resultSet.getString("sourceType"));
-				Assertions.assertEquals(index.getValueString(), resultSet.getString("valueString"));
-
-				Assertions.assertTrue(resultSet.isLast());
-			}
-		}
+	@Override
+	protected String getPropertyValue(PropertyStringCreatePersistenceIndex index) {
+		return index.getValueString();
 	}
 
-	@Test
-	public void testCreateNull() throws Exception {
+	@Override
+	protected void setPropertyValue(PropertyStringCreatePersistenceIndex index, String value) {
+		index.setValueString(value);
+	}
 
-		index.setValueString(null);
-
-		handler.create(JdbcPersistenceContext.of(connection), index);
-
-		try (PreparedStatement statement = connection.prepareStatement(
-				String.format("select * from %s", PropertyStringCreatePersistenceIndex.class.getSimpleName()))) {
-
-			try (ResultSet resultSet = statement.executeQuery()) {
-
-				Assertions.assertTrue(resultSet.next());
-
-				Assertions.assertEquals(index.getId(), resultSet.getString("id"));
-				Assertions.assertEquals(index.getSource().getId(), resultSet.getString("sourceId"));
-				Assertions.assertEquals(index.getSource().getType().getName(), resultSet.getString("sourceType"));
-				Assertions.assertEquals(index.getValueString(), resultSet.getString("valueString"));
-
-				Assertions.assertTrue(resultSet.isLast());
-			}
-		}
+	@Override
+	protected void checkPropertyValue(PropertyStringCreatePersistenceIndex index, ResultSet resultSet)
+			throws Exception {
+		Assertions.assertEquals(index.getValueString(), resultSet.getString("valueString"));
 	}
 }

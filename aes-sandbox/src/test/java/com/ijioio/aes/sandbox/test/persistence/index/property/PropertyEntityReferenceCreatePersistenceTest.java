@@ -1,13 +1,9 @@
 package com.ijioio.aes.sandbox.test.persistence.index.property;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityIndex;
@@ -16,13 +12,12 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.BaseEntity;
 import com.ijioio.aes.core.EntityReference;
-import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceContext;
-import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandler;
-import com.ijioio.aes.sandbox.test.persistence.BasePersistenceTest;
+import com.ijioio.aes.sandbox.test.persistence.index.property.PropertyEntityReferenceCreatePersistenceTest.Some;
 import com.ijioio.test.model.PropertyEntityReferenceCreatePersistence;
 import com.ijioio.test.model.PropertyEntityReferenceCreatePersistenceIndex;
 
-public class PropertyEntityReferenceCreatePersistenceTest extends BasePersistenceTest {
+public class PropertyEntityReferenceCreatePersistenceTest extends
+		BasePropertyCreatePersistenceTest<PropertyEntityReferenceCreatePersistenceIndex, EntityReference<Some>> {
 
 	public static class Some extends BaseEntity {
 
@@ -53,52 +48,48 @@ public class PropertyEntityReferenceCreatePersistenceTest extends BasePersistenc
 		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyEntityReferenceCreatePersistenceIndex";
 	}
 
-	private JdbcPersistenceHandler handler;
+	@Override
+	protected String getSqlScriptPath() throws Exception {
+		return "persistence/index/property/property-entity-reference-create-persistence.sql";
+	}
 
-	private Path path;
+	@Override
+	protected String getTableName() {
+		return PropertyEntityReferenceCreatePersistenceIndex.class.getSimpleName();
+	}
 
-	private PropertyEntityReferenceCreatePersistenceIndex index;
+	@Override
+	protected PropertyEntityReferenceCreatePersistenceIndex createIndex() {
 
-	@BeforeEach
-	public void before() throws Exception {
-
-		handler = new JdbcPersistenceHandler();
-
-		path = Paths.get(getClass().getClassLoader()
-				.getResource("persistence/index/property/property-entity-reference-create-persistence.sql").toURI());
-
-		executeSql(connection, path);
-
-		index = new PropertyEntityReferenceCreatePersistenceIndex();
+		PropertyEntityReferenceCreatePersistenceIndex index = new PropertyEntityReferenceCreatePersistenceIndex();
 
 		index.setId("property-entity-reference-create-persistence-index");
 		index.setSource(EntityReference.of("property-entity-reference-create-persistence",
 				PropertyEntityReferenceCreatePersistence.class));
 		index.setValueEntityReference(EntityReference.of("some", Some.class));
+
+		return index;
 	}
 
-	@Test
-	public void testCreate() throws Exception {
+	@Override
+	protected EntityReference<Some> getPropertyValue(PropertyEntityReferenceCreatePersistenceIndex index) {
+		return index.getValueEntityReference();
+	}
 
-		handler.create(JdbcPersistenceContext.of(connection), index);
+	@Override
+	protected void setPropertyValue(PropertyEntityReferenceCreatePersistenceIndex index, EntityReference<Some> value) {
+		index.setValueEntityReference(value);
+	}
 
-		try (PreparedStatement statement = connection.prepareStatement(String.format("select * from %s",
-				PropertyEntityReferenceCreatePersistenceIndex.class.getSimpleName()))) {
+	@Override
+	protected void checkPropertyValue(PropertyEntityReferenceCreatePersistenceIndex index, ResultSet resultSet)
+			throws Exception {
 
-			try (ResultSet resultSet = statement.executeQuery()) {
-
-				Assertions.assertTrue(resultSet.next());
-
-				Assertions.assertEquals(index.getId(), resultSet.getString("id"));
-				Assertions.assertEquals(index.getSource().getId(), resultSet.getString("sourceId"));
-				Assertions.assertEquals(index.getSource().getType().getName(), resultSet.getString("sourceType"));
-				Assertions.assertEquals(index.getValueEntityReference().getId(),
-						resultSet.getString("valueEntityReferenceId"));
-				Assertions.assertEquals(index.getValueEntityReference().getType().getName(),
-						resultSet.getString("valueEntityReferenceType"));
-
-				Assertions.assertTrue(resultSet.isLast());
-			}
-		}
+		Assertions.assertEquals(
+				Optional.ofNullable(index.getValueEntityReference()).map(item -> item.getId()).orElse(null),
+				resultSet.getString("valueEntityReferenceId"));
+		Assertions.assertEquals(
+				Optional.ofNullable(index.getValueEntityReference()).map(item -> item.getType().getName()).orElse(null),
+				resultSet.getString("valueEntityReferenceType"));
 	}
 }
