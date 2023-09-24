@@ -96,23 +96,49 @@ public class BasePersistenceTest extends BaseTest {
 		return null;
 	}
 
-	protected <C extends Comparable<C>> int compare(Collection<C> l1, Collection<C> l2) {
+	protected <C extends Comparable<C>> int compare(C o1, C o2) {
 
-		Iterator<C> i1 = l1.iterator();
-		Iterator<C> i2 = l2.iterator();
+		if (o1 == null && o2 == null) {
+			return 0;
+		}
+
+		if (o1 == null) {
+			return -1;
+		}
+
+		if (o2 == null) {
+			return 1;
+		}
+
+		return o1.compareTo(o2);
+	}
+
+	protected <C extends Comparable<C>> int compare(Collection<C> o1, Collection<C> o2) {
+
+		if (o1 == null && o2 == null) {
+			return 0;
+		}
+
+		if (o1 == null) {
+			return -1;
+		}
+
+		if (o2 == null) {
+			return 1;
+		}
+
+		Iterator<C> i1 = o1.iterator();
+		Iterator<C> i2 = o2.iterator();
 
 		while (i1.hasNext() && i2.hasNext()) {
 
-			C o1 = i1.next();
-			C o2 = i2.next();
-
-			int result = o1.compareTo(o2);
+			int result = compare(i1.next(), i2.next());
 
 			if (result != 0) {
 				return result;
 			}
 		}
 
-		return Integer.compare(l1.size(), l2.size());
+		return Integer.compare(o1.size(), o2.size());
 	}
 }
