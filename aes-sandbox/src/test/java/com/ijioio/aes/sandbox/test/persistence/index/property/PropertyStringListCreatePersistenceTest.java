@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,12 +49,16 @@ public class PropertyStringListCreatePersistenceTest extends BasePersistenceTest
 		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyStringListCreatePersistenceIndex";
 	}
 
+	private JdbcPersistenceHandler handler;
+
 	private Path path;
 
 	private PropertyStringListCreatePersistenceIndex index;
 
 	@BeforeEach
 	public void before() throws Exception {
+
+		handler = new JdbcPersistenceHandler();
 
 		path = Paths.get(getClass().getClassLoader()
 				.getResource("persistence/index/property/property-string-list-create-persistence.sql").toURI());
@@ -71,7 +76,29 @@ public class PropertyStringListCreatePersistenceTest extends BasePersistenceTest
 	@Test
 	public void testCreate() throws Exception {
 
-		JdbcPersistenceHandler handler = new JdbcPersistenceHandler();
+		handler.create(JdbcPersistenceContext.of(connection), index);
+
+		try (PreparedStatement statement = connection.prepareStatement(
+				String.format("select * from %s", PropertyStringListCreatePersistenceIndex.class.getSimpleName()))) {
+
+			try (ResultSet resultSet = statement.executeQuery()) {
+
+				Assertions.assertTrue(resultSet.next());
+
+				Assertions.assertEquals(index.getId(), resultSet.getString("id"));
+				Assertions.assertEquals(index.getSource().getId(), resultSet.getString("sourceId"));
+				Assertions.assertEquals(index.getSource().getType().getName(), resultSet.getString("sourceType"));
+				Assertions.assertEquals(index.getValueStringList(), getArray(resultSet.getArray("valueStringList")));
+
+				Assertions.assertTrue(resultSet.isLast());
+			}
+		}
+	}
+
+	@Test
+	public void testCreateEmpty() throws Exception {
+
+		index.setValueStringList(Collections.emptyList());
 
 		handler.create(JdbcPersistenceContext.of(connection), index);
 
@@ -85,8 +112,31 @@ public class PropertyStringListCreatePersistenceTest extends BasePersistenceTest
 				Assertions.assertEquals(index.getId(), resultSet.getString("id"));
 				Assertions.assertEquals(index.getSource().getId(), resultSet.getString("sourceId"));
 				Assertions.assertEquals(index.getSource().getType().getName(), resultSet.getString("sourceType"));
-				Assertions.assertEquals(index.getValueStringList(),
-						Arrays.asList((Object[]) resultSet.getArray("valueStringList").getArray()));
+				Assertions.assertEquals(index.getValueStringList(), getArray(resultSet.getArray("valueStringList")));
+
+				Assertions.assertTrue(resultSet.isLast());
+			}
+		}
+	}
+
+	@Test
+	public void testCreateNull() throws Exception {
+
+		index.setValueStringList(null);
+
+		handler.create(JdbcPersistenceContext.of(connection), index);
+
+		try (PreparedStatement statement = connection.prepareStatement(
+				String.format("select * from %s", PropertyStringListCreatePersistenceIndex.class.getSimpleName()))) {
+
+			try (ResultSet resultSet = statement.executeQuery()) {
+
+				Assertions.assertTrue(resultSet.next());
+
+				Assertions.assertEquals(index.getId(), resultSet.getString("id"));
+				Assertions.assertEquals(index.getSource().getId(), resultSet.getString("sourceId"));
+				Assertions.assertEquals(index.getSource().getType().getName(), resultSet.getString("sourceType"));
+				Assertions.assertEquals(index.getValueStringList(), getArray(resultSet.getArray("valueStringList")));
 
 				Assertions.assertTrue(resultSet.isLast());
 			}

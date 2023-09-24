@@ -56,12 +56,16 @@ public class PropertyEntityReferenceListCreatePersistenceTest extends BasePersis
 		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyEntityReferenceListCreatePersistenceIndex";
 	}
 
+	private JdbcPersistenceHandler handler;
+
 	private Path path;
 
 	private PropertyEntityReferenceListCreatePersistenceIndex index;
 
 	@BeforeEach
 	public void before() throws Exception {
+
+		handler = new JdbcPersistenceHandler();
 
 		path = Paths.get(getClass().getClassLoader()
 				.getResource("persistence/index/property/property-entity-reference-list-create-persistence.sql")
@@ -80,8 +84,6 @@ public class PropertyEntityReferenceListCreatePersistenceTest extends BasePersis
 
 	@Test
 	public void testCreate() throws Exception {
-
-		JdbcPersistenceHandler handler = new JdbcPersistenceHandler();
 
 		handler.create(JdbcPersistenceContext.of(connection), index);
 

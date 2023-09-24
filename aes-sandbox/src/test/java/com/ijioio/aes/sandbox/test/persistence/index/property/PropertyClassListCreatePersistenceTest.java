@@ -50,12 +50,16 @@ public class PropertyClassListCreatePersistenceTest extends BasePersistenceTest 
 		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyClassListCreatePersistenceIndex";
 	}
 
+	private JdbcPersistenceHandler handler;
+
 	private Path path;
 
 	private PropertyClassListCreatePersistenceIndex index;
 
 	@BeforeEach
 	public void before() throws Exception {
+
+		handler = new JdbcPersistenceHandler();
 
 		path = Paths.get(getClass().getClassLoader()
 				.getResource("persistence/index/property/property-class-list-create-persistence.sql").toURI());
@@ -72,8 +76,6 @@ public class PropertyClassListCreatePersistenceTest extends BasePersistenceTest 
 
 	@Test
 	public void testCreate() throws Exception {
-
-		JdbcPersistenceHandler handler = new JdbcPersistenceHandler();
 
 		handler.create(JdbcPersistenceContext.of(connection), index);
 

@@ -402,8 +402,14 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 			PreparedStatement statement = context.getStatement();
 
 			try {
-				statement.setObject(context.getNextIndex(), statement.getConnection()
-						.createArrayOf(JDBCType.valueOf(Types.VARCHAR).getName(), values.toArray()), Types.ARRAY);
+
+				Array array = values != null
+						? statement.getConnection().createArrayOf(JDBCType.valueOf(Types.VARCHAR).getName(),
+								values.toArray())
+						: null;
+
+				statement.setObject(context.getNextIndex(), array, Types.ARRAY);
+
 			} catch (SQLException e) {
 				throw new PersistenceException(e);
 			}
@@ -431,13 +437,18 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 
 			try {
 
+				Array array = resultSet.getObject(context.getNextIndex(), Array.class);
+
+				if (array == null) {
+					return null;
+				}
+
 				Collection<String> collection = List.class.isAssignableFrom(type.getRawType()) ? new ArrayList<>()
 						: new LinkedHashSet<>();
 
 				collection.clear();
-				collection.addAll(
-						Arrays.stream((Object[]) resultSet.getObject(context.getNextIndex(), Array.class).getArray())
-								.map(item -> (String) item).collect(Collectors.toList()));
+				collection.addAll(Arrays.stream((Object[]) array.getArray()).map(item -> (String) item)
+						.collect(Collectors.toList()));
 
 				return collection;
 
@@ -805,8 +816,11 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 			JdbcPersistenceValueHandler<String> idHandler = handler.getValueHandler(idProperty.getRawType());
 			JdbcPersistenceValueHandler<Class> typeHandler = handler.getValueHandler(typeProperty.getRawType());
 
-			return Stream.of(idHandler.getColumns(context, handler, String.format("%sId", name), idProperty, search),
-					typeHandler.getColumns(context, handler, String.format("%sType", name), typeProperty, search))
+			return Stream
+					.of(idHandler.getColumns(context, handler, String.format("%sId", name), idProperty, search),
+							search ? Collections.<String>emptyList()
+									: typeHandler.getColumns(context, handler, String.format("%sType", name),
+											typeProperty, search))
 					.flatMap(item -> item.stream()).collect(Collectors.toList());
 		}
 
@@ -822,7 +836,10 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 			JdbcPersistenceValueHandler<Class> typeHandler = handler.getValueHandler(typeProperty.getRawType());
 
 			idHandler.write(context, handler, idProperty, value != null ? value.getId() : null, search);
-			typeHandler.write(context, handler, typeProperty, value != null ? value.getType() : null, search);
+
+			if (!search) {
+				typeHandler.write(context, handler, typeProperty, value != null ? value.getType() : null, search);
+			}
 		}
 
 		@Override
@@ -848,7 +865,10 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 			}
 
 			idHandler.write(context, handler, idType, idValues, search);
-			typeHandler.write(context, handler, typeType, typeValues, search);
+
+			if (!search) {
+				typeHandler.write(context, handler, typeType, typeValues, search);
+			}
 		}
 
 		@SuppressWarnings("unchecked")
@@ -1212,14 +1232,31 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 
 		Property<P> property = criterion.getProperty();
 		TypeReference<T> type = criterion.getType();
+		T value = criterion.getValue();
 
-		readers.add(Pair.of(type, () -> criterion.getValue()));
+		boolean skip = value == null
+				&& (criterion.getOperation() == Operation.EQUALS || criterion.getOperation() == Operation.NOT_EQUALS);
+
+		if (!skip) {
+			readers.add(Pair.of(type, () -> value));
+		}
 
 		List<String> columns = getColumns(context, property.getName(), property.getType(), true);
 
-		String operation = getOperation(criterion.getOperation());
+		String operation = getOperation(criterion.getOperation(), value);
 
-		return columns.stream().map(item -> String.format("%s %s ?", item, operation))
+		if (criterion.getOperation().name().startsWith("ANY")) {
+			return columns.stream().map(item -> String.format("? %s any (%s)", operation, item))
+					.collect(Collectors.joining(" and "));
+		}
+
+		if (criterion.getOperation().name().startsWith("ALL")) {
+			return columns.stream().map(item -> String.format("? %s all (%s)", operation, item))
+					.collect(Collectors.joining(" and "));
+		}
+
+		return columns.stream()
+				.map(item -> skip ? String.format("%s %s", item, operation) : String.format("%s %s ?", item, operation))
 				.collect(Collectors.joining(" and "));
 	}
 
@@ -1352,23 +1389,36 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 		}
 	}
 
-	private String getOperation(Operation operation) throws PersistenceException {
+	private String getOperation(Operation operation, Object value) throws PersistenceException {
 
-		if (operation == Operation.EQUALS) {
-			return "=";
-		} else if (operation == Operation.NOT_EQUALS) {
-			return "!=";
-		} else if (operation == Operation.LOWER) {
-			return "<";
-		} else if (operation == Operation.LOWER_OR_EQUALS) {
-			return "<=";
-		} else if (operation == Operation.GREATER) {
-			return ">";
-		} else if (operation == Operation.GREATER_OR_EQUALS) {
-			return ">=";
+		if (value != null) {
+
+			if (operation == Operation.EQUALS || operation == Operation.ANY_EQUALS
+					|| operation == Operation.ALL_EQUALS) {
+				return "=";
+			} else if (operation == Operation.NOT_EQUALS || operation == Operation.ANY_NOT_EQUALS
+					|| operation == Operation.ALL_NOT_EQUALS) {
+				return "!=";
+			} else if (operation == Operation.LOWER) {
+				return "<";
+			} else if (operation == Operation.LOWER_OR_EQUALS) {
+				return "<=";
+			} else if (operation == Operation.GREATER) {
+				return ">";
+			} else if (operation == Operation.GREATER_OR_EQUALS) {
+				return ">=";
+			}
+
+		} else {
+
+			if (operation == Operation.EQUALS) {
+				return "is null";
+			} else if (operation == Operation.NOT_EQUALS) {
+				return "is not null";
+			}
 		}
 
-		throw new PersistenceException(String.format("operation %s is not supported", operation));
+		throw new PersistenceException(String.format("operation %s for value %s is not supported", operation, value));
 	}
 
 	private String getOrder(Order order) throws PersistenceException {

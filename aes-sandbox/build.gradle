@@ -23,6 +23,6 @@ dependencies {
 	testAnnotationProcessor group: 'com.ijioio', name: 'aes-processor', version: '1.0.0'
 	testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.9.1'
 	testImplementation group: 'com.zaxxer', name: 'HikariCP', version: '5.0.1'
-	testImplementation group: 'com.h2database', name: 'h2', version: '2.1.214'
+	testImplementation group: 'com.h2database', name: 'h2', version: '2.2.222'
 	testImplementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
 }
