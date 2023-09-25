@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
+import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.BaseEntity;
 import com.ijioio.aes.core.EntityReference;
@@ -20,13 +21,14 @@ import com.ijioio.test.model.PropertyEntityReferenceExplicitSerialization;
 public class PropertyEntityReferenceExplicitSerializationTest extends BaseSerializationTest {
 
 	public static class Some extends BaseEntity {
-		// Empty
+
+		public static final String NAME = "com.ijioio.aes.sandbox.test.serialization.property.PropertyEntityReferenceExplicitSerializationTest.Some";
 	}
 
 	@Entity( //
 			name = PropertyEntityReferenceExplicitSerializationPrototype.NAME, //
 			types = { //
-					@Type(name = "EntityReference<Some>", type = "com.ijioio.aes.core.EntityReference", parameters = "com.ijioio.aes.sandbox.test.serialization.property.PropertyEntityReferenceExplicitSerializationTest.Some") //
+					@Type(name = "EntityReference<Some>", type = "com.ijioio.aes.core.EntityReference", parameters = @Parameter(name = Some.NAME)) //
 			}, //
 			properties = { //
 					@EntityProperty(name = "valueEntityReference", type = "EntityReference<Some>") //

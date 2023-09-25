@@ -14,6 +14,7 @@ import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityIndex;
 import com.ijioio.aes.annotation.EntityIndexProperty;
 import com.ijioio.aes.annotation.EntityProperty;
+import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.BaseEntity;
 import com.ijioio.aes.core.BaseEntityIndex;
@@ -37,7 +38,7 @@ public class PropertyEntityReferenceSearchPersistenceTest extends BasePersistenc
 	@Entity( //
 			name = PropertyEntityReferenceSearchPersistencePrototype.NAME, //
 			types = { //
-					@Type(name = "EntityReference<Some>", type = Type.ENTITY_REFERENCE, parameters = Some.NAME) //
+					@Type(name = "EntityReference<Some>", type = Type.ENTITY_REFERENCE, parameters = @Parameter(name = Some.NAME)) //
 			}, //
 			properties = { //
 					@EntityProperty(name = "valueEntityReference", type = "EntityReference<Some>") //

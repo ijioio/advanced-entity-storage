@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
+import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
@@ -26,9 +27,10 @@ public class PropertySkipSerializationTest extends BaseSerializationTest {
 	@Entity( //
 			name = PropertySkipSerializationPrototype.NAME, //
 			types = { //
-					@Type(name = "List<String>", type = Type.LIST, parameters = Type.STRING), //
-					@Type(name = "Set<String>", type = Type.SET, parameters = Type.STRING), //
-					@Type(name = "Map<String, String>", type = Type.MAP, parameters = { Type.STRING, Type.STRING }) //
+					@Type(name = "List<String>", type = Type.LIST, parameters = @Parameter(name = Type.STRING)), //
+					@Type(name = "Set<String>", type = Type.SET, parameters = @Parameter(name = Type.STRING)), //
+					@Type(name = "Map<String, String>", type = Type.MAP, parameters = { @Parameter(name = Type.STRING),
+							@Parameter(name = Type.STRING) }) //
 			}, //
 			properties = { //
 					@EntityProperty(name = "valueString", type = Type.STRING), //

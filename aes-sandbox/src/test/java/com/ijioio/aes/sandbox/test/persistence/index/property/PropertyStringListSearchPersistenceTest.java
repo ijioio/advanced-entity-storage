@@ -15,8 +15,8 @@ import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityIndex;
 import com.ijioio.aes.annotation.EntityIndexProperty;
 import com.ijioio.aes.annotation.EntityProperty;
+import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
-import com.ijioio.aes.core.BaseEntity;
 import com.ijioio.aes.core.BaseEntityIndex;
 import com.ijioio.aes.core.EntityReference;
 import com.ijioio.aes.core.Order;
@@ -31,15 +31,10 @@ import com.ijioio.test.model.PropertyStringListSearchPersistenceIndex;
 
 public class PropertyStringListSearchPersistenceTest extends BasePersistenceTest {
 
-	public static class Some extends BaseEntity {
-
-		public static final String NAME = "com.ijioio.aes.sandbox.test.persistence.index.property.PropertyStringListSearchPersistenceTest.Some";
-	}
-
 	@Entity( //
 			name = PropertyStringListSearchPersistencePrototype.NAME, //
 			types = { //
-					@Type(name = "List<String>", type = Type.LIST, parameters = Type.STRING) //
+					@Type(name = "List<String>", type = Type.LIST, parameters = @Parameter(name = Type.STRING)) //
 			}, //
 			properties = { //
 					@EntityProperty(name = "valueStringList", type = "List<String>") //

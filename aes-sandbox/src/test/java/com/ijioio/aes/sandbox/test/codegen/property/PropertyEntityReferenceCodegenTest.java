@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
+import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.BaseEntity;
 import com.ijioio.aes.core.EntityReference;
@@ -17,13 +18,14 @@ import com.ijioio.test.model.PropertyEntityReferenceCodegen;
 public class PropertyEntityReferenceCodegenTest extends BaseCodegenTest {
 
 	public static class Some extends BaseEntity {
-		// Empty
+
+		public static final String NAME = "com.ijioio.aes.sandbox.test.codegen.property.PropertyEntityReferenceCodegenTest.Some";
 	}
 
 	@Entity( //
 			name = PropertyEntityReferenceCodegenPrototype.NAME, //
 			types = { //
-					@Type(name = "EntityReference<Some>", type = Type.ENTITY_REFERENCE, parameters = "com.ijioio.aes.sandbox.test.codegen.property.PropertyEntityReferenceCodegenTest.Some") //
+					@Type(name = "EntityReference<Some>", type = Type.ENTITY_REFERENCE, parameters = @Parameter(name = Some.NAME)) //
 			}, //
 			properties = { //
 					@EntityProperty(name = "valueEntityReference", type = "EntityReference<Some>") //
