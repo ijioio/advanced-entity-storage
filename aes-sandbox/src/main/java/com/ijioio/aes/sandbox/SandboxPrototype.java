@@ -5,6 +5,7 @@ import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityIndex;
 import com.ijioio.aes.annotation.EntityIndexProperty;
 import com.ijioio.aes.annotation.EntityProperty;
+import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
 
 @Entity( //
@@ -12,13 +13,13 @@ import com.ijioio.aes.annotation.Type;
 		parent = SandboxParentPrototype.NAME, //
 		attributes = Attribute.FINAL, //
 		types = { //
-				@Type(name = "Class<String>", type = Type.CLASS, parameters = Type.STRING), //
-				@Type(name = "List<String>", type = Type.LIST, parameters = Type.STRING), //
-				@Type(name = "Set<Month>", type = Type.SET, parameters = "java.time.Month"), //
-				@Type(name = "Map<Object, Object>", type = Type.MAP, parameters = { "java.lang.Object",
-						"java.lang.Object" }), //
-				@Type(name = "EntityReference<SandboxParent>", type = Type.ENTITY_REFERENCE, parameters = SandboxParentPrototype.NAME), //
-				@Type(name = "List<SandboxChild>", type = Type.LIST, parameters = SandboxChildPrototype.NAME), //
+				@Type(name = "Class<String>", type = Type.CLASS, parameters = @Parameter(name = Type.STRING, wildcard = true)), //
+				@Type(name = "List<String>", type = Type.LIST, parameters = @Parameter(name = Type.STRING)), //
+				@Type(name = "Set<Month>", type = Type.SET, parameters = @Parameter(name = "java.time.Month")), //
+				@Type(name = "Map<Object, Object>", type = Type.MAP, parameters = {
+						@Parameter(name = "java.lang.Object"), @Parameter(name = "java.lang.Object") }), //
+				@Type(name = "EntityReference<SandboxParent>", type = Type.ENTITY_REFERENCE, parameters = @Parameter(name = SandboxParentPrototype.NAME)), //
+				@Type(name = "List<SandboxChild>", type = Type.LIST, parameters = @Parameter(name = SandboxChildPrototype.NAME)), //
 		}, //
 		properties = { //
 				@EntityProperty(name = "valueBoolean", type = Type.BOOLEAN), //
