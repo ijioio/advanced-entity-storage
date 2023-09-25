@@ -5,13 +5,13 @@ import com.ijioio.aes.sandbox.test.codegen.BaseCodegenTest;
 public class PropertyEntityReferenceSpecialCodegenTest extends BaseCodegenTest {
 
 //	public static class Some extends BaseEntity {
-//		// Empty
+//		public static final String NAME = "com.ijioio.aes.sandbox.test.codegen.property.PropertyEntityReferenceSpecialCodegenTest.Some";
 //	}
 //
 //	@Entity( //
 //			name = PropertyEntityReferenceSpecialCodegenPrototype.NAME, //
 //			properties = { //
-//					@EntityProperty(name = "valueEntityReference", type = @Type(name = "com.ijioio.aes.sandbox.test.codegen.property.PropertyEntityReferenceSpecialCodegenTest.Some", reference = true)) //
+//					@EntityProperty(name = "valueEntityReference", type = @Type(name = Some.NAME, reference = true)) //
 //			} //
 //	)
 //	public static interface PropertyEntityReferenceSpecialCodegenPrototype {

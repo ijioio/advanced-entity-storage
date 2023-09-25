@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
+import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
@@ -26,12 +27,12 @@ public class PropertyCollectionSerializationTest extends BaseSerializationTest {
 	@Entity( //
 			name = PropertyCollectionSerializationPrototype.NAME, //
 			types = { //
-					@Type(name = "List<String>", type = Type.LIST, parameters = Type.STRING), //
-					@Type(name = "List<Month>", type = Type.LIST, parameters = "java.time.Month"), //
-					@Type(name = "List<Object>", type = Type.LIST, parameters = "java.lang.Object"), //
-					@Type(name = "Set<String>", type = Type.SET, parameters = Type.STRING), //
-					@Type(name = "Set<Month>", type = Type.SET, parameters = "java.time.Month"), //
-					@Type(name = "Set<Object>", type = Type.SET, parameters = "java.lang.Object") //
+					@Type(name = "List<String>", type = Type.LIST, parameters = @Parameter(name = Type.STRING)), //
+					@Type(name = "List<Month>", type = Type.LIST, parameters = @Parameter(name = "java.time.Month")), //
+					@Type(name = "List<Object>", type = Type.LIST, parameters = @Parameter(name = "java.lang.Object")), //
+					@Type(name = "Set<String>", type = Type.SET, parameters = @Parameter(name = Type.STRING)), //
+					@Type(name = "Set<Month>", type = Type.SET, parameters = @Parameter(name = "java.time.Month")), //
+					@Type(name = "Set<Object>", type = Type.SET, parameters = @Parameter(name = "java.lang.Object")) //
 			}, //
 			properties = { //
 					@EntityProperty(name = "valueStringList", type = "List<String>"), //

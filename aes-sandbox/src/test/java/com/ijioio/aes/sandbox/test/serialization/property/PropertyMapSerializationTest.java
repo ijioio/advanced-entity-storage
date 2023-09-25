@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
+import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
@@ -23,11 +24,12 @@ public class PropertyMapSerializationTest extends BaseSerializationTest {
 	@Entity( //
 			name = PropertyMapSerializationPrototype.NAME, //
 			types = { //
-					@Type(name = "Map<String, String>", type = Type.MAP, parameters = { Type.STRING, Type.STRING }), //
-					@Type(name = "Map<Month, Month>", type = Type.MAP, parameters = { "java.time.Month",
-							"java.time.Month" }), //
-					@Type(name = "Map<Object, Object>", type = Type.MAP, parameters = { "java.lang.Object",
-							"java.lang.Object" }) //
+					@Type(name = "Map<String, String>", type = Type.MAP, parameters = { @Parameter(name = Type.STRING),
+							@Parameter(name = Type.STRING) }), //
+					@Type(name = "Map<Month, Month>", type = Type.MAP, parameters = {
+							@Parameter(name = "java.time.Month"), @Parameter(name = "java.time.Month") }), //
+					@Type(name = "Map<Object, Object>", type = Type.MAP, parameters = {
+							@Parameter(name = "java.lang.Object"), @Parameter(name = "java.lang.Object") }) //
 			}, //
 			properties = { //
 					@EntityProperty(name = "valueStringMap", type = "Map<String, String>"), //

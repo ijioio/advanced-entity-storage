@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
 
@@ -16,7 +17,7 @@ import com.ijioio.aes.annotation.processor.util.TextUtil;
 
 public class TypeMetadata {
 
-	public static TypeMetadata of(String name, String type, List<String> parameters) {
+	public static TypeMetadata of(String name, String type, List<ParameterMetadata> parameters) {
 		return new TypeMetadata(name, type, parameters);
 	}
 
@@ -29,9 +30,9 @@ public class TypeMetadata {
 
 	private String type;
 
-	private final List<String> parameters = new ArrayList<>();
+	private final List<ParameterMetadata> parameters = new ArrayList<>();
 
-	private TypeMetadata(String name, String type, List<String> parameters) {
+	private TypeMetadata(String name, String type, List<ParameterMetadata> parameters) {
 
 		this.name = name;
 		this.type = type;
@@ -66,9 +67,12 @@ public class TypeMetadata {
 
 				for (AnnotationValue annotationValue : annotationValues) {
 
-					String parameter = ProcessorUtil.stringVisitor.visit(annotationValue);
+					AnnotationMirror annotationMirror = ProcessorUtil.annotationVisitor.visit(annotationValue);
 
-					parameters.add(parameter);
+					ParameterMetadata type = ParameterMetadata.of(environment,
+							context.withAnnotationMirror(annotationMirror));
+
+					parameters.add(type);
 				}
 			}
 		}
@@ -92,7 +96,7 @@ public class TypeMetadata {
 		return type;
 	}
 
-	public List<String> getParameters() {
+	public List<ParameterMetadata> getParameters() {
 		return parameters;
 	}
 

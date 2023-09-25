@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
+import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.BaseIdentity;
 import com.ijioio.aes.core.XSerializable;
@@ -34,6 +35,8 @@ public class PropertyIdentitySerializationTest extends BaseSerializationTest {
 
 	public static class IdentityFoo extends BaseIdentity implements XSerializable {
 
+		public static final String NAME = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityFoo";
+
 		@Override
 		public void write(SerializationContext context, SerializationHandler handler) throws SerializationException {
 			handler.write(context, Collections.singletonMap("id", () -> handler.write(context, "id", getId())));
@@ -46,6 +49,8 @@ public class PropertyIdentitySerializationTest extends BaseSerializationTest {
 	}
 
 	public static class IdentityBar extends BaseIdentity implements XSerializable {
+
+		public static final String NAME = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityBar";
 
 		@Override
 		public void write(SerializationContext context, SerializationHandler handler) throws SerializationException {
@@ -61,22 +66,22 @@ public class PropertyIdentitySerializationTest extends BaseSerializationTest {
 	@Entity( //
 			name = PropertyIdentitySerializationPrototype.NAME, //
 			types = { //
-					@Type(name = "List<IdentityFoo>", type = Type.LIST, parameters = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityFoo"), //
-					@Type(name = "List<IdentityBar>", type = Type.LIST, parameters = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityBar"), //
-					@Type(name = "List<Object>", type = Type.LIST, parameters = "java.lang.Object"), //
-					@Type(name = "Set<IdentityFoo>", type = Type.SET, parameters = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityFoo"), //
-					@Type(name = "Set<IdentityBar>", type = Type.SET, parameters = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityBar"), //
-					@Type(name = "Set<Object>", type = Type.SET, parameters = "java.lang.Object"), //
-					@Type(name = "Map<String, IdentityFoo>", type = Type.MAP, parameters = { Type.STRING,
-							"com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityFoo" }), //
-					@Type(name = "Map<String, IdentityBar>", type = Type.MAP, parameters = { Type.STRING,
-							"com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityBar" }), //
-					@Type(name = "Map<String, Object>", type = Type.MAP, parameters = { Type.STRING,
-							"java.lang.Object" }) //
+					@Type(name = "List<IdentityFoo>", type = Type.LIST, parameters = @Parameter(name = IdentityFoo.NAME)), //
+					@Type(name = "List<IdentityBar>", type = Type.LIST, parameters = @Parameter(name = IdentityBar.NAME)), //
+					@Type(name = "List<Object>", type = Type.LIST, parameters = @Parameter(name = "java.lang.Object")), //
+					@Type(name = "Set<IdentityFoo>", type = Type.SET, parameters = @Parameter(name = IdentityFoo.NAME)), //
+					@Type(name = "Set<IdentityBar>", type = Type.SET, parameters = @Parameter(name = IdentityBar.NAME)), //
+					@Type(name = "Set<Object>", type = Type.SET, parameters = @Parameter(name = "java.lang.Object")), //
+					@Type(name = "Map<String, IdentityFoo>", type = Type.MAP, parameters = {
+							@Parameter(name = Type.STRING), @Parameter(name = IdentityFoo.NAME) }), //
+					@Type(name = "Map<String, IdentityBar>", type = Type.MAP, parameters = {
+							@Parameter(name = Type.STRING), @Parameter(name = IdentityBar.NAME) }), //
+					@Type(name = "Map<String, Object>", type = Type.MAP, parameters = { @Parameter(name = Type.STRING),
+							@Parameter(name = "java.lang.Object") }) //
 			}, //
 			properties = { //
-					@EntityProperty(name = "valueIdentityFoo", type = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityFoo"), //
-					@EntityProperty(name = "valueIdentityBar", type = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.IdentityBar"), //
+					@EntityProperty(name = "valueIdentityFoo", type = IdentityFoo.NAME), //
+					@EntityProperty(name = "valueIdentityBar", type = IdentityBar.NAME), //
 					@EntityProperty(name = "valueIdentityFooList", type = "List<IdentityFoo>"), //
 					@EntityProperty(name = "valueIdentityBarList", type = "List<IdentityBar>"), //
 					@EntityProperty(name = "valueIdentityMixList", type = "List<Object>"), //

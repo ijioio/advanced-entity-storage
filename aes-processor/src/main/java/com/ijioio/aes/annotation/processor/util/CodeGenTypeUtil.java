@@ -20,6 +20,7 @@ import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.WildcardTypeName;
 
 /** Helper class for code gen type. */
 public class CodeGenTypeUtil {
@@ -198,22 +199,19 @@ public class CodeGenTypeUtil {
 		}
 
 		/**
-		 * Returns list of parameter type names of the type.
+		 * Returns list of parameters type names of the type.
 		 * 
-		 * @return list of parameter type names
+		 * @param wildcards indicating whether wildcards should be included or not
+		 * @return list of parameters type names
 		 */
-		public default List<TypeName> getParameters() {
-			return Collections.emptyList();
-		}
-
-		public default List<TypeName> getParameterizedParameters() {
+		public default List<TypeName> getParameters(boolean wildcards) {
 			return Collections.emptyList();
 		}
 
 		public default TypeName getParameterizedType() {
 
 			TypeName type = getType();
-			List<TypeName> parameters = getParameterizedParameters();
+			List<TypeName> parameters = getParameters(true);
 
 			return parameters.size() > 0 ? ParameterizedTypeName.get((ClassName) type,
 					parameters.stream().toArray(size -> new TypeName[size])) : type;
@@ -222,7 +220,7 @@ public class CodeGenTypeUtil {
 		public default TypeName getParameterizedImplementationType() {
 
 			TypeName type = getImplementationType();
-			List<TypeName> parameters = getParameterizedParameters();
+			List<TypeName> parameters = getParameters(false);
 
 			return parameters.size() > 0 ? ParameterizedTypeName.get((ClassName) type,
 					parameters.stream().toArray(size -> new TypeName[size])) : type;
@@ -514,17 +512,14 @@ public class CodeGenTypeUtil {
 			}
 
 			@Override
-			public List<TypeName> getParameters() {
+			public List<TypeName> getParameters(boolean wildcards) {
 
-				return type.getParameters().stream().map(item -> resolveType(item, types))
-						.map(item -> getTypeHandler(item, types).getType()).collect(Collectors.toList());
-			}
-
-			@Override
-			public List<TypeName> getParameterizedParameters() {
-
-				return type.getParameters().stream().map(item -> resolveType(item, types))
-						.map(item -> getTypeHandler(item, types).getParameterizedType()).collect(Collectors.toList());
+				return type.getParameters().stream()
+						.map(item -> Optional
+								.of(getTypeHandler(resolveType(item.getName(), types), types).getParameterizedType())
+								.map(type -> wildcards && item.isWildcard() ? WildcardTypeName.subtypeOf(type) : type)
+								.get())
+						.collect(Collectors.toList());
 			}
 		};
 	}

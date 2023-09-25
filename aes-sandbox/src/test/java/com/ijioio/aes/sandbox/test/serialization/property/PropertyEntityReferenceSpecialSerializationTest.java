@@ -5,13 +5,13 @@ import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
 public class PropertyEntityReferenceSpecialSerializationTest extends BaseSerializationTest {
 
 //	public static class Some extends BaseEntity {
-//		// Empty
+//		public static final String NAME = "com.ijioio.aes.sandbox.test.serialization.property.PropertyEntityReferenceSpecialSerializationTest.Some";
 //	}
 //
 //	@Entity( //
 //			name = PropertyEntityReferenceSpecialSerializationPrototype.NAME, //
 //			properties = { //
-//					@EntityProperty(name = "valueEntityReference", type = @Type(name = "com.ijioio.aes.sandbox.test.serialization.property.PropertyEntityReferenceSpecialSerializationTest.Some", reference = true)) //
+//					@EntityProperty(name = "valueEntityReference", type = @Type(name = Some.NAME, reference = true)) //
 //			} //
 //	)
 //	public static interface PropertyEntityReferenceSpecialSerializationPrototype {

@@ -15,6 +15,7 @@ import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityIndex;
 import com.ijioio.aes.annotation.EntityIndexProperty;
 import com.ijioio.aes.annotation.EntityProperty;
+import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.EntityReference;
 import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceContext;
@@ -28,7 +29,7 @@ public class PropertyStringListCreatePersistenceTest extends BasePersistenceTest
 	@Entity( //
 			name = PropertyStringCreatePersistencePrototype.NAME, //
 			types = { //
-					@Type(name = "List<String>", type = Type.LIST, parameters = Type.STRING) //
+					@Type(name = "List<String>", type = Type.LIST, parameters = @Parameter(name = Type.STRING)) //
 			}, //
 			properties = { //
 					@EntityProperty(name = "valueStringList", type = "List<String>") //

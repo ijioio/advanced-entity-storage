@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
+import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.sandbox.test.codegen.BaseCodegenTest;
 import com.ijioio.test.model.PropertyCollectionExplicitCodegen;
@@ -19,12 +20,12 @@ public class PropertyCollectionExplicitCodegenTest extends BaseCodegenTest {
 	@Entity( //
 			name = PropertyCollectionExplicitCodegenPrototype.NAME, //
 			types = { //
-					@Type(name = "List<String>", type = "java.util.List", parameters = Type.STRING), //
-					@Type(name = "List<Month>", type = "java.util.List", parameters = "java.time.Month"), //
-					@Type(name = "List<Object>", type = "java.util.List", parameters = "java.lang.Object"), //
-					@Type(name = "Set<String>", type = "java.util.Set", parameters = Type.STRING), //
-					@Type(name = "Set<Month>", type = "java.util.Set", parameters = "java.time.Month"), //
-					@Type(name = "Set<Object>", type = "java.util.Set", parameters = "java.lang.Object") //
+					@Type(name = "List<String>", type = "java.util.List", parameters = @Parameter(name = Type.STRING)), //
+					@Type(name = "List<Month>", type = "java.util.List", parameters = @Parameter(name = "java.time.Month")), //
+					@Type(name = "List<Object>", type = "java.util.List", parameters = @Parameter(name = "java.lang.Object")), //
+					@Type(name = "Set<String>", type = "java.util.Set", parameters = @Parameter(name = Type.STRING)), //
+					@Type(name = "Set<Month>", type = "java.util.Set", parameters = @Parameter(name = "java.time.Month")), //
+					@Type(name = "Set<Object>", type = "java.util.Set", parameters = @Parameter(name = "java.lang.Object")) //
 			}, //
 			properties = { //
 					@EntityProperty(name = "valueStringList", type = "List<String>"), //

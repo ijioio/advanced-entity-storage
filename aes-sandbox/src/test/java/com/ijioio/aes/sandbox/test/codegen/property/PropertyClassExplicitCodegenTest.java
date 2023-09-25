@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
+import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.sandbox.test.codegen.BaseCodegenTest;
 import com.ijioio.test.model.PropertyClassExplicitCodegen;
@@ -17,7 +18,7 @@ public class PropertyClassExplicitCodegenTest extends BaseCodegenTest {
 	@Entity( //
 			name = PropertyClassExplicitCodegenPrototype.NAME, //
 			types = { //
-					@Type(name = "Class<String>", type = "java.lang.Class", parameters = Type.STRING) //
+					@Type(name = "Class<String>", type = "java.lang.Class", parameters = @Parameter(name = Type.STRING)) //
 			}, //
 			properties = { //
 					@EntityProperty(name = "valueClass", type = "Class<String>") //

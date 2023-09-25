@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
+import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
@@ -20,7 +21,7 @@ public class PropertyClassSerializationTest extends BaseSerializationTest {
 	@Entity( //
 			name = PropertyClassSerializationPrototype.NAME, //
 			types = { //
-					@Type(name = "Class<String>", type = Type.CLASS, parameters = Type.STRING) //
+					@Type(name = "Class<String>", type = Type.CLASS, parameters = @Parameter(name = Type.STRING)) //
 			}, //
 			properties = { //
 					@EntityProperty(name = "valueClass", type = "Class<String>") //
