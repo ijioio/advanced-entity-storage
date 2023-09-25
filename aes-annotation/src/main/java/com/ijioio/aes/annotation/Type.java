@@ -51,5 +51,5 @@ public @interface Type {
 
 	public String type();
 
-	public String[] parameters() default {};
+	public Parameter[] parameters() default {};
 }
