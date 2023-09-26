@@ -722,8 +722,10 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 
 			JdbcPersistenceValueHandler<String> nameHandler = handler.getValueHandler(nameType.getRawType());
 
+			String nameValue = nameHandler.read(context, handler, nameType, null);
+
 			try {
-				return Class.forName(nameHandler.read(context, handler, nameType, null));
+				return nameValue != null ? Class.forName(nameValue) : null;
 			} catch (ClassNotFoundException e) {
 				throw new PersistenceException(e);
 			}
@@ -746,7 +748,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 			for (String nameValue : nameValues) {
 
 				try {
-					collection.add(Class.forName(nameValue));
+					collection.add(nameValue != null ? Class.forName(nameValue) : null);
 				} catch (ClassNotFoundException e) {
 					throw new PersistenceException(e);
 				}
@@ -885,7 +887,12 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 			String idValue = idHandler.read(context, handler, idType, null);
 			Class typeValue = typeHandler.read(context, handler, typeType, null);
 
-			return EntityReference.of(idValue, typeValue);
+			if ((idValue == null && typeValue != null) || (idValue != null && typeValue == null)) {
+				throw new PersistenceException(
+						String.format("id value %s and type value %s are incosistent", idValue, typeValue));
+			}
+
+			return idValue != null && typeValue != null ? EntityReference.of(idValue, typeValue) : null;
 		}
 
 		@SuppressWarnings("unchecked")
@@ -905,8 +912,10 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 			Collection<String> idValues = idHandler.read(context, handler, idType, null);
 			Collection<Class> typeValues = typeHandler.read(context, handler, typeType, null);
 
-			if (idValues.size() != typeValues.size()) {
-				throw new PersistenceException("count of ids not matches count of types");
+			if ((idValues == null && typeValues != null) || (idValues != null && typeValues == null)
+					|| (idValues != null && typeValues != null && idValues.size() != typeValues.size())) {
+				throw new PersistenceException(
+						String.format("id values %s and type values %s are incosistent", idValues, typeValues));
 			}
 
 			Collection<EntityReference> collection = List.class.isAssignableFrom(type.getRawType()) ? new ArrayList<>()
@@ -916,7 +925,16 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 			Iterator<Class> typeValuesIterator = typeValues.iterator();
 
 			while (idValuesIterator.hasNext()) {
-				collection.add(EntityReference.of(idValuesIterator.next(), typeValuesIterator.next()));
+
+				String idValue = idValuesIterator.next();
+				Class typeValue = typeValuesIterator.next();
+
+				if ((idValue == null && typeValue != null) || (idValue != null && typeValue == null)) {
+					throw new PersistenceException(
+							String.format("id value %s and type value %s are incosistent", idValue, typeValue));
+				}
+
+				collection.add(idValue != null && typeValue != null ? EntityReference.of(idValue, typeValue) : null);
 			}
 
 			return collection;
@@ -1399,13 +1417,17 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 			} else if (operation == Operation.NOT_EQUALS || operation == Operation.ANY_NOT_EQUALS
 					|| operation == Operation.ALL_NOT_EQUALS) {
 				return "!=";
-			} else if (operation == Operation.LOWER) {
+			} else if (operation == Operation.LOWER || operation == Operation.ANY_GREATER
+					|| operation == Operation.ALL_GREATER) {
 				return "<";
-			} else if (operation == Operation.LOWER_OR_EQUALS) {
+			} else if (operation == Operation.LOWER_OR_EQUALS || operation == Operation.ANY_GREATER_OR_EQUALS
+					|| operation == Operation.ALL_GREATER_OR_EQUALS) {
 				return "<=";
-			} else if (operation == Operation.GREATER) {
+			} else if (operation == Operation.GREATER || operation == Operation.ANY_LOWER
+					|| operation == Operation.ALL_LOWER) {
 				return ">";
-			} else if (operation == Operation.GREATER_OR_EQUALS) {
+			} else if (operation == Operation.GREATER_OR_EQUALS || operation == Operation.ANY_LOWER_OR_EQUALS
+					|| operation == Operation.ALL_LOWER_OR_EQUALS) {
 				return ">=";
 			}
 
