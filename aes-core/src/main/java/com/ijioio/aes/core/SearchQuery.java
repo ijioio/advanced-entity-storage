@@ -238,8 +238,67 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		}
 
 		/**
+		 * Adds any greater search criterion. It allows to check if any value of
+		 * indicated collection index {@code property} is greater than indicated
+		 * {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> anygt(Property<C> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.anygt(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds any greater or equals search criterion. It allows to check if any value
+		 * of indicated collection index {@code property} is greater or equals to
+		 * indicated {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> anyge(Property<C> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.anyge(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds any lower search criterion. It allows to check if any value of indicated
+		 * collection index {@code property} is lower than indicated {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> anylt(Property<C> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.anylt(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds any lower or equals search criterion. It allows to check if any value of
+		 * indicated collection index {@code property} is lower or equals to indicated
+		 * {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> anyle(Property<C> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.anyle(property, value));
+			return this;
+		}
+
+		/**
 		 * Adds all equals search criterion. It allows to check if all values of
-		 * indicated collection index {@code property} is equals to indicated
+		 * indicated collection index {@code property} are equals to indicated
 		 * {@code value}.
 		 *
 		 * @param property to check
@@ -254,7 +313,7 @@ public class SearchQuery<I extends EntityIndex<?>> {
 
 		/**
 		 * Adds all not equals search criterion. It allows to check if all values of
-		 * indicated collection index {@code property} is not equals to indicated
+		 * indicated collection index {@code property} are not equals to indicated
 		 * {@code value}.
 		 *
 		 * @param property to check
@@ -264,6 +323,66 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> allne(Property<C> property, T value) {
 
 			this.criterions.add(SimpleSearchCriterion.allne(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds all greater search criterion. It allows to check if all values of
+		 * indicated collection index {@code property} are greater than indicated
+		 * {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> allgt(Property<C> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.allgt(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds all greater or equals search criterion. It allows to check if all values
+		 * of indicated collection index {@code property} are greater or equals to
+		 * indicated {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> allge(Property<C> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.allge(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds all lower search criterion. It allows to check if all values of
+		 * indicated collection index {@code property} are lower than indicated
+		 * {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> alllt(Property<C> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.alllt(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds all lower or equals search criterion. It allows to check if all values
+		 * of indicated collection index {@code property} are lower or equals to
+		 * indicated {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> allle(Property<C> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.allle(property, value));
 			return this;
 		}
 
@@ -560,8 +679,67 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		}
 
 		/**
+		 * Adds any greater search criterion. It allows to check if any value of
+		 * indicated collection index {@code property} is greater than indicated
+		 * {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryBuilder<I> anygt(Property<C> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.anygt(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds any greater or equals search criterion. It allows to check if any value
+		 * of indicated collection index {@code property} is greater or equals to
+		 * indicated {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryBuilder<I> anyge(Property<C> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.anyge(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds any lower search criterion. It allows to check if any value of indicated
+		 * collection index {@code property} is lower than indicated {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryBuilder<I> anylt(Property<C> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.anylt(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds any lower or equals search criterion. It allows to check if any value of
+		 * indicated collection index {@code property} is lower or equals to indicated
+		 * {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryBuilder<I> anyle(Property<C> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.anyle(property, value));
+			return this;
+		}
+
+		/**
 		 * Adds all equals search criterion. It allows to check if all values of
-		 * indicated collection index {@code property} is equals to indicated
+		 * indicated collection index {@code property} are equals to indicated
 		 * {@code value}.
 		 *
 		 * @param property to check
@@ -576,7 +754,7 @@ public class SearchQuery<I extends EntityIndex<?>> {
 
 		/**
 		 * Adds all not equals search criterion. It allows to check if all values of
-		 * indicated collection index {@code property} is not equals to indicated
+		 * indicated collection index {@code property} are not equals to indicated
 		 * {@code value}.
 		 *
 		 * @param property to check
@@ -590,7 +768,67 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		}
 
 		/**
-		 * Adds {@code MOT} search criterion populated with indicated
+		 * Adds all greater search criterion. It allows to check if all values of
+		 * indicated collection index {@code property} are greater than indicated
+		 * {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryBuilder<I> allgt(Property<C> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.allgt(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds all greater or equals search criterion. It allows to check if all values
+		 * of indicated collection index {@code property} are greater or equals to
+		 * indicated {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryBuilder<I> allge(Property<C> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.allge(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds all lower search criterion. It allows to check if all values of
+		 * indicated collection index {@code property} are lower than indicated
+		 * {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryBuilder<I> alllt(Property<C> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.alllt(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds all lower or equals search criterion. It allows to check if all values
+		 * of indicated collection index {@code property} are lower or equals to
+		 * indicated {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryBuilder<I> allle(Property<C> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.allle(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds {@code NOT} search criterion populated with indicated
 		 * {@code criterions}.
 		 *
 		 * @param criterions to add
