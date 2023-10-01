@@ -8,12 +8,18 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.ijioio.aes.core.BaseEntity;
 import com.ijioio.aes.core.EntityIndex;
 import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceContext;
 import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandler;
 import com.ijioio.aes.sandbox.test.persistence.BasePersistenceTest;
 
 public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>, V> extends BasePersistenceTest {
+
+	public static class Some extends BaseEntity {
+
+		public static final String NAME = "com.ijioio.aes.sandbox.test.persistence.index.property.BasePropertyCreatePersistenceTest.Some";
+	}
 
 	protected JdbcPersistenceHandler handler;
 
@@ -24,7 +30,8 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 
 		handler = new JdbcPersistenceHandler();
 
-		executeSql(connection, Paths.get(getClass().getClassLoader().getResource(getSqlScriptPath()).toURI()));
+		executeSql(connection, Paths.get(getClass().getClassLoader()
+				.getResource(String.format("persistence/index/property/%s", getSqlScriptFileName())).toURI()));
 
 		index = createIndex();
 	}
@@ -77,7 +84,7 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 		}
 	}
 
-	protected abstract String getSqlScriptPath() throws Exception;
+	protected abstract String getSqlScriptFileName() throws Exception;
 
 	protected abstract String getTableName();
 

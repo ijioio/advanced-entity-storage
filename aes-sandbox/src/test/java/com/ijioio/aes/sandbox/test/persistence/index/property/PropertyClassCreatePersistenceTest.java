@@ -12,25 +12,26 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.EntityReference;
+import com.ijioio.aes.sandbox.test.persistence.index.property.BasePropertyCreatePersistenceTest.Some;
 import com.ijioio.test.model.PropertyClassCreatePersistence;
 import com.ijioio.test.model.PropertyClassCreatePersistenceIndex;
 
 public class PropertyClassCreatePersistenceTest
-		extends BasePropertyCreatePersistenceTest<PropertyClassCreatePersistenceIndex, Class<String>> {
+		extends BasePropertyCreatePersistenceTest<PropertyClassCreatePersistenceIndex, Class<Some>> {
 
 	@Entity( //
 			name = PropertyClassCreatePersistencePrototype.NAME, //
 			types = { //
-					@Type(name = "Class<String>", type = Type.CLASS, parameters = @Parameter(name = Type.STRING)) //
+					@Type(name = "Class<Some>", type = Type.CLASS, parameters = @Parameter(name = Some.NAME)) //
 			}, //
 			properties = { //
-					@EntityProperty(name = "valueClass", type = "Class<String>") //
+					@EntityProperty(name = "valueClass", type = "Class<Some>") //
 			}, //
 			indexes = { //
 					@EntityIndex( //
 							name = PropertyClassCreatePersistencePrototype.INDEX_NAME, //
 							properties = { //
-									@EntityIndexProperty(name = "valueClass", type = "Class<String>") //
+									@EntityIndexProperty(name = "valueClass", type = "Class<Some>") //
 							} //
 					) //
 			} //
@@ -43,8 +44,8 @@ public class PropertyClassCreatePersistenceTest
 	}
 
 	@Override
-	protected String getSqlScriptPath() throws Exception {
-		return "persistence/index/property/property-class-create-persistence.sql";
+	protected String getSqlScriptFileName() throws Exception {
+		return "property-class-create-persistence.sql";
 	}
 
 	@Override
@@ -59,18 +60,18 @@ public class PropertyClassCreatePersistenceTest
 
 		index.setId("property-class-create-persistence-index");
 		index.setSource(EntityReference.of("property-class-create-persistence", PropertyClassCreatePersistence.class));
-		index.setValueClass(String.class);
+		index.setValueClass(Some.class);
 
 		return index;
 	}
 
 	@Override
-	protected Class<String> getPropertyValue(PropertyClassCreatePersistenceIndex index) {
+	protected Class<Some> getPropertyValue(PropertyClassCreatePersistenceIndex index) {
 		return index.getValueClass();
 	}
 
 	@Override
-	protected void setPropertyValue(PropertyClassCreatePersistenceIndex index, Class<String> value) {
+	protected void setPropertyValue(PropertyClassCreatePersistenceIndex index, Class<Some> value) {
 		index.setValueClass(value);
 	}
 

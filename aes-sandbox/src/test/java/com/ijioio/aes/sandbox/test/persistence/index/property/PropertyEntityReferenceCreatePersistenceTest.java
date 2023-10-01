@@ -11,19 +11,13 @@ import com.ijioio.aes.annotation.EntityIndexProperty;
 import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
-import com.ijioio.aes.core.BaseEntity;
 import com.ijioio.aes.core.EntityReference;
-import com.ijioio.aes.sandbox.test.persistence.index.property.PropertyEntityReferenceCreatePersistenceTest.Some;
+import com.ijioio.aes.sandbox.test.persistence.index.property.BasePropertyCreatePersistenceTest.Some;
 import com.ijioio.test.model.PropertyEntityReferenceCreatePersistence;
 import com.ijioio.test.model.PropertyEntityReferenceCreatePersistenceIndex;
 
 public class PropertyEntityReferenceCreatePersistenceTest extends
 		BasePropertyCreatePersistenceTest<PropertyEntityReferenceCreatePersistenceIndex, EntityReference<Some>> {
-
-	public static class Some extends BaseEntity {
-
-		public static final String NAME = "com.ijioio.aes.sandbox.test.persistence.index.property.PropertyEntityReferenceCreatePersistenceTest.Some";
-	}
 
 	@Entity( //
 			name = PropertyEntityReferenceCreatePersistencePrototype.NAME, //
@@ -50,8 +44,8 @@ public class PropertyEntityReferenceCreatePersistenceTest extends
 	}
 
 	@Override
-	protected String getSqlScriptPath() throws Exception {
-		return "persistence/index/property/property-entity-reference-create-persistence.sql";
+	protected String getSqlScriptFileName() throws Exception {
+		return "property-entity-reference-create-persistence.sql";
 	}
 
 	@Override

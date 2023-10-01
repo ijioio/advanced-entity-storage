@@ -38,8 +38,8 @@ public class PropertyStringCreatePersistenceTest
 	}
 
 	@Override
-	protected String getSqlScriptPath() {
-		return "persistence/index/property/property-string-create-persistence.sql";
+	protected String getSqlScriptFileName() {
+		return "property-string-create-persistence.sql";
 	}
 
 	@Override
