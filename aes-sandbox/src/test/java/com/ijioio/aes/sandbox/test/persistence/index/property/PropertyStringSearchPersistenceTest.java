@@ -3,6 +3,8 @@ package com.ijioio.aes.sandbox.test.persistence.index.property;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.Assertions;
+
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityIndex;
 import com.ijioio.aes.annotation.EntityIndexProperty;
@@ -38,13 +40,8 @@ public class PropertyStringSearchPersistenceTest
 	}
 
 	@Override
-	protected String getSqlScriptPath() throws Exception {
-		return "persistence/index/property/property-string-search-persistence.sql";
-	}
-
-	@Override
-	protected String getTableName() {
-		return PropertyStringSearchPersistenceIndex.class.getSimpleName();
+	protected String getSqlScriptFileName() throws Exception {
+		return "property-string-search-persistence.sql";
 	}
 
 	@Override
@@ -55,18 +52,18 @@ public class PropertyStringSearchPersistenceTest
 	@Override
 	protected List<PropertyStringSearchPersistenceIndex> createIndexes() {
 
-		int count = random.nextInt(10) + 1;
-
 		List<PropertyStringSearchPersistenceIndex> indexes = new ArrayList<>();
+
+		int count = random.nextInt(INDEX_MAX_COUNT) + 1;
 
 		for (int i = 0; i < count; i++) {
 
 			PropertyStringSearchPersistenceIndex index = new PropertyStringSearchPersistenceIndex();
 
-			index.setId(String.format("property-string-search-persistence-index-%s", i));
-			index.setSource(EntityReference.of(String.format("property-string-search-persistence-%s", i),
+			index.setId(String.format("property-string-search-persistence-index-%s", i + 1));
+			index.setSource(EntityReference.of(String.format("property-string-search-persistence-%s", i + 1),
 					PropertyStringSearchPersistence.class));
-			index.setValueString(String.format("value-%s", i));
+			index.setValueString(String.format("value-%s", i + 1));
 
 			indexes.add(index);
 		}
@@ -90,8 +87,12 @@ public class PropertyStringSearchPersistenceTest
 	}
 
 	@Override
-	protected int comparePropertyValue(PropertyStringSearchPersistenceIndex o1,
-			PropertyStringSearchPersistenceIndex o2) {
-		return compare(o1.getValueString(), o2.getValueString());
+	protected int comparePropertyValue(String value1, String value2) {
+		return compare(value1, value2);
+	}
+
+	@Override
+	protected void checkPropertyValue(String expectedValue, String actualValue) {
+		Assertions.assertEquals(expectedValue, actualValue);
 	}
 }
