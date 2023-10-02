@@ -94,13 +94,15 @@ public class PropertyClassSearchPersistenceTest
 
 	@Override
 	protected int comparePropertyValue(Class<? extends Some> value1, Class<? extends Some> value2) {
-		return compare(Optional.ofNullable(value1).map(item -> item.getName()).orElse(null),
-				Optional.ofNullable(value2).map(item -> item.getName()).orElse(null));
+		return compare(getClassName(value1), getClassName(value2));
 	}
 
 	@Override
 	protected void checkPropertyValue(Class<? extends Some> expectedValue, Class<? extends Some> actualValue) {
-		Assertions.assertEquals(Optional.ofNullable(expectedValue).map(item -> item.getName()).orElse(null),
-				Optional.ofNullable(actualValue).map(item -> item.getName()).orElse(null));
+		Assertions.assertEquals(getClassName(expectedValue), getClassName(actualValue));
+	}
+
+	private String getClassName(Class<? extends Some> value) {
+		return Optional.ofNullable(value).map(item -> item.getName()).orElse(null);
 	}
 }
