@@ -95,18 +95,22 @@ public class PropertyEntityReferenceSearchPersistenceTest extends
 
 	@Override
 	protected int comparePropertyValue(EntityReference<? extends Some> value1, EntityReference<? extends Some> value2) {
-		return compare(Optional.ofNullable(value1).map(item -> item.getId()).orElse(null),
-				Optional.ofNullable(value2).map(item -> item.getId()).orElse(null));
+		return compare(getEntityReferenceId(value1), getEntityReferenceId(value2));
 	}
 
 	@Override
 	protected void checkPropertyValue(EntityReference<? extends Some> expectedValue,
 			EntityReference<? extends Some> actualValue) {
 
-		Assertions.assertEquals(Optional.ofNullable(expectedValue).map(item -> item.getId()).orElse(null),
-				Optional.ofNullable(actualValue).map(item -> item.getId()).orElse(null));
-		Assertions.assertEquals(
-				Optional.ofNullable(expectedValue).map(item -> item.getType()).map(item -> item.getName()).orElse(null),
-				Optional.ofNullable(actualValue).map(item -> item.getType()).map(item -> item.getName()).orElse(null));
+		Assertions.assertEquals(getEntityReferenceId(expectedValue), getEntityReferenceId(actualValue));
+		Assertions.assertEquals(getEntityReferenceTypeName(expectedValue), getEntityReferenceTypeName(actualValue));
+	}
+
+	private String getEntityReferenceId(EntityReference<? extends Some> value) {
+		return Optional.ofNullable(value).map(item -> item.getId()).orElse(null);
+	}
+
+	private String getEntityReferenceTypeName(EntityReference<? extends Some> value) {
+		return Optional.ofNullable(value).map(item -> item.getType()).map(item -> item.getName()).orElse(null);
 	}
 }
