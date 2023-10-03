@@ -38,8 +38,8 @@ public class PropertyStringCreatePersistenceTest
 	}
 
 	@Override
-	protected String getSqlScriptPath() {
-		return "persistence/index/property/property-string-create-persistence.sql";
+	protected String getSqlScriptFileName() {
+		return "property-string-create-persistence.sql";
 	}
 
 	@Override
@@ -71,8 +71,7 @@ public class PropertyStringCreatePersistenceTest
 	}
 
 	@Override
-	protected void checkPropertyValue(PropertyStringCreatePersistenceIndex index, ResultSet resultSet)
-			throws Exception {
-		Assertions.assertEquals(index.getValueString(), resultSet.getString("valueString"));
+	protected void checkPropertyValue(String value, ResultSet resultSet) throws Exception {
+		Assertions.assertEquals(value, resultSet.getString("valueString"));
 	}
 }

@@ -1,15 +1,12 @@
 package com.ijioio.aes.sandbox.test.persistence.index.property;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityIndex;
@@ -17,39 +14,29 @@ import com.ijioio.aes.annotation.EntityIndexProperty;
 import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
-import com.ijioio.aes.core.BaseEntity;
-import com.ijioio.aes.core.BaseEntityIndex;
 import com.ijioio.aes.core.EntityReference;
-import com.ijioio.aes.core.Order;
-import com.ijioio.aes.core.SearchQuery;
-import com.ijioio.aes.core.SearchQuery.SearchQueryBuilder;
-import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceContext;
-import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandler;
-import com.ijioio.aes.sandbox.test.persistence.BasePersistenceTest;
+import com.ijioio.aes.core.Property;
+import com.ijioio.aes.sandbox.test.persistence.index.property.BasePropertySearchPersistenceTest.Some;
 import com.ijioio.test.model.PropertyEntityReferenceListSearchPersistence;
 import com.ijioio.test.model.PropertyEntityReferenceListSearchPersistenceIndex;
 
-public class PropertyEntityReferenceListSearchPersistenceTest extends BasePersistenceTest {
-
-	public static class Some extends BaseEntity {
-
-		public static final String NAME = "com.ijioio.aes.sandbox.test.persistence.index.property.PropertyEntityReferenceListSearchPersistenceTest.Some";
-	}
+public class PropertyEntityReferenceListSearchPersistenceTest extends
+		BasePropertyCollectionSearchPersistenceTest<PropertyEntityReferenceListSearchPersistenceIndex, List<EntityReference<? extends Some>>, EntityReference<? extends Some>> {
 
 	@Entity( //
 			name = PropertyEntityReferenceListSearchPersistencePrototype.NAME, //
 			types = { //
-					@Type(name = "EntityReference<Some>", type = Type.ENTITY_REFERENCE, parameters = @Parameter(name = Some.NAME)), //
-					@Type(name = "List<EntityReference<Some>>", type = Type.LIST, parameters = @Parameter(name = "EntityReference<Some>")) //
+					@Type(name = "EntityReference<? extends Some>", type = Type.ENTITY_REFERENCE, parameters = @Parameter(name = Some.NAME, wildcard = true)), //
+					@Type(name = "List<EntityReference<? extends Some>>", type = Type.LIST, parameters = @Parameter(name = "EntityReference<? extends Some>")) //
 			}, //
 			properties = { //
-					@EntityProperty(name = "valueEntityReferenceList", type = "List<EntityReference<Some>>") //
+					@EntityProperty(name = "valueEntityReferenceList", type = "List<EntityReference<? extends Some>>") //
 			}, //
 			indexes = { //
 					@EntityIndex( //
 							name = PropertyEntityReferenceListSearchPersistencePrototype.INDEX_NAME, //
 							properties = { //
-									@EntityIndexProperty(name = "valueEntityReferenceList", type = "List<EntityReference<Some>>") //
+									@EntityIndexProperty(name = "valueEntityReferenceList", type = "List<EntityReference<? extends Some>>") //
 							} //
 					) //
 			} //
@@ -61,126 +48,137 @@ public class PropertyEntityReferenceListSearchPersistenceTest extends BasePersis
 		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyEntityReferenceListSearchPersistenceIndex";
 	}
 
-	private JdbcPersistenceHandler handler;
+	@Override
+	protected String getSqlScriptFileName() throws Exception {
+		return "property-entity-reference-list-search-persistence.sql";
+	}
 
-	private Path path;
+	@Override
+	protected Class<PropertyEntityReferenceListSearchPersistenceIndex> getIndexClass() {
+		return PropertyEntityReferenceListSearchPersistenceIndex.class;
+	}
 
-	private List<PropertyEntityReferenceListSearchPersistenceIndex> indexes;
+	@Override
+	protected List<PropertyEntityReferenceListSearchPersistenceIndex> createIndexes() {
 
-	@BeforeEach
-	public void before() throws Exception {
+		List<PropertyEntityReferenceListSearchPersistenceIndex> indexes = new ArrayList<>();
 
-		handler = new JdbcPersistenceHandler();
-
-		path = Paths.get(getClass().getClassLoader()
-				.getResource("persistence/index/property/property-entity-reference-list-search-persistence.sql")
-				.toURI());
-
-		executeSql(connection, path);
-
-		int count = random.nextInt(10) + 1;
-
-		indexes = new ArrayList<>();
+		int count = random.nextInt(INDEX_MAX_COUNT) + 1;
 
 		for (int i = 0; i < count; i++) {
 
 			PropertyEntityReferenceListSearchPersistenceIndex index = new PropertyEntityReferenceListSearchPersistenceIndex();
 
-			index.setId(String.format("property-entity-reference-list-search-persistence-index-%s", i));
-			index.setSource(EntityReference.of(String.format("property-entity-reference-list-search-persistence-%s", i),
-					PropertyEntityReferenceListSearchPersistence.class));
-			index.setValueEntityReferenceList(
-					Arrays.asList(EntityReference.of(String.format("some-%s1", i), Some.class),
-							EntityReference.of(String.format("some-%s2", i), Some.class),
-							EntityReference.of(String.format("some-%s3", i), Some.class)));
+			index.setId(String.format("property-entity-reference-list-search-persistence-index-%s", i + 1));
+			index.setSource(
+					EntityReference.of(String.format("property-entity-reference-list-search-persistence-%s", i + 1),
+							PropertyEntityReferenceListSearchPersistence.class));
+
+			List<EntityReference<? extends Some>> value = new ArrayList<>();
+
+			for (int j = 0; j < VALUE_MAX_COUNT; j++) {
+				value.add(EntityReference.of(String.format("some-%s%s", i + 1, j + 1),
+						collectionTypes.get(i + 1).get(j)));
+			}
+
+			index.setValueEntityReferenceList(value);
 
 			indexes.add(index);
 		}
+
+		return indexes;
 	}
 
-	@Test
-	public void testSearch() throws Exception {
-
-		for (PropertyEntityReferenceListSearchPersistenceIndex index : indexes) {
-			handler.create(JdbcPersistenceContext.of(connection), index);
-		}
-
-		SearchQuery<PropertyEntityReferenceListSearchPersistenceIndex> query = SearchQueryBuilder
-				.of(PropertyEntityReferenceListSearchPersistenceIndex.class)
-				.sorting(BaseEntityIndex.Properties.id, Order.ASC).build();
-
-		List<PropertyEntityReferenceListSearchPersistenceIndex> expectedIndexes = indexes;
-		List<PropertyEntityReferenceListSearchPersistenceIndex> actualIndexes = handler
-				.search(JdbcPersistenceContext.of(connection), query);
-
-		check(expectedIndexes, actualIndexes);
+	@Override
+	protected List<EntityReference<? extends Some>> createEmptyPropertyValue() {
+		return Collections.emptyList();
 	}
 
-	@Test
-	public void testSearchEquals() throws Exception {
+	@Override
+	protected List<EntityReference<? extends Some>> createAllNullPropertyValue() {
 
-		for (PropertyEntityReferenceListSearchPersistenceIndex index : indexes) {
-			handler.create(JdbcPersistenceContext.of(connection), index);
+		List<EntityReference<? extends Some>> value = new ArrayList<>();
+
+		for (int j = 0; j < VALUE_MAX_COUNT; j++) {
+			value.add(null);
 		}
 
-		PropertyEntityReferenceListSearchPersistenceIndex selectedIndex = indexes.get(random.nextInt(indexes.size()));
-
-		SearchQuery<PropertyEntityReferenceListSearchPersistenceIndex> query = SearchQueryBuilder
-				.of(PropertyEntityReferenceListSearchPersistenceIndex.class)
-				.eq(PropertyEntityReferenceListSearchPersistenceIndex.Properties.valueEntityReferenceList,
-						selectedIndex.getValueEntityReferenceList())
-				.sorting(BaseEntityIndex.Properties.id, Order.ASC).build();
-
-		List<PropertyEntityReferenceListSearchPersistenceIndex> expectedIndexes = Collections
-				.singletonList(selectedIndex);
-		List<PropertyEntityReferenceListSearchPersistenceIndex> actualIndexes = handler
-				.search(JdbcPersistenceContext.of(connection), query);
-
-		check(expectedIndexes, actualIndexes);
+		return value;
 	}
 
-	@Test
-	public void testSearchAnyEquals() throws Exception {
+	@Override
+	protected List<EntityReference<? extends Some>> createAllSamePropertyValue(int i) {
 
-		for (PropertyEntityReferenceListSearchPersistenceIndex index : indexes) {
-			handler.create(JdbcPersistenceContext.of(connection), index);
+		List<EntityReference<? extends Some>> value = new ArrayList<>();
+
+		for (int j = 0; j < VALUE_MAX_COUNT; j++) {
+			value.add(EntityReference.of(String.format("some-%s", i + 1), types.get(i)));
 		}
 
-		PropertyEntityReferenceListSearchPersistenceIndex selectedIndex = indexes.get(random.nextInt(indexes.size()));
-
-		EntityReference<Some> selectedValue = selectedIndex.getValueEntityReferenceList()
-				.get(random.nextInt(selectedIndex.getValueEntityReferenceList().size()));
-
-		SearchQuery<PropertyEntityReferenceListSearchPersistenceIndex> query = SearchQueryBuilder
-				.of(PropertyEntityReferenceListSearchPersistenceIndex.class)
-				.anyeq(PropertyEntityReferenceListSearchPersistenceIndex.Properties.valueEntityReferenceList,
-						selectedValue)
-				.sorting(BaseEntityIndex.Properties.id, Order.ASC).build();
-
-		List<PropertyEntityReferenceListSearchPersistenceIndex> expectedIndexes = Collections
-				.singletonList(selectedIndex);
-		List<PropertyEntityReferenceListSearchPersistenceIndex> actualIndexes = handler
-				.search(JdbcPersistenceContext.of(connection), query);
-
-		check(expectedIndexes, actualIndexes);
+		return value;
 	}
 
-	private void check(List<PropertyEntityReferenceListSearchPersistenceIndex> expectedIndexes,
-			List<PropertyEntityReferenceListSearchPersistenceIndex> actualIndexes) {
+	@Override
+	protected Property<List<EntityReference<? extends Some>>> getProperty() {
+		return PropertyEntityReferenceListSearchPersistenceIndex.Properties.valueEntityReferenceList;
+	}
 
-		Assertions.assertEquals(expectedIndexes.size(), actualIndexes.size());
+	@Override
+	protected List<EntityReference<? extends Some>> getPropertyValue(
+			PropertyEntityReferenceListSearchPersistenceIndex index) {
+		return index.getValueEntityReferenceList();
+	}
 
-		for (int i = 0; i < expectedIndexes.size(); i++) {
+	@Override
+	protected void setPropertyValue(PropertyEntityReferenceListSearchPersistenceIndex index,
+			List<EntityReference<? extends Some>> value) {
+		index.setValueEntityReferenceList(value);
+	}
 
-			PropertyEntityReferenceListSearchPersistenceIndex expectedIndex = expectedIndexes.get(i);
-			PropertyEntityReferenceListSearchPersistenceIndex actualIndex = actualIndexes.get(i);
+	@Override
+	protected int comparePropertyValue(List<EntityReference<? extends Some>> value1,
+			List<EntityReference<? extends Some>> value2) {
+		return compare(
+				Optional.ofNullable(value1)
+						.map(item -> item.stream().map(element -> getEntityReferenceId(element))
+								.collect(Collectors.toList()))
+						.orElse(null),
+				Optional.ofNullable(value2).map(item -> item.stream().map(element -> getEntityReferenceId(element))
+						.collect(Collectors.toList())).orElse(null));
+	}
 
-			Assertions.assertEquals(expectedIndex.getId(), actualIndex.getId());
-			Assertions.assertEquals(expectedIndex.getSource().getId(), actualIndex.getSource().getId());
-			Assertions.assertEquals(expectedIndex.getSource().getType().getName(),
-					actualIndex.getSource().getType().getName());
-			Assertions.assertEquals(expectedIndex.getValueEntityReferenceList(),
-					actualIndex.getValueEntityReferenceList());
-		}
+	@Override
+	protected int comparePropertyValueElement(EntityReference<? extends Some> element1,
+			EntityReference<? extends Some> element2) {
+		return compare(getEntityReferenceId(element1), getEntityReferenceId(element2));
+	}
+
+	@Override
+	protected void checkPropertyValue(List<EntityReference<? extends Some>> expectedValue,
+			List<EntityReference<? extends Some>> actualValue) {
+
+		Assertions.assertEquals(
+				Optional.ofNullable(expectedValue)
+						.map(item -> item.stream().map(element -> getEntityReferenceId(element))
+								.collect(Collectors.toList()))
+						.orElse(null),
+				Optional.ofNullable(actualValue).map(item -> item.stream().map(element -> getEntityReferenceId(element))
+						.collect(Collectors.toList())).orElse(null));
+		Assertions.assertEquals(
+				Optional.ofNullable(expectedValue)
+						.map(item -> item.stream().map(element -> getEntityReferenceTypeName(element))
+								.collect(Collectors.toList()))
+						.orElse(null),
+				Optional.ofNullable(actualValue).map(item -> item.stream()
+						.map(element -> getEntityReferenceTypeName(element)).collect(Collectors.toList()))
+						.orElse(null));
+	}
+
+	private String getEntityReferenceId(EntityReference<? extends Some> element) {
+		return Optional.ofNullable(element).map(item -> item.getId()).orElse(null);
+	}
+
+	private String getEntityReferenceTypeName(EntityReference<? extends Some> element) {
+		return Optional.ofNullable(element).map(item -> item.getType()).map(item -> item.getName()).orElse(null);
 	}
 }

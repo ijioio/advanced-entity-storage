@@ -32,20 +32,20 @@ public class SearchCriterion {
 			return new SimpleSearchCriterion<>(property, Operation.NOT_EQUALS, property.getType(), value);
 		}
 
-		public static <T> SimpleSearchCriterion<T, T> gt(Property<T> property, T value) {
-			return new SimpleSearchCriterion<>(property, Operation.GREATER, property.getType(), value);
-		}
-
-		public static <T> SimpleSearchCriterion<T, T> ge(Property<T> property, T value) {
-			return new SimpleSearchCriterion<>(property, Operation.GREATER_OR_EQUALS, property.getType(), value);
-		}
-
 		public static <T> SimpleSearchCriterion<T, T> lt(Property<T> property, T value) {
 			return new SimpleSearchCriterion<>(property, Operation.LOWER, property.getType(), value);
 		}
 
 		public static <T> SimpleSearchCriterion<T, T> le(Property<T> property, T value) {
 			return new SimpleSearchCriterion<>(property, Operation.LOWER_OR_EQUALS, property.getType(), value);
+		}
+
+		public static <T> SimpleSearchCriterion<T, T> gt(Property<T> property, T value) {
+			return new SimpleSearchCriterion<>(property, Operation.GREATER, property.getType(), value);
+		}
+
+		public static <T> SimpleSearchCriterion<T, T> ge(Property<T> property, T value) {
+			return new SimpleSearchCriterion<>(property, Operation.GREATER_OR_EQUALS, property.getType(), value);
 		}
 
 		@SuppressWarnings("unchecked")
@@ -57,18 +57,6 @@ public class SearchCriterion {
 		@SuppressWarnings("unchecked")
 		public static <C extends Collection<T>, T> SimpleSearchCriterion<C, T> anyne(Property<C> property, T value) {
 			return new SimpleSearchCriterion<>(property, Operation.ANY_NOT_EQUALS,
-					property.getType().getParameterTypes()[0], value);
-		}
-
-		@SuppressWarnings("unchecked")
-		public static <C extends Collection<T>, T> SimpleSearchCriterion<C, T> anygt(Property<C> property, T value) {
-			return new SimpleSearchCriterion<>(property, Operation.ANY_GREATER,
-					property.getType().getParameterTypes()[0], value);
-		}
-
-		@SuppressWarnings("unchecked")
-		public static <C extends Collection<T>, T> SimpleSearchCriterion<C, T> anyge(Property<C> property, T value) {
-			return new SimpleSearchCriterion<>(property, Operation.ANY_GREATER_OR_EQUALS,
 					property.getType().getParameterTypes()[0], value);
 		}
 
@@ -85,6 +73,18 @@ public class SearchCriterion {
 		}
 
 		@SuppressWarnings("unchecked")
+		public static <C extends Collection<T>, T> SimpleSearchCriterion<C, T> anygt(Property<C> property, T value) {
+			return new SimpleSearchCriterion<>(property, Operation.ANY_GREATER,
+					property.getType().getParameterTypes()[0], value);
+		}
+
+		@SuppressWarnings("unchecked")
+		public static <C extends Collection<T>, T> SimpleSearchCriterion<C, T> anyge(Property<C> property, T value) {
+			return new SimpleSearchCriterion<>(property, Operation.ANY_GREATER_OR_EQUALS,
+					property.getType().getParameterTypes()[0], value);
+		}
+
+		@SuppressWarnings("unchecked")
 		public static <C extends Collection<T>, T> SimpleSearchCriterion<C, T> alleq(Property<C> property, T value) {
 			return new SimpleSearchCriterion<>(property, Operation.ALL_EQUALS,
 					property.getType().getParameterTypes()[0], value);
@@ -97,18 +97,6 @@ public class SearchCriterion {
 		}
 
 		@SuppressWarnings("unchecked")
-		public static <C extends Collection<T>, T> SimpleSearchCriterion<C, T> allgt(Property<C> property, T value) {
-			return new SimpleSearchCriterion<>(property, Operation.ALL_GREATER,
-					property.getType().getParameterTypes()[0], value);
-		}
-
-		@SuppressWarnings("unchecked")
-		public static <C extends Collection<T>, T> SimpleSearchCriterion<C, T> allge(Property<C> property, T value) {
-			return new SimpleSearchCriterion<>(property, Operation.ALL_GREATER_OR_EQUALS,
-					property.getType().getParameterTypes()[0], value);
-		}
-
-		@SuppressWarnings("unchecked")
 		public static <C extends Collection<T>, T> SimpleSearchCriterion<C, T> alllt(Property<C> property, T value) {
 			return new SimpleSearchCriterion<>(property, Operation.ALL_LOWER, property.getType().getParameterTypes()[0],
 					value);
@@ -117,6 +105,18 @@ public class SearchCriterion {
 		@SuppressWarnings("unchecked")
 		public static <C extends Collection<T>, T> SimpleSearchCriterion<C, T> allle(Property<C> property, T value) {
 			return new SimpleSearchCriterion<>(property, Operation.ALL_LOWER_OR_EQUALS,
+					property.getType().getParameterTypes()[0], value);
+		}
+
+		@SuppressWarnings("unchecked")
+		public static <C extends Collection<T>, T> SimpleSearchCriterion<C, T> allgt(Property<C> property, T value) {
+			return new SimpleSearchCriterion<>(property, Operation.ALL_GREATER,
+					property.getType().getParameterTypes()[0], value);
+		}
+
+		@SuppressWarnings("unchecked")
+		public static <C extends Collection<T>, T> SimpleSearchCriterion<C, T> allge(Property<C> property, T value) {
+			return new SimpleSearchCriterion<>(property, Operation.ALL_GREATER_OR_EQUALS,
 					property.getType().getParameterTypes()[0], value);
 		}
 

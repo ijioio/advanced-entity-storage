@@ -705,13 +705,20 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 
 			JdbcPersistenceValueHandler<List<String>> nameHandler = handler.getValueHandler(nameType.getRawType());
 
-			List<String> nameValues = new ArrayList<>();
+			if (values != null) {
 
-			for (Class value : values) {
-				nameValues.add(value != null ? value.getName() : null);
+				List<String> nameValues = new ArrayList<>();
+
+				for (Class value : values) {
+					nameValues.add(value != null ? value.getName() : null);
+				}
+
+				nameHandler.write(context, handler, nameType, nameValues, search);
+
+			} else {
+
+				nameHandler.write(context, handler, nameType, null, search);
 			}
-
-			nameHandler.write(context, handler, nameType, nameValues, search);
 		};
 
 		@Override
@@ -742,19 +749,26 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 
 			Collection<String> nameValues = nameHandler.read(context, handler, nameType, null);
 
-			Collection<Class> collection = List.class.isAssignableFrom(type.getRawType()) ? new ArrayList<>()
-					: new LinkedHashSet<>();
+			if (nameValues != null) {
 
-			for (String nameValue : nameValues) {
+				Collection<Class> collection = List.class.isAssignableFrom(type.getRawType()) ? new ArrayList<>()
+						: new LinkedHashSet<>();
 
-				try {
-					collection.add(nameValue != null ? Class.forName(nameValue) : null);
-				} catch (ClassNotFoundException e) {
-					throw new PersistenceException(e);
+				for (String nameValue : nameValues) {
+
+					try {
+						collection.add(nameValue != null ? Class.forName(nameValue) : null);
+					} catch (ClassNotFoundException e) {
+						throw new PersistenceException(e);
+					}
 				}
-			}
 
-			return collection;
+				return collection;
+
+			} else {
+
+				return null;
+			}
 		};
 	};
 
@@ -857,19 +871,30 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 			JdbcPersistenceValueHandler<List<String>> idHandler = handler.getValueHandler(idType.getRawType());
 			JdbcPersistenceValueHandler<List<Class>> typeHandler = handler.getValueHandler(typeType.getRawType());
 
-			List<String> idValues = new ArrayList<>();
-			List<Class> typeValues = new ArrayList<>();
+			if (values != null) {
 
-			for (EntityReference value : values) {
+				List<String> idValues = new ArrayList<>();
+				List<Class> typeValues = new ArrayList<>();
 
-				idValues.add(value != null ? value.getId() : null);
-				typeValues.add(value != null ? value.getType() : null);
-			}
+				for (EntityReference value : values) {
 
-			idHandler.write(context, handler, idType, idValues, search);
+					idValues.add(value != null ? value.getId() : null);
+					typeValues.add(value != null ? value.getType() : null);
+				}
 
-			if (!search) {
-				typeHandler.write(context, handler, typeType, typeValues, search);
+				idHandler.write(context, handler, idType, idValues, search);
+
+				if (!search) {
+					typeHandler.write(context, handler, typeType, typeValues, search);
+				}
+
+			} else {
+
+				idHandler.write(context, handler, idType, null, search);
+
+				if (!search) {
+					typeHandler.write(context, handler, typeType, null, search);
+				}
 			}
 		}
 
@@ -918,26 +943,35 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 						String.format("id values %s and type values %s are incosistent", idValues, typeValues));
 			}
 
-			Collection<EntityReference> collection = List.class.isAssignableFrom(type.getRawType()) ? new ArrayList<>()
-					: new LinkedHashSet<>();
+			if (idValues != null && typeValues != null) {
 
-			Iterator<String> idValuesIterator = idValues.iterator();
-			Iterator<Class> typeValuesIterator = typeValues.iterator();
+				Collection<EntityReference> collection = List.class.isAssignableFrom(type.getRawType())
+						? new ArrayList<>()
+						: new LinkedHashSet<>();
 
-			while (idValuesIterator.hasNext()) {
+				Iterator<String> idValuesIterator = idValues.iterator();
+				Iterator<Class> typeValuesIterator = typeValues.iterator();
 
-				String idValue = idValuesIterator.next();
-				Class typeValue = typeValuesIterator.next();
+				while (idValuesIterator.hasNext()) {
 
-				if ((idValue == null && typeValue != null) || (idValue != null && typeValue == null)) {
-					throw new PersistenceException(
-							String.format("id value %s and type value %s are incosistent", idValue, typeValue));
+					String idValue = idValuesIterator.next();
+					Class typeValue = typeValuesIterator.next();
+
+					if ((idValue == null && typeValue != null) || (idValue != null && typeValue == null)) {
+						throw new PersistenceException(
+								String.format("id value %s and type value %s are incosistent", idValue, typeValue));
+					}
+
+					collection
+							.add(idValue != null && typeValue != null ? EntityReference.of(idValue, typeValue) : null);
 				}
 
-				collection.add(idValue != null && typeValue != null ? EntityReference.of(idValue, typeValue) : null);
-			}
+				return collection;
 
-			return collection;
+			} else {
+
+				return null;
+			}
 		}
 	};
 

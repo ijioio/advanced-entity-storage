@@ -1,15 +1,13 @@
 package com.ijioio.aes.sandbox.test.persistence.index.property;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityIndex;
@@ -18,28 +16,27 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.EntityReference;
-import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceContext;
-import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandler;
-import com.ijioio.aes.sandbox.test.persistence.BasePersistenceTest;
+import com.ijioio.aes.sandbox.test.persistence.index.property.BasePropertyCreatePersistenceTest.Some;
 import com.ijioio.test.model.PropertyClassListCreatePersistence;
 import com.ijioio.test.model.PropertyClassListCreatePersistenceIndex;
 
-public class PropertyClassListCreatePersistenceTest extends BasePersistenceTest {
+public class PropertyClassListCreatePersistenceTest extends
+		BasePropertyCollectionCreatePersistenceTest<PropertyClassListCreatePersistenceIndex, List<Class<? extends Some>>, Class<? extends Some>> {
 
 	@Entity( //
 			name = PropertyClassListCreatePersistencePrototype.NAME, //
 			types = { //
-					@Type(name = "Class<String>", type = Type.CLASS, parameters = @Parameter(name = Type.STRING)), //
-					@Type(name = "List<Class<String>>", type = Type.LIST, parameters = @Parameter(name = "Class<String>")) //
+					@Type(name = "Class<? extends Some>", type = Type.CLASS, parameters = @Parameter(name = Some.NAME, wildcard = true)), //
+					@Type(name = "List<Class<? extends Some>>", type = Type.LIST, parameters = @Parameter(name = "Class<? extends Some>")) //
 			}, //
 			properties = { //
-					@EntityProperty(name = "valueClassList", type = "List<Class<String>>") //
+					@EntityProperty(name = "valueClassList", type = "List<Class<? extends Some>>") //
 			}, //
 			indexes = { //
 					@EntityIndex( //
 							name = PropertyClassListCreatePersistencePrototype.INDEX_NAME, //
 							properties = { //
-									@EntityIndexProperty(name = "valueClassList", type = "List<Class<String>>") //
+									@EntityIndexProperty(name = "valueClassList", type = "List<Class<? extends Some>>") //
 							} //
 					) //
 			} //
@@ -51,51 +48,63 @@ public class PropertyClassListCreatePersistenceTest extends BasePersistenceTest 
 		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyClassListCreatePersistenceIndex";
 	}
 
-	private JdbcPersistenceHandler handler;
+	@Override
+	protected String getSqlScriptFileName() throws Exception {
+		return "property-class-list-create-persistence.sql";
+	}
 
-	private Path path;
+	@Override
+	protected String getTableName() {
+		return PropertyClassListCreatePersistenceIndex.class.getSimpleName();
+	}
 
-	private PropertyClassListCreatePersistenceIndex index;
+	@Override
+	protected PropertyClassListCreatePersistenceIndex createIndex() {
 
-	@BeforeEach
-	public void before() throws Exception {
-
-		handler = new JdbcPersistenceHandler();
-
-		path = Paths.get(getClass().getClassLoader()
-				.getResource("persistence/index/property/property-class-list-create-persistence.sql").toURI());
-
-		executeSql(connection, path);
-
-		index = new PropertyClassListCreatePersistenceIndex();
+		PropertyClassListCreatePersistenceIndex index = new PropertyClassListCreatePersistenceIndex();
 
 		index.setId("property-class-list-create-persistence-index");
 		index.setSource(
 				EntityReference.of("property-class-list-create-persistence", PropertyClassListCreatePersistence.class));
-		index.setValueClassList(Arrays.asList(String.class, String.class, String.class));
+
+		List<Class<? extends Some>> value = new ArrayList<>();
+
+		for (int i = 0; i < VALUE_MAX_COUNT; i++) {
+			value.add(types.get(i));
+		}
+
+		index.setValueClassList(value);
+
+		return index;
 	}
 
-	@Test
-	public void testCreate() throws Exception {
+	@Override
+	protected List<Class<? extends Some>> createEmptyPropertyValue() {
+		return Collections.emptyList();
+	}
 
-		handler.create(JdbcPersistenceContext.of(connection), index);
+	@Override
+	protected List<Class<? extends Some>> getPropertyValue(PropertyClassListCreatePersistenceIndex index) {
+		return index.getValueClassList();
+	}
 
-		try (PreparedStatement statement = connection.prepareStatement(
-				String.format("select * from %s", PropertyClassListCreatePersistenceIndex.class.getSimpleName()))) {
+	@Override
+	protected void setPropertyValue(PropertyClassListCreatePersistenceIndex index, List<Class<? extends Some>> value) {
+		index.setValueClassList(value);
+	}
 
-			try (ResultSet resultSet = statement.executeQuery()) {
+	@Override
+	protected void checkPropertyValue(List<Class<? extends Some>> value, ResultSet resultSet) throws Exception {
+		Assertions
+				.assertEquals(
+						Optional.ofNullable(value)
+								.map(item -> item.stream().map(element -> getClassName(element))
+										.collect(Collectors.toList()))
+								.orElse(null),
+						getArray(resultSet.getArray("valueClassList")));
+	}
 
-				Assertions.assertTrue(resultSet.next());
-
-				Assertions.assertEquals(index.getId(), resultSet.getString("id"));
-				Assertions.assertEquals(index.getSource().getId(), resultSet.getString("sourceId"));
-				Assertions.assertEquals(index.getSource().getType().getName(), resultSet.getString("sourceType"));
-				Assertions.assertEquals(
-						index.getValueClassList().stream().map(item -> item.getName()).collect(Collectors.toList()),
-						Arrays.asList((Object[]) resultSet.getArray("valueClassList").getArray()));
-
-				Assertions.assertTrue(resultSet.isLast());
-			}
-		}
+	private String getClassName(Class<? extends Some> value) {
+		return Optional.ofNullable(value).map(item -> item.getName()).orElse(null);
 	}
 }
