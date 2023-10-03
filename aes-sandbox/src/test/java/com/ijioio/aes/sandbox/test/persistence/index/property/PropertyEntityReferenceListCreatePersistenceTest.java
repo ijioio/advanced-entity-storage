@@ -1,15 +1,13 @@
 package com.ijioio.aes.sandbox.test.persistence.index.property;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityIndex;
@@ -17,35 +15,28 @@ import com.ijioio.aes.annotation.EntityIndexProperty;
 import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
-import com.ijioio.aes.core.BaseEntity;
 import com.ijioio.aes.core.EntityReference;
-import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceContext;
-import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandler;
-import com.ijioio.aes.sandbox.test.persistence.BasePersistenceTest;
+import com.ijioio.aes.sandbox.test.persistence.index.property.BasePropertyCreatePersistenceTest.Some;
 import com.ijioio.test.model.PropertyEntityReferenceListCreatePersistence;
 import com.ijioio.test.model.PropertyEntityReferenceListCreatePersistenceIndex;
 
-public class PropertyEntityReferenceListCreatePersistenceTest extends BasePersistenceTest {
-
-	public static class Some extends BaseEntity {
-
-		public static final String NAME = "com.ijioio.aes.sandbox.test.persistence.index.property.PropertyEntityReferenceListCreatePersistenceTest.Some";
-	}
+public class PropertyEntityReferenceListCreatePersistenceTest extends
+		BasePropertyCollectionCreatePersistenceTest<PropertyEntityReferenceListCreatePersistenceIndex, List<EntityReference<? extends Some>>, EntityReference<? extends Some>> {
 
 	@Entity( //
 			name = PropertyEntityReferenceListCreatePersistencePrototype.NAME, //
 			types = { //
-					@Type(name = "EntityReference<Some>", type = Type.ENTITY_REFERENCE, parameters = @Parameter(name = Some.NAME)), //
-					@Type(name = "List<EntityReference<Some>>", type = Type.LIST, parameters = @Parameter(name = "EntityReference<Some>")) //
+					@Type(name = "EntityReference<? extends Some>", type = Type.ENTITY_REFERENCE, parameters = @Parameter(name = Some.NAME, wildcard = true)), //
+					@Type(name = "List<EntityReference<? extends Some>>", type = Type.LIST, parameters = @Parameter(name = "EntityReference<? extends Some>")) //
 			}, //
 			properties = { //
-					@EntityProperty(name = "valueEntityReferenceList", type = "List<EntityReference<Some>>") //
+					@EntityProperty(name = "valueEntityReferenceList", type = "List<EntityReference<? extends Some>>") //
 			}, //
 			indexes = { //
 					@EntityIndex( //
 							name = PropertyEntityReferenceListCreatePersistencePrototype.INDEX_NAME, //
 							properties = { //
-									@EntityIndexProperty(name = "valueEntityReferenceList", type = "List<EntityReference<Some>>") //
+									@EntityIndexProperty(name = "valueEntityReferenceList", type = "List<EntityReference<? extends Some>>") //
 							} //
 					) //
 			} //
@@ -57,58 +48,76 @@ public class PropertyEntityReferenceListCreatePersistenceTest extends BasePersis
 		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyEntityReferenceListCreatePersistenceIndex";
 	}
 
-	private JdbcPersistenceHandler handler;
+	@Override
+	protected String getSqlScriptFileName() throws Exception {
+		return "property-entity-reference-list-create-persistence.sql";
+	}
 
-	private Path path;
+	@Override
+	protected String getTableName() {
+		return PropertyEntityReferenceListCreatePersistenceIndex.class.getSimpleName();
+	}
 
-	private PropertyEntityReferenceListCreatePersistenceIndex index;
+	@Override
+	protected PropertyEntityReferenceListCreatePersistenceIndex createIndex() {
 
-	@BeforeEach
-	public void before() throws Exception {
-
-		handler = new JdbcPersistenceHandler();
-
-		path = Paths.get(getClass().getClassLoader()
-				.getResource("persistence/index/property/property-entity-reference-list-create-persistence.sql")
-				.toURI());
-
-		executeSql(connection, path);
-
-		index = new PropertyEntityReferenceListCreatePersistenceIndex();
+		PropertyEntityReferenceListCreatePersistenceIndex index = new PropertyEntityReferenceListCreatePersistenceIndex();
 
 		index.setId("property-entity-reference-list-create-persistence-index");
 		index.setSource(EntityReference.of("property-entity-reference-list-create-persistence",
 				PropertyEntityReferenceListCreatePersistence.class));
-		index.setValueEntityReferenceList(Arrays.asList(EntityReference.of("some-1", Some.class),
-				EntityReference.of("some-2", Some.class), EntityReference.of("some-3", Some.class)));
+
+		List<EntityReference<? extends Some>> value = new ArrayList<>();
+
+		for (int i = 0; i < VALUE_MAX_COUNT; i++) {
+			value.add(EntityReference.of(String.format("some-%s", i + 1), types.get(i)));
+		}
+
+		index.setValueEntityReferenceList(value);
+
+		return index;
 	}
 
-	@Test
-	public void testCreate() throws Exception {
+	@Override
+	protected List<EntityReference<? extends Some>> createEmptyPropertyValue() {
+		return Collections.emptyList();
+	}
 
-		handler.create(JdbcPersistenceContext.of(connection), index);
+	@Override
+	protected List<EntityReference<? extends Some>> getPropertyValue(
+			PropertyEntityReferenceListCreatePersistenceIndex index) {
+		return index.getValueEntityReferenceList();
+	}
 
-		try (PreparedStatement statement = connection.prepareStatement(String.format("select * from %s",
-				PropertyEntityReferenceListCreatePersistenceIndex.class.getSimpleName()))) {
+	@Override
+	protected void setPropertyValue(PropertyEntityReferenceListCreatePersistenceIndex index,
+			List<EntityReference<? extends Some>> value) {
+		index.setValueEntityReferenceList(value);
+	}
 
-			try (ResultSet resultSet = statement.executeQuery()) {
+	@Override
+	protected void checkPropertyValue(List<EntityReference<? extends Some>> value, ResultSet resultSet)
+			throws Exception {
 
-				Assertions.assertTrue(resultSet.next());
+		Assertions.assertEquals(
+				Optional.ofNullable(value)
+						.map(item -> item.stream().map(element -> getEntityReferenceId(element))
+								.collect(Collectors.toList()))
+						.orElse(null),
+				getArray(resultSet.getArray("valueEntityReferenceListId")));
+		Assertions.assertEquals(
+				Optional.ofNullable(value)
+						.map(item -> item.stream().map(element -> getEntityReferenceTypeName(element))
+								.collect(Collectors.toList()))
+						.orElse(null),
+				getArray(resultSet.getArray("valueEntityReferenceListType")));
+	}
 
-				Assertions.assertEquals(index.getId(), resultSet.getString("id"));
-				Assertions.assertEquals(index.getSource().getId(), resultSet.getString("sourceId"));
-				Assertions.assertEquals(index.getSource().getType().getName(), resultSet.getString("sourceType"));
-				Assertions.assertEquals(
-						index.getValueEntityReferenceList().stream().map(item -> item.getId())
-								.collect(Collectors.toList()),
-						Arrays.asList((Object[]) resultSet.getArray("valueEntityReferenceListId").getArray()));
-				Assertions.assertEquals(
-						index.getValueEntityReferenceList().stream().map(item -> item.getType().getName())
-								.collect(Collectors.toList()),
-						Arrays.asList((Object[]) resultSet.getArray("valueEntityReferenceListType").getArray()));
+	private String getEntityReferenceId(EntityReference<? extends Some> element) {
+		return Optional.ofNullable(element).map(item -> item.getId()).orElse(null);
+	}
 
-				Assertions.assertTrue(resultSet.isLast());
-			}
-		}
+	private String getEntityReferenceTypeName(EntityReference<? extends Some> element) {
+		return Optional.ofNullable(element).map(item -> item.getType()).map(item -> item.getName()).orElse(null);
 	}
 }
