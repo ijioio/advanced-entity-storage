@@ -77,14 +77,17 @@ public class PropertyEntityReferenceCreatePersistenceTest extends
 	}
 
 	@Override
-	protected void checkPropertyValue(PropertyEntityReferenceCreatePersistenceIndex index, ResultSet resultSet)
-			throws Exception {
+	protected void checkPropertyValue(EntityReference<Some> value, ResultSet resultSet) throws Exception {
 
-		Assertions.assertEquals(
-				Optional.ofNullable(index.getValueEntityReference()).map(item -> item.getId()).orElse(null),
-				resultSet.getString("valueEntityReferenceId"));
-		Assertions.assertEquals(
-				Optional.ofNullable(index.getValueEntityReference()).map(item -> item.getType().getName()).orElse(null),
-				resultSet.getString("valueEntityReferenceType"));
+		Assertions.assertEquals(getEntityReferenceId(value), resultSet.getString("valueEntityReferenceId"));
+		Assertions.assertEquals(getEntityReferenceTypeName(value), resultSet.getString("valueEntityReferenceType"));
+	}
+
+	private String getEntityReferenceId(EntityReference<? extends Some> value) {
+		return Optional.ofNullable(value).map(item -> item.getId()).orElse(null);
+	}
+
+	private String getEntityReferenceTypeName(EntityReference<? extends Some> value) {
+		return Optional.ofNullable(value).map(item -> item.getType()).map(item -> item.getName()).orElse(null);
 	}
 }

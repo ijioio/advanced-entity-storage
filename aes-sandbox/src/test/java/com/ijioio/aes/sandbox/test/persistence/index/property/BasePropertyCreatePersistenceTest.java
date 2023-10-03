@@ -3,6 +3,8 @@ package com.ijioio.aes.sandbox.test.persistence.index.property;
 import java.nio.file.Paths;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +22,61 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 
 		public static final String NAME = "com.ijioio.aes.sandbox.test.persistence.index.property.BasePropertyCreatePersistenceTest.Some";
 	}
+
+	public static class Some1 extends Some {
+		// Empty
+	}
+
+	public static class Some2 extends Some {
+		// Empty
+	}
+
+	public static class Some3 extends Some {
+		// Empty
+	}
+
+	public static class Some4 extends Some {
+		// Empty
+	}
+
+	public static class Some5 extends Some {
+		// Empty
+	}
+
+	public static class Some6 extends Some {
+		// Empty
+	}
+
+	public static class Some7 extends Some {
+		// Empty
+	}
+
+	public static class Some8 extends Some {
+		// Empty
+	}
+
+	public static class Some9 extends Some {
+		// Empty
+	}
+
+	protected static List<Class<? extends Some>> types = new ArrayList<>();
+
+	static {
+
+		types.add(Some1.class);
+		types.add(Some2.class);
+		types.add(Some3.class);
+		types.add(Some4.class);
+		types.add(Some5.class);
+		types.add(Some6.class);
+		types.add(Some7.class);
+		types.add(Some8.class);
+		types.add(Some9.class);
+	}
+
+	protected static int INDEX_MAX_COUNT = 9;
+
+	protected static int VALUE_MAX_COUNT = 3;
 
 	protected JdbcPersistenceHandler handler;
 
@@ -52,7 +109,7 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 				Assertions.assertEquals(index.getSource().getId(), resultSet.getString("sourceId"));
 				Assertions.assertEquals(index.getSource().getType().getName(), resultSet.getString("sourceType"));
 
-				checkPropertyValue(index, resultSet);
+				checkPropertyValue(getPropertyValue(index), resultSet);
 
 				Assertions.assertTrue(resultSet.isLast());
 			}
@@ -77,7 +134,7 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 				Assertions.assertEquals(index.getSource().getId(), resultSet.getString("sourceId"));
 				Assertions.assertEquals(index.getSource().getType().getName(), resultSet.getString("sourceType"));
 
-				checkPropertyValue(index, resultSet);
+				checkPropertyValue(getPropertyValue(index), resultSet);
 
 				Assertions.assertTrue(resultSet.isLast());
 			}
@@ -94,5 +151,5 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 
 	protected abstract void setPropertyValue(I index, V value);
 
-	protected abstract void checkPropertyValue(I index, ResultSet resultSet) throws Exception;
+	protected abstract void checkPropertyValue(V value, ResultSet resultSet) throws Exception;
 }
