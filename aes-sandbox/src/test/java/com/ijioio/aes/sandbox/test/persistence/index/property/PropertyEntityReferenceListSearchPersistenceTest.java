@@ -27,7 +27,7 @@ public class PropertyEntityReferenceListSearchPersistenceTest extends
 			name = PropertyEntityReferenceListSearchPersistencePrototype.NAME, //
 			types = { //
 					@Type(name = "EntityReference<? extends Some>", type = Type.ENTITY_REFERENCE, parameters = @Parameter(name = Some.NAME, wildcard = true)), //
-					@Type(name = "List<EntityReference<Some>>", type = Type.LIST, parameters = @Parameter(name = "EntityReference<? extends Some>")) //
+					@Type(name = "List<EntityReference<? extends Some>>", type = Type.LIST, parameters = @Parameter(name = "EntityReference<? extends Some>")) //
 			}, //
 			properties = { //
 					@EntityProperty(name = "valueEntityReferenceList", type = "List<EntityReference<? extends Some>>") //
