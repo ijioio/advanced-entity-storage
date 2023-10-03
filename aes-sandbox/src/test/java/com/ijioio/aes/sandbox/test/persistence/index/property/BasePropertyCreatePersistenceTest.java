@@ -76,8 +76,6 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 
 	protected static int INDEX_MAX_COUNT = 9;
 
-	protected static int VALUE_MAX_COUNT = 3;
-
 	protected JdbcPersistenceHandler handler;
 
 	protected I index;
