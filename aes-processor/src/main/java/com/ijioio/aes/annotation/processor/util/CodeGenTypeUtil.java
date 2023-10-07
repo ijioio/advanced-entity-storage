@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.annotation.processor.EntityIndexPropertyMetadata;
 import com.ijioio.aes.annotation.processor.EntityPropertyMetadata;
-import com.ijioio.aes.annotation.processor.ParameterMetadata;
+import com.ijioio.aes.annotation.processor.Messager;
 import com.ijioio.aes.annotation.processor.TypeMetadata;
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
@@ -198,151 +198,110 @@ public class CodeGenTypeUtil {
 		 * @return type name
 		 */
 		public TypeName getImplementationType();
-
-		/**
-		 * Returns list of parameters type names of the type.
-		 * 
-		 * @param wildcards indicating whether wildcards should be included or not
-		 * @return list of parameters type names
-		 */
-		public List<TypeName> getParameters(boolean wildcards);
-
-		public default TypeName getParameterizedType() {
-
-			TypeName type = getType();
-			List<TypeName> parameters = getParameters(true);
-
-			return parameters.size() > 0 ? ParameterizedTypeName.get((ClassName) type,
-					parameters.stream().toArray(size -> new TypeName[size])) : type;
-		}
-
-		public default TypeName getParameterizedImplementationType() {
-
-			TypeName type = getImplementationType();
-			List<TypeName> parameters = getParameters(false);
-
-			return parameters.size() > 0 ? ParameterizedTypeName.get((ClassName) type,
-					parameters.stream().toArray(size -> new TypeName[size])) : type;
-		}
-
-		public default boolean isBoolean() {
-			return getType() == BOOLEAN_TYPE_NAME;
-		}
 	}
 
-	public static TypeMetadata resolveType(EntityPropertyMetadata property, Map<String, TypeMetadata> types) {
+	public static CodeGenTypeHandler getTypeHandler(EntityPropertyMetadata property, Map<String, TypeMetadata> types,
+			Messager messager) {
 
-		return Optional.ofNullable(resolveType(types.get(property.getType()), types))
-				.orElse(TypeMetadata.of(property.getType(), property.getType(), property.isReference(),
-						property.isList(), property.isSet(), Collections.emptyList()));
-	}
-
-	public static TypeMetadata resolveType(EntityIndexPropertyMetadata property, Map<String, TypeMetadata> types) {
-
-		return Optional.ofNullable(resolveType(types.get(property.getType()), types))
-				.orElse(TypeMetadata.of(property.getType(), property.getType(), property.isReference(),
-						property.isList(), property.isSet(), Collections.emptyList()));
-	}
-
-	public static TypeMetadata resolveType(ParameterMetadata parameter, Map<String, TypeMetadata> types) {
-
-		return Optional.ofNullable(resolveType(types.get(parameter.getName()), types)).orElse(TypeMetadata
-				.of(parameter.getName(), parameter.getName(), false, false, false, Collections.emptyList()));
-	}
-
-	private static TypeMetadata resolveType(TypeMetadata type, Map<String, TypeMetadata> types) {
-
-		return Optional.ofNullable(type).map(item -> resolveType(types.get(item.getType()), types)).orElse(type);
-	}
-
-	public static CodeGenTypeHandler getTypeHandler(EntityPropertyMetadata property, Map<String, TypeMetadata> types) {
-
-		return getTypeHandler(resolveType(property, types), types);
+		return getTypeHandler(TypeMetadata.of(property.getName(), property.getType(), property.isReference(),
+				property.isList(), property.isSet(), Collections.emptyList()), types, messager);
 	}
 
 	public static CodeGenTypeHandler getTypeHandler(EntityIndexPropertyMetadata property,
-			Map<String, TypeMetadata> types) {
+			Map<String, TypeMetadata> types, Messager messager) {
 
-		return getTypeHandler(resolveType(property, types), types);
+		return getTypeHandler(TypeMetadata.of(property.getName(), property.getType(), property.isReference(),
+				property.isList(), property.isSet(), Collections.emptyList()), types, messager);
 	}
 
-	public static CodeGenTypeHandler getTypeHandler(TypeMetadata type, Map<String, TypeMetadata> types) {
-
-		String name = type.getType();
+	public static CodeGenTypeHandler getTypeHandler(TypeMetadata type, Map<String, TypeMetadata> types,
+			Messager messager) {
 
 		return new CodeGenTypeHandler() {
 
 			@Override
 			public TypeName getType() {
 
-				if (name.equals(Type.BOOLEAN) || name.equals(TypeUtil.BOOLEAN_TYPE_NAME)) {
-					return BOOLEAN_TYPE_NAME;
-				}
-
-				if (name.equals(Type.CHAR) || name.equals(TypeUtil.CHAR_TYPE_NAME)) {
-					return CHAR_TYPE_NAME;
-				}
-
-				if (name.equals(Type.BYTE) || name.equals(TypeUtil.BYTE_TYPE_NAME)) {
-					return BYTE_TYPE_NAME;
-				}
-
-				if (name.equals(Type.SHORT) || name.equals(TypeUtil.SHORT_TYPE_NAME)) {
-					return SHORT_TYPE_NAME;
-				}
-
-				if (name.equals(Type.INT) || name.equals(TypeUtil.INT_TYPE_NAME)) {
-					return INT_TYPE_NAME;
-				}
-
-				if (name.equals(Type.LONG) || name.equals(TypeUtil.LONG_TYPE_NAME)) {
-					return LONG_TYPE_NAME;
-				}
-
-				if (name.equals(Type.FLOAT) || name.equals(TypeUtil.FLOAT_TYPE_NAME)) {
-					return FLOAT_TYPE_NAME;
-				}
-
-				if (name.equals(Type.DOUBLE) || name.equals(TypeUtil.DOUBLE_TYPE_NAME)) {
-					return DOUBLE_TYPE_NAME;
-				}
+				String name = type.getType();
 
 				TypeName typeName = null;
 
-				if (name.equals(Type.BYTE_ARRAY) || name.equals(TypeUtil.BYTE_ARRAY_TYPE_NAME)) {
-					typeName = BYTE_ARRAY_TYPE_NAME;
-				} else if (name.equals(Type.STRING) || name.equals(TypeUtil.STRING_TYPE_NAME)) {
-					typeName = STRING_TYPE_NAME;
-				} else if (name.equals(Type.INSTANT) || name.equals(TypeUtil.INSTANT_TYPE_NAME)) {
-					typeName = INSTANT_TYPE_NAME;
-				} else if (name.equals(Type.LOCAL_DATE_TIME) || name.equals(TypeUtil.LOCAL_DATE_TIME_TYPE_NAME)) {
-					typeName = LOCAL_DATE_TIME_TYPE_NAME;
-				} else if (name.equals(Type.LOCAL_DATE) || name.equals(TypeUtil.LOCAL_DATE_TYPE_NAME)) {
-					typeName = LOCAL_DATE_TYPE_NAME;
-				} else if (name.equals(Type.LOCAL_TIME) || name.equals(TypeUtil.LOCAL_TIME_TYPE_NAME)) {
-					typeName = LOCAL_TIME_TYPE_NAME;
-				} else if (name.equals(Type.CLASS) || name.equals(TypeUtil.CLASS_TYPE_NAME)) {
-					typeName = CLASS_TYPE_NAME;
-				} else if (name.equals(Type.LIST) || name.equals(TypeUtil.LIST_TYPE_NAME)) {
-					typeName = LIST_TYPE_NAME;
-				} else if (name.equals(Type.SET) || name.equals(TypeUtil.SET_TYPE_NAME)) {
-					typeName = SET_TYPE_NAME;
-				} else if (name.equals(Type.MAP) || name.equals(TypeUtil.MAP_TYPE_NAME)) {
-					typeName = MAP_TYPE_NAME;
-				} else if (name.equals(Type.ENTITY_REFERENCE) || name.equals(TypeUtil.ENTITY_REFERENCE_TYPE_NAME)) {
-					typeName = ENTITY_REFERENCE_TYPE_NAME;
+				if (types.containsKey(name)) {
+
+					typeName = getTypeHandler(types.get(name), types, messager).getType();
+
 				} else {
-					typeName = ClassName.bestGuess(name);
+
+					if (name.equals(Type.BOOLEAN) || name.equals(TypeUtil.BOOLEAN_TYPE_NAME)) {
+						typeName = BOOLEAN_TYPE_NAME;
+					} else if (name.equals(Type.CHAR) || name.equals(TypeUtil.CHAR_TYPE_NAME)) {
+						typeName = CHAR_TYPE_NAME;
+					} else if (name.equals(Type.BYTE) || name.equals(TypeUtil.BYTE_TYPE_NAME)) {
+						typeName = BYTE_TYPE_NAME;
+					} else if (name.equals(Type.SHORT) || name.equals(TypeUtil.SHORT_TYPE_NAME)) {
+						typeName = SHORT_TYPE_NAME;
+					} else if (name.equals(Type.INT) || name.equals(TypeUtil.INT_TYPE_NAME)) {
+						typeName = INT_TYPE_NAME;
+					} else if (name.equals(Type.LONG) || name.equals(TypeUtil.LONG_TYPE_NAME)) {
+						typeName = LONG_TYPE_NAME;
+					} else if (name.equals(Type.FLOAT) || name.equals(TypeUtil.FLOAT_TYPE_NAME)) {
+						typeName = FLOAT_TYPE_NAME;
+					} else if (name.equals(Type.DOUBLE) || name.equals(TypeUtil.DOUBLE_TYPE_NAME)) {
+						typeName = DOUBLE_TYPE_NAME;
+					} else if (name.equals(Type.BYTE_ARRAY) || name.equals(TypeUtil.BYTE_ARRAY_TYPE_NAME)) {
+						typeName = BYTE_ARRAY_TYPE_NAME;
+					} else if (name.equals(Type.STRING) || name.equals(TypeUtil.STRING_TYPE_NAME)) {
+						typeName = STRING_TYPE_NAME;
+					} else if (name.equals(Type.INSTANT) || name.equals(TypeUtil.INSTANT_TYPE_NAME)) {
+						typeName = INSTANT_TYPE_NAME;
+					} else if (name.equals(Type.LOCAL_DATE_TIME) || name.equals(TypeUtil.LOCAL_DATE_TIME_TYPE_NAME)) {
+						typeName = LOCAL_DATE_TIME_TYPE_NAME;
+					} else if (name.equals(Type.LOCAL_DATE) || name.equals(TypeUtil.LOCAL_DATE_TYPE_NAME)) {
+						typeName = LOCAL_DATE_TYPE_NAME;
+					} else if (name.equals(Type.LOCAL_TIME) || name.equals(TypeUtil.LOCAL_TIME_TYPE_NAME)) {
+						typeName = LOCAL_TIME_TYPE_NAME;
+					} else if (name.equals(Type.CLASS) || name.equals(TypeUtil.CLASS_TYPE_NAME)) {
+						typeName = CLASS_TYPE_NAME;
+					} else if (name.equals(Type.LIST) || name.equals(TypeUtil.LIST_TYPE_NAME)) {
+						typeName = LIST_TYPE_NAME;
+					} else if (name.equals(Type.SET) || name.equals(TypeUtil.SET_TYPE_NAME)) {
+						typeName = SET_TYPE_NAME;
+					} else if (name.equals(Type.MAP) || name.equals(TypeUtil.MAP_TYPE_NAME)) {
+						typeName = MAP_TYPE_NAME;
+					} else if (name.equals(Type.ENTITY_REFERENCE) || name.equals(TypeUtil.ENTITY_REFERENCE_TYPE_NAME)) {
+						typeName = ENTITY_REFERENCE_TYPE_NAME;
+					} else {
+						typeName = ClassName.bestGuess(name);
+					}
+
+					if (!typeName.isPrimitive() && (typeName instanceof ClassName)) {
+
+						List<TypeName> parameters = type.getParameters().stream()
+								.map(item -> Optional
+										.of(getTypeHandler(TypeMetadata.of(item.getName(), item.getName(), false, false,
+												false, Collections.emptyList()), types, messager).getType())
+										.map(type -> item.isWildcard() ? WildcardTypeName.subtypeOf(type) : type).get())
+								.collect(Collectors.toList());
+
+						if (parameters.size() > 0) {
+
+							typeName = ParameterizedTypeName.get((ClassName) typeName,
+									parameters.stream().toArray(size -> new TypeName[size]));
+						}
+					}
 				}
 
-				if (type.isReference()) {
-					typeName = ParameterizedTypeName.get(ENTITY_REFERENCE_TYPE_NAME, typeName);
-				}
+				if (!typeName.isPrimitive()) {
 
-				if (type.isList()) {
-					typeName = ParameterizedTypeName.get(LIST_TYPE_NAME, typeName);
-				} else if (type.isSet()) {
-					typeName = ParameterizedTypeName.get(SET_TYPE_NAME, typeName);
+					if (type.isReference()) {
+						typeName = ParameterizedTypeName.get(ENTITY_REFERENCE_TYPE_NAME, typeName);
+					}
+
+					if (type.isList()) {
+						typeName = ParameterizedTypeName.get(LIST_TYPE_NAME, typeName);
+					} else if (type.isSet()) {
+						typeName = ParameterizedTypeName.get(SET_TYPE_NAME, typeName);
+					}
 				}
 
 				return typeName;
@@ -351,87 +310,37 @@ public class CodeGenTypeUtil {
 			@Override
 			public TypeName getImplementationType() {
 
-				if (name.equals(Type.BOOLEAN) || name.equals(TypeUtil.BOOLEAN_TYPE_NAME)) {
-					return BOOLEAN_TYPE_NAME;
-				}
+				TypeName typeName = getType();
 
-				if (name.equals(Type.CHAR) || name.equals(TypeUtil.CHAR_TYPE_NAME)) {
-					return CHAR_TYPE_NAME;
-				}
+				if (typeName instanceof ParameterizedTypeName) {
 
-				if (name.equals(Type.BYTE) || name.equals(TypeUtil.BYTE_TYPE_NAME)) {
-					return BYTE_TYPE_NAME;
-				}
+					ParameterizedTypeName parameterizedTypeName = (ParameterizedTypeName) typeName;
 
-				if (name.equals(Type.SHORT) || name.equals(TypeUtil.SHORT_TYPE_NAME)) {
-					return SHORT_TYPE_NAME;
-				}
+					if (parameterizedTypeName.rawType.equals(LIST_TYPE_NAME)) {
+						typeName = ParameterizedTypeName.get(ARRAY_LIST_TYPE_NAME, parameterizedTypeName.typeArguments
+								.toArray(new TypeName[parameterizedTypeName.typeArguments.size()]));
+					} else if (parameterizedTypeName.rawType.equals(SET_TYPE_NAME)) {
+						typeName = ParameterizedTypeName.get(LINKED_HASH_SET_TYPE_NAME,
+								parameterizedTypeName.typeArguments
+										.toArray(new TypeName[parameterizedTypeName.typeArguments.size()]));
+					} else if (parameterizedTypeName.rawType.equals(MAP_TYPE_NAME)) {
+						typeName = ParameterizedTypeName.get(LINKED_HASH_MAP_TYPE_NAME,
+								parameterizedTypeName.typeArguments
+										.toArray(new TypeName[parameterizedTypeName.typeArguments.size()]));
+					}
 
-				if (name.equals(Type.INT) || name.equals(TypeUtil.INT_TYPE_NAME)) {
-					return INT_TYPE_NAME;
-				}
-
-				if (name.equals(Type.LONG) || name.equals(TypeUtil.LONG_TYPE_NAME)) {
-					return LONG_TYPE_NAME;
-				}
-
-				if (name.equals(Type.FLOAT) || name.equals(TypeUtil.FLOAT_TYPE_NAME)) {
-					return FLOAT_TYPE_NAME;
-				}
-
-				if (name.equals(Type.DOUBLE) || name.equals(TypeUtil.DOUBLE_TYPE_NAME)) {
-					return DOUBLE_TYPE_NAME;
-				}
-
-				TypeName typeName = null;
-
-				if (name.equals(Type.BYTE_ARRAY) || name.equals(TypeUtil.BYTE_ARRAY_TYPE_NAME)) {
-					typeName = BYTE_ARRAY_TYPE_NAME;
-				} else if (name.equals(Type.STRING) || name.equals(TypeUtil.STRING_TYPE_NAME)) {
-					typeName = STRING_TYPE_NAME;
-				} else if (name.equals(Type.INSTANT) || name.equals(TypeUtil.INSTANT_TYPE_NAME)) {
-					typeName = INSTANT_TYPE_NAME;
-				} else if (name.equals(Type.LOCAL_DATE_TIME) || name.equals(TypeUtil.LOCAL_DATE_TIME_TYPE_NAME)) {
-					typeName = LOCAL_DATE_TIME_TYPE_NAME;
-				} else if (name.equals(Type.LOCAL_DATE) || name.equals(TypeUtil.LOCAL_DATE_TYPE_NAME)) {
-					typeName = LOCAL_DATE_TYPE_NAME;
-				} else if (name.equals(Type.LOCAL_TIME) || name.equals(TypeUtil.LOCAL_TIME_TYPE_NAME)) {
-					typeName = LOCAL_TIME_TYPE_NAME;
-				} else if (name.equals(Type.CLASS) || name.equals(TypeUtil.CLASS_TYPE_NAME)) {
-					typeName = CLASS_TYPE_NAME;
-				} else if (name.equals(Type.LIST) || name.equals(TypeUtil.LIST_TYPE_NAME)) {
-					typeName = type.isList() ? LIST_TYPE_NAME : ARRAY_LIST_TYPE_NAME;
-				} else if (name.equals(Type.SET) || name.equals(TypeUtil.SET_TYPE_NAME)) {
-					typeName = type.isSet() ? SET_TYPE_NAME : LINKED_HASH_SET_TYPE_NAME;
-				} else if (name.equals(Type.MAP) || name.equals(TypeUtil.MAP_TYPE_NAME)) {
-					typeName = LINKED_HASH_MAP_TYPE_NAME;
-				} else if (name.equals(Type.ENTITY_REFERENCE) || name.equals(TypeUtil.ENTITY_REFERENCE_TYPE_NAME)) {
-					typeName = ENTITY_REFERENCE_TYPE_NAME;
 				} else {
-					typeName = ClassName.bestGuess(name);
-				}
 
-				if (type.isReference()) {
-					typeName = ParameterizedTypeName.get(ENTITY_REFERENCE_TYPE_NAME, typeName);
-				}
-
-				if (type.isList()) {
-					typeName = ParameterizedTypeName.get(ARRAY_LIST_TYPE_NAME, typeName);
-				} else if (type.isSet()) {
-					typeName = ParameterizedTypeName.get(LINKED_HASH_SET_TYPE_NAME, typeName);
+					if (typeName.equals(LIST_TYPE_NAME)) {
+						typeName = ARRAY_LIST_TYPE_NAME;
+					} else if (typeName.equals(SET_TYPE_NAME)) {
+						typeName = LINKED_HASH_SET_TYPE_NAME;
+					} else if (typeName.equals(MAP_TYPE_NAME)) {
+						typeName = LINKED_HASH_MAP_TYPE_NAME;
+					}
 				}
 
 				return typeName;
-			}
-
-			@Override
-			public List<TypeName> getParameters(boolean wildcards) {
-
-				return type.getParameters().stream()
-						.map(item -> Optional.of(getTypeHandler(resolveType(item, types), types).getParameterizedType())
-								.map(type -> wildcards && item.isWildcard() ? WildcardTypeName.subtypeOf(type) : type)
-								.get())
-						.collect(Collectors.toList());
 			}
 		};
 	}
