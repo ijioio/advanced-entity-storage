@@ -1,4 +1,4 @@
 <factorypath>
-    <factorypathentry kind="EXTJAR" id="C:\eclipse-workspace\advanced-entity-storage\aes-processor\build\libs\aes-processor.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="PLUGIN" id="org.eclipse.jst.ws.annotations.core" enabled="false" runInBatchMode="false"/>
+    <factorypathentry kind="WKSPJAR" id="/aes-processor/build/libs/aes-processor.jar" enabled="true" runInBatchMode="false"/>
 </factorypath>
