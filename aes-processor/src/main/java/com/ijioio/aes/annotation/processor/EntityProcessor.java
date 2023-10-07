@@ -367,8 +367,7 @@ public class EntityProcessor extends AbstractProcessor {
 //						ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME), property.getName(), type);
 //			} else {
 			codeBlockBuilder.addStatement("writers.put($T.$L, ($T value) -> $L = value)",
-					ClassName.bestGuess("Properties"), property.getName(), type.isPrimitive() ? type.box() : type,
-					property.getName());
+					ClassName.bestGuess("Properties"), property.getName(), type.box(), property.getName());
 //			}
 		}
 
@@ -487,15 +486,15 @@ public class EntityProcessor extends AbstractProcessor {
 
 			TypeName type = handler.getType();
 
-			fields.add(FieldSpec
-					.builder(ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME),
-							type.isPrimitive() ? type.box() : type), property.getName())
-					.addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-					.initializer("$T.of($S, new $T() {})", ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME),
-							property.getName(),
-							ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.TYPE_REFERENCE_TYPE_NAME),
-									type.isPrimitive() ? type.box() : type))
-					.build());
+			fields.add(
+					FieldSpec
+							.builder(ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME),
+									type.box()), property.getName())
+							.addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+							.initializer("$T.of($S, new $T() {})", ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME),
+									property.getName(), ParameterizedTypeName
+											.get(ClassName.bestGuess(TypeUtil.TYPE_REFERENCE_TYPE_NAME), type.box()))
+							.build());
 
 			codeBlockBuilder.addStatement("values.add($L)", property.getName());
 		}
