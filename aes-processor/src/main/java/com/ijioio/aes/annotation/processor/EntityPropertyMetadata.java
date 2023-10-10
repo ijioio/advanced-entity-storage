@@ -35,11 +35,11 @@ public class EntityPropertyMetadata {
 
 	private String type;
 
+	private boolean reference;
+
 	private boolean list;
 
 	private boolean set;
-
-	private boolean reference;
 
 	private final Set<Attribute> attributes = new HashSet<>();
 
@@ -62,6 +62,10 @@ public class EntityPropertyMetadata {
 
 				type = ProcessorUtil.stringVisitor.visit(value);
 
+			} else if (key.getSimpleName().contentEquals("reference")) {
+
+				reference = ProcessorUtil.booleanVisitor.visit(value).booleanValue();
+
 			} else if (key.getSimpleName().contentEquals("list")) {
 
 				list = ProcessorUtil.booleanVisitor.visit(value).booleanValue();
@@ -69,10 +73,6 @@ public class EntityPropertyMetadata {
 			} else if (key.getSimpleName().contentEquals("set")) {
 
 				set = ProcessorUtil.booleanVisitor.visit(value).booleanValue();
-
-			} else if (key.getSimpleName().contentEquals("reference")) {
-
-				reference = ProcessorUtil.booleanVisitor.visit(value).booleanValue();
 
 			} else if (key.getSimpleName().contentEquals("attributes")) {
 
@@ -122,6 +122,10 @@ public class EntityPropertyMetadata {
 		return type;
 	}
 
+	public boolean isReference() {
+		return reference;
+	}
+
 	public boolean isList() {
 		return list;
 	}
@@ -130,17 +134,13 @@ public class EntityPropertyMetadata {
 		return set;
 	}
 
-	public boolean isReference() {
-		return reference;
-	}
-
 	public boolean isFinal() {
 		return attributes.contains(Attribute.FINAL);
 	}
 
 	@Override
 	public String toString() {
-		return "EntityPropertyMetadata [name=" + name + ", type=" + type + ", list=" + list + ", set=" + set
-				+ ", reference=" + reference + ", attributes=" + attributes + "]";
+		return "EntityPropertyMetadata [name=" + name + ", type=" + type + ", reference=" + reference + ", list=" + list
+				+ ", set=" + set + ", attributes=" + attributes + "]";
 	}
 }

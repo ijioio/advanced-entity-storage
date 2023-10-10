@@ -52,4 +52,10 @@ public @interface Type {
 	public String type();
 
 	public Parameter[] parameters() default {};
+
+	public boolean list() default false;
+
+	public boolean set() default false;
+
+	public boolean reference() default false;
 }
