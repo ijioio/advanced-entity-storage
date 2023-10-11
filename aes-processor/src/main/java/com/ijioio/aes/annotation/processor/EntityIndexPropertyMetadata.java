@@ -29,6 +29,7 @@ public class EntityIndexPropertyMetadata {
 
 	static {
 
+		supportedAttributes.add(Attribute.FINAL);
 	}
 
 	private String name;
@@ -135,6 +136,10 @@ public class EntityIndexPropertyMetadata {
 
 	public boolean isSet() {
 		return set;
+	}
+
+	public boolean isFinal() {
+		return attributes.contains(Attribute.FINAL);
 	}
 
 	@Override
