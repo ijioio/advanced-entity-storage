@@ -117,29 +117,34 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 	@Test
 	public void testCreateNull() throws Exception {
 
-		setPropertyValue(index, null);
+		if (!isFinal()) {
 
-		handler.create(JdbcPersistenceContext.of(connection), index);
+			setPropertyValue(index, null);
 
-		try (PreparedStatement statement = connection
-				.prepareStatement(String.format("select * from %s", getTableName()))) {
+			handler.create(JdbcPersistenceContext.of(connection), index);
 
-			try (ResultSet resultSet = statement.executeQuery()) {
+			try (PreparedStatement statement = connection
+					.prepareStatement(String.format("select * from %s", getTableName()))) {
 
-				Assertions.assertTrue(resultSet.next());
+				try (ResultSet resultSet = statement.executeQuery()) {
 
-				Assertions.assertEquals(index.getId(), resultSet.getString("id"));
-				Assertions.assertEquals(index.getSource().getId(), resultSet.getString("sourceId"));
-				Assertions.assertEquals(index.getSource().getType().getName(), resultSet.getString("sourceType"));
+					Assertions.assertTrue(resultSet.next());
 
-				checkPropertyValue(getPropertyValue(index), resultSet);
+					Assertions.assertEquals(index.getId(), resultSet.getString("id"));
+					Assertions.assertEquals(index.getSource().getId(), resultSet.getString("sourceId"));
+					Assertions.assertEquals(index.getSource().getType().getName(), resultSet.getString("sourceType"));
 
-				Assertions.assertTrue(resultSet.isLast());
+					checkPropertyValue(getPropertyValue(index), resultSet);
+
+					Assertions.assertTrue(resultSet.isLast());
+				}
 			}
 		}
 	}
 
 	protected abstract String getSqlScriptFileName() throws Exception;
+
+	protected abstract boolean isFinal();
 
 	protected abstract String getTableName();
 
