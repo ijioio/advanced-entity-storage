@@ -43,11 +43,6 @@ public class PropertyStringCreatePersistenceTest
 	}
 
 	@Override
-	protected boolean isFinal() {
-		return false;
-	}
-
-	@Override
 	protected String getTableName() {
 		return PropertyStringCreatePersistenceIndex.class.getSimpleName();
 	}

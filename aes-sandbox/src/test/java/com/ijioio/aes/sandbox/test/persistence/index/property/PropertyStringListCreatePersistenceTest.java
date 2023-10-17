@@ -55,11 +55,6 @@ public class PropertyStringListCreatePersistenceTest extends
 	}
 
 	@Override
-	protected boolean isFinal() {
-		return false;
-	}
-
-	@Override
 	protected PropertyStringListCreatePersistenceIndex createIndex() {
 
 		PropertyStringListCreatePersistenceIndex index = new PropertyStringListCreatePersistenceIndex();
