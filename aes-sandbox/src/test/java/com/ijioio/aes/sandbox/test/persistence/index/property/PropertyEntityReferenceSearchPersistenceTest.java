@@ -51,6 +51,11 @@ public class PropertyEntityReferenceSearchPersistenceTest extends
 	}
 
 	@Override
+	protected boolean isFinal() {
+		return false;
+	}
+
+	@Override
 	protected Class<PropertyEntityReferenceSearchPersistenceIndex> getIndexClass() {
 		return PropertyEntityReferenceSearchPersistenceIndex.class;
 	}
