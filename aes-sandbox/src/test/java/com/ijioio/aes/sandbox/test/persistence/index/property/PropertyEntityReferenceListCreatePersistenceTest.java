@@ -54,6 +54,11 @@ public class PropertyEntityReferenceListCreatePersistenceTest extends
 	}
 
 	@Override
+	protected boolean isFinal() {
+		return false;
+	}
+
+	@Override
 	protected String getTableName() {
 		return PropertyEntityReferenceListCreatePersistenceIndex.class.getSimpleName();
 	}
