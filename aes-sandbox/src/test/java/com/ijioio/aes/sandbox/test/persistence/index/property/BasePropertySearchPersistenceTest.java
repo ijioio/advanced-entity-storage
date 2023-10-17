@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIf;
 
 import com.ijioio.aes.core.BaseEntity;
 import com.ijioio.aes.core.BaseEntityIndex;
@@ -98,7 +98,6 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		indexes.addAll(createIndexes());
 	}
 
-	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearch() throws Exception {
 
@@ -116,7 +115,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		check(expectedIndexes, actualIndexes);
 	}
 
-	@Tag(Tags.NULL)
+	@DisabledIf("isFinal")
 	@Test
 	public void testSearchNull() throws Exception {
 
@@ -137,7 +136,6 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		check(expectedIndexes, actualIndexes);
 	}
 
-	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchEquals() throws Exception {
 
@@ -160,7 +158,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		check(expectedIndexes, actualIndexes);
 	}
 
-	@Tag(Tags.NULL)
+	@DisabledIf("isFinal")
 	@Test
 	public void testSearchEqualsNull() throws Exception {
 
@@ -188,7 +186,6 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		check(expectedIndexes, actualIndexes);
 	}
 
-	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchNotEquals() throws Exception {
 
@@ -211,7 +208,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		check(expectedIndexes, actualIndexes);
 	}
 
-	@Tag(Tags.NULL)
+	@DisabledIf("isFinal")
 	@Test
 	public void testSearchNotEqualsNull() throws Exception {
 
@@ -239,7 +236,6 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		check(expectedIndexes, actualIndexes);
 	}
 
-	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchGreater() throws Exception {
 
@@ -262,7 +258,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		check(expectedIndexes, actualIndexes);
 	}
 
-	@Tag(Tags.NULL)
+	@DisabledIf("isFinal")
 	@Test
 	public void testSearchGreaterNull() throws Exception {
 
@@ -288,7 +284,6 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		Assertions.assertEquals("operation GREATER for value null is not supported", exception.getMessage());
 	}
 
-	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchGreaterOrEquals() throws Exception {
 
@@ -311,7 +306,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		check(expectedIndexes, actualIndexes);
 	}
 
-	@Tag(Tags.NULL)
+	@DisabledIf("isFinal")
 	@Test
 	public void testSearchGreaterOrEqualsNull() throws Exception {
 
@@ -337,7 +332,6 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		Assertions.assertEquals("operation GREATER_OR_EQUALS for value null is not supported", exception.getMessage());
 	}
 
-	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchLower() throws Exception {
 
@@ -360,7 +354,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		check(expectedIndexes, actualIndexes);
 	}
 
-	@Tag(Tags.NULL)
+	@DisabledIf("isFinal")
 	@Test
 	public void testSearchLowerNull() throws Exception {
 
@@ -386,7 +380,6 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		Assertions.assertEquals("operation LOWER for value null is not supported", exception.getMessage());
 	}
 
-	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchLowerOrEquals() throws Exception {
 
@@ -409,7 +402,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		check(expectedIndexes, actualIndexes);
 	}
 
-	@Tag(Tags.NULL)
+	@DisabledIf("isFinal")
 	@Test
 	public void testSearchLowerOrEqualsNull() throws Exception {
 
@@ -454,6 +447,8 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 	}
 
 	protected abstract String getSqlScriptFileName() throws Exception;
+
+	protected abstract boolean isFinal();
 
 	protected abstract Class<I> getIndexClass();
 

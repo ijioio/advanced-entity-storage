@@ -8,8 +8,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIf;
 
 import com.ijioio.aes.core.BaseEntity;
 import com.ijioio.aes.core.EntityIndex;
@@ -92,7 +92,6 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 		index = createIndex();
 	}
 
-	@Tag(Tags.REGULAR)
 	@Test
 	public void testCreate() throws Exception {
 
@@ -116,7 +115,7 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 		}
 	}
 
-	@Tag(Tags.NULL)
+	@DisabledIf("isFinal")
 	@Test
 	public void testCreateNull() throws Exception {
 
@@ -143,6 +142,8 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 	}
 
 	protected abstract String getSqlScriptFileName() throws Exception;
+
+	protected abstract boolean isFinal();
 
 	protected abstract String getTableName();
 

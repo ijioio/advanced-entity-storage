@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.util.Collection;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.core.EntityIndex;
@@ -16,7 +15,6 @@ public abstract class BasePropertyCollectionCreatePersistenceTest<I extends Enti
 
 	protected static int VALUE_MAX_COUNT = 3;
 
-	@Tag(Tags.EMPTY)
 	@Test
 	public void testCreateEmpty() throws Exception {
 
