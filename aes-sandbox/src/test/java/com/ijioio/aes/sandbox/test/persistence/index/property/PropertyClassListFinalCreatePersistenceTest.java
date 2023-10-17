@@ -17,10 +17,12 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.EntityReference;
+import com.ijioio.aes.sandbox.test.DisableTags;
 import com.ijioio.aes.sandbox.test.persistence.index.property.BasePropertyCreatePersistenceTest.Some;
 import com.ijioio.test.model.PropertyClassListFinalCreatePersistence;
 import com.ijioio.test.model.PropertyClassListFinalCreatePersistenceIndex;
 
+@DisableTags(Tags.NULL)
 public class PropertyClassListFinalCreatePersistenceTest extends
 		BasePropertyCollectionCreatePersistenceTest<PropertyClassListFinalCreatePersistenceIndex, List<Class<? extends Some>>, Class<? extends Some>> {
 
@@ -52,11 +54,6 @@ public class PropertyClassListFinalCreatePersistenceTest extends
 	@Override
 	protected String getSqlScriptFileName() throws Exception {
 		return "property-class-list-final-create-persistence.sql";
-	}
-
-	@Override
-	protected boolean isFinal() {
-		return true;
 	}
 
 	@Override
