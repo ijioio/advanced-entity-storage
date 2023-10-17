@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.core.BaseEntityIndex;
@@ -146,6 +147,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 
 	protected static int VALUE_MAX_COUNT = 3;
 
+	@Tag(Tags.EMPTY)
 	@Test
 	public void testSearchEmpty() throws Exception {
 
@@ -166,6 +168,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@Tag(Tags.EMPTY)
 	@Test
 	public void testSearchEqualsEmpty() throws Exception {
 
@@ -193,6 +196,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@Tag(Tags.EMPTY)
 	@Test
 	public void testSearchNotEqualsEmpty() throws Exception {
 
@@ -220,6 +224,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@Tag(Tags.EMPTY)
 	@Test
 	public void testSearchGreaterEmpty() throws Exception {
 
@@ -247,6 +252,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@Tag(Tags.EMPTY)
 	@Test
 	public void testSearchGreaterOrEqualsEmpty() throws Exception {
 
@@ -274,6 +280,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@Tag(Tags.EMPTY)
 	@Test
 	public void testSearchLowerEmpty() throws Exception {
 
@@ -301,6 +308,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@Tag(Tags.EMPTY)
 	@Test
 	public void testSearchLowerOrEqualsEmpty() throws Exception {
 
@@ -328,6 +336,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchAnyEquals() throws Exception {
 
@@ -354,6 +363,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchAnyEqualsNull() throws Exception {
 
@@ -381,6 +391,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		Assertions.assertEquals("operation ANY_EQUALS for value null is not supported", exception.getMessage());
 	}
 
+	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchAnyNotEquals() throws Exception {
 
@@ -416,6 +427,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchAnyNotEqualsNull() throws Exception {
 
@@ -443,6 +455,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		Assertions.assertEquals("operation ANY_NOT_EQUALS for value null is not supported", exception.getMessage());
 	}
 
+	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchAnyGreater() throws Exception {
 
@@ -469,6 +482,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchAnyGreaterNull() throws Exception {
 
@@ -496,6 +510,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		Assertions.assertEquals("operation ANY_GREATER for value null is not supported", exception.getMessage());
 	}
 
+	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchAnyGreaterOrEquals() throws Exception {
 
@@ -522,6 +537,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchAnyGreaterOrEqualsNull() throws Exception {
 
@@ -550,6 +566,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 				exception.getMessage());
 	}
 
+	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchAnyLower() throws Exception {
 
@@ -576,6 +593,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchAnyLowerNull() throws Exception {
 
@@ -603,6 +621,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		Assertions.assertEquals("operation ANY_LOWER for value null is not supported", exception.getMessage());
 	}
 
+	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchAnyLowerOrEquals() throws Exception {
 
@@ -629,6 +648,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchAnyLowerOrEqualsNull() throws Exception {
 
@@ -657,6 +677,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 				exception.getMessage());
 	}
 
+	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchAllEquals() throws Exception {
 
@@ -690,6 +711,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchAllEqualsNull() throws Exception {
 
@@ -723,6 +745,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		Assertions.assertEquals("operation ALL_EQUALS for value null is not supported", exception.getMessage());
 	}
 
+	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchAllNotEquals() throws Exception {
 
@@ -756,6 +779,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchAllNotEqualsNull() throws Exception {
 
@@ -789,6 +813,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		Assertions.assertEquals("operation ALL_NOT_EQUALS for value null is not supported", exception.getMessage());
 	}
 
+	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchAllGreater() throws Exception {
 
@@ -822,6 +847,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchAllGreaterNull() throws Exception {
 
@@ -855,6 +881,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		Assertions.assertEquals("operation ALL_GREATER for value null is not supported", exception.getMessage());
 	}
 
+	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchAllGreaterOrEquals() throws Exception {
 
@@ -888,6 +915,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchAllGreaterOrEqualsNull() throws Exception {
 
@@ -922,6 +950,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 				exception.getMessage());
 	}
 
+	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchAllLower() throws Exception {
 
@@ -955,6 +984,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchAllLowerNull() throws Exception {
 
@@ -988,6 +1018,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		Assertions.assertEquals("operation ALL_LOWER for value null is not supported", exception.getMessage());
 	}
 
+	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchAllLowerOrEquals() throws Exception {
 
@@ -1021,6 +1052,7 @@ public abstract class BasePropertyCollectionSearchPersistenceTest<I extends Enti
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@Tag(Tags.REGULAR)
 	@Test
 	public void testSearchAllLowerOrEqualsNull() throws Exception {
 
