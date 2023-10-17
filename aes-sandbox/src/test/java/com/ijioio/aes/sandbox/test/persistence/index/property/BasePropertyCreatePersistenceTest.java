@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.core.BaseEntity;
@@ -91,6 +92,7 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 		index = createIndex();
 	}
 
+	@Tag(Tags.REGULAR)
 	@Test
 	public void testCreate() throws Exception {
 
@@ -114,37 +116,33 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 		}
 	}
 
+	@Tag(Tags.NULL)
 	@Test
 	public void testCreateNull() throws Exception {
 
-		if (!isFinal()) {
+		setPropertyValue(index, null);
 
-			setPropertyValue(index, null);
+		handler.create(JdbcPersistenceContext.of(connection), index);
 
-			handler.create(JdbcPersistenceContext.of(connection), index);
+		try (PreparedStatement statement = connection
+				.prepareStatement(String.format("select * from %s", getTableName()))) {
 
-			try (PreparedStatement statement = connection
-					.prepareStatement(String.format("select * from %s", getTableName()))) {
+			try (ResultSet resultSet = statement.executeQuery()) {
 
-				try (ResultSet resultSet = statement.executeQuery()) {
+				Assertions.assertTrue(resultSet.next());
 
-					Assertions.assertTrue(resultSet.next());
+				Assertions.assertEquals(index.getId(), resultSet.getString("id"));
+				Assertions.assertEquals(index.getSource().getId(), resultSet.getString("sourceId"));
+				Assertions.assertEquals(index.getSource().getType().getName(), resultSet.getString("sourceType"));
 
-					Assertions.assertEquals(index.getId(), resultSet.getString("id"));
-					Assertions.assertEquals(index.getSource().getId(), resultSet.getString("sourceId"));
-					Assertions.assertEquals(index.getSource().getType().getName(), resultSet.getString("sourceType"));
+				checkPropertyValue(getPropertyValue(index), resultSet);
 
-					checkPropertyValue(getPropertyValue(index), resultSet);
-
-					Assertions.assertTrue(resultSet.isLast());
-				}
+				Assertions.assertTrue(resultSet.isLast());
 			}
 		}
 	}
 
 	protected abstract String getSqlScriptFileName() throws Exception;
-
-	protected abstract boolean isFinal();
 
 	protected abstract String getTableName();
 
