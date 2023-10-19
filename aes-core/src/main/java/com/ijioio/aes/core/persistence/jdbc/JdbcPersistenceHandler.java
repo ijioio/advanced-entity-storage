@@ -1109,7 +1109,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 				context.resetIndex();
 
 				for (Pair<TypeReference<?>, PropertyReader<?>> reader : readers) {
-					write(context, ((TypeReference) reader.getFirst()), reader.getSecond(), true);
+					write(context, ((TypeReference) reader.getFirst()), reader.getSecond().read(), true);
 				}
 
 				System.out.println(statement);
