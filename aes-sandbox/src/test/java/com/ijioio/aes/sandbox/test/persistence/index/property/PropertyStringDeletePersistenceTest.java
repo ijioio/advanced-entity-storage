@@ -45,6 +45,11 @@ public class PropertyStringDeletePersistenceTest
 	}
 
 	@Override
+	protected boolean isFinal() {
+		return false;
+	}
+
+	@Override
 	protected Class<PropertyStringDeletePersistenceIndex> getIndexClass() {
 		return PropertyStringDeletePersistenceIndex.class;
 	}

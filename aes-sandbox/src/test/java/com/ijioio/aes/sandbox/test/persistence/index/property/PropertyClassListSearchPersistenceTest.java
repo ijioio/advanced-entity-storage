@@ -1,7 +1,7 @@
 package com.ijioio.aes.sandbox.test.persistence.index.property;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,13 +21,13 @@ import com.ijioio.test.model.PropertyClassListSearchPersistence;
 import com.ijioio.test.model.PropertyClassListSearchPersistenceIndex;
 
 public class PropertyClassListSearchPersistenceTest extends
-		BasePropertyCollectionSearchPersistenceTest<PropertyClassListSearchPersistenceIndex, List<Class<? extends Some>>, Class<? extends Some>> {
+		BasePropertyCollectionSearchPersistenceTest<PropertyClassListSearchPersistenceIndex, LinkedList<Class<? extends Some>>, Class<? extends Some>> {
 
 	@Entity( //
 			name = PropertyClassListSearchPersistencePrototype.NAME, //
 			types = { //
 					@Type(name = "Class<? extends Some>", type = Type.CLASS, parameters = @Parameter(name = Some.NAME, wildcard = true)), //
-					@Type(name = "List<Class<? extends Some>>", type = Type.LIST, parameters = @Parameter(name = "Class<? extends Some>")) //
+					@Type(name = "List<Class<? extends Some>>", type = "java.util.LinkedList", parameters = @Parameter(name = "Class<? extends Some>")) //
 			}, //
 			properties = { //
 					@EntityProperty(name = "valueClassList", type = "List<Class<? extends Some>>") //
@@ -78,7 +78,7 @@ public class PropertyClassListSearchPersistenceTest extends
 			index.setSource(EntityReference.of(String.format("property-class-list-search-persistence-%s", i + 1),
 					PropertyClassListSearchPersistence.class));
 
-			List<Class<? extends Some>> value = new ArrayList<>();
+			LinkedList<Class<? extends Some>> value = new LinkedList<>();
 
 			for (int j = 0; j < VALUE_MAX_COUNT; j++) {
 				value.add(collectionTypes.get(i + 1).get(j));
@@ -93,14 +93,14 @@ public class PropertyClassListSearchPersistenceTest extends
 	}
 
 	@Override
-	protected List<Class<? extends Some>> createEmptyPropertyValue() {
-		return Collections.emptyList();
+	protected LinkedList<Class<? extends Some>> createEmptyPropertyValue() {
+		return new LinkedList<>();
 	}
 
 	@Override
-	protected List<Class<? extends Some>> createAllNullPropertyValue() {
+	protected LinkedList<Class<? extends Some>> createAllNullPropertyValue() {
 
-		List<Class<? extends Some>> value = new ArrayList<>();
+		LinkedList<Class<? extends Some>> value = new LinkedList<>();
 
 		for (int j = 0; j < VALUE_MAX_COUNT; j++) {
 			value.add(null);
@@ -110,9 +110,9 @@ public class PropertyClassListSearchPersistenceTest extends
 	}
 
 	@Override
-	protected List<Class<? extends Some>> createAllSamePropertyValue(int i) {
+	protected LinkedList<Class<? extends Some>> createAllSamePropertyValue(int i) {
 
-		List<Class<? extends Some>> value = new ArrayList<>();
+		LinkedList<Class<? extends Some>> value = new LinkedList<>();
 
 		for (int j = 0; j < VALUE_MAX_COUNT; j++) {
 			value.add(types.get(i));
@@ -122,22 +122,26 @@ public class PropertyClassListSearchPersistenceTest extends
 	}
 
 	@Override
-	protected Property<List<Class<? extends Some>>> getProperty() {
+	protected Property<LinkedList<Class<? extends Some>>> getProperty() {
 		return PropertyClassListSearchPersistenceIndex.Properties.valueClassList;
 	}
 
 	@Override
-	protected List<Class<? extends Some>> getPropertyValue(PropertyClassListSearchPersistenceIndex index) {
+	protected LinkedList<Class<? extends Some>> getPropertyValue(PropertyClassListSearchPersistenceIndex index) {
 		return index.getValueClassList();
 	}
 
 	@Override
-	protected void setPropertyValue(PropertyClassListSearchPersistenceIndex index, List<Class<? extends Some>> value) {
-		index.setValueClassList(value);
+	protected void setPropertyValue(PropertyClassListSearchPersistenceIndex index,
+			LinkedList<Class<? extends Some>> value) {
+
+		index.getValueClassList().clear();
+		index.getValueClassList().addAll(value);
 	}
 
 	@Override
-	protected int comparePropertyValue(List<Class<? extends Some>> value1, List<Class<? extends Some>> value2) {
+	protected int comparePropertyValue(LinkedList<Class<? extends Some>> value1,
+			LinkedList<Class<? extends Some>> value2) {
 		return compare(
 				Optional.ofNullable(value1)
 						.map(item -> item.stream().map(element -> getClassName(element)).collect(Collectors.toList()))
@@ -153,8 +157,8 @@ public class PropertyClassListSearchPersistenceTest extends
 	}
 
 	@Override
-	protected void checkPropertyValue(List<Class<? extends Some>> expectedValue,
-			List<Class<? extends Some>> actualValue) {
+	protected void checkPropertyValue(LinkedList<Class<? extends Some>> expectedValue,
+			LinkedList<Class<? extends Some>> actualValue) {
 		Assertions.assertEquals(
 				Optional.ofNullable(expectedValue)
 						.map(item -> item.stream().map(element -> getClassName(element)).collect(Collectors.toList()))
