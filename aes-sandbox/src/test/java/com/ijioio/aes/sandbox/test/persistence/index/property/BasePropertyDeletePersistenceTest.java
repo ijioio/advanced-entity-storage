@@ -83,7 +83,7 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 
 	protected static int INDEX_MAX_COUNT = 9;
 
-	private JdbcPersistenceHandler handler;
+	protected JdbcPersistenceHandler handler;
 
 	protected List<I> indexes = new ArrayList<>();
 
@@ -106,11 +106,15 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 			handler.create(JdbcPersistenceContext.of(connection), index);
 		}
 
-		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
+		SearchQuery<I> deleteQuery = SearchQueryBuilder.of(getIndexClass()) //
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
 				.build();
 
-		handler.delete(JdbcPersistenceContext.of(connection), query);
+		handler.delete(JdbcPersistenceContext.of(connection), deleteQuery);
+
+		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
+				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
+				.build();
 
 		List<I> expectedIndexes = Collections.emptyList();
 		List<I> actualIndexes = handler.search(JdbcPersistenceContext.of(connection), query);
