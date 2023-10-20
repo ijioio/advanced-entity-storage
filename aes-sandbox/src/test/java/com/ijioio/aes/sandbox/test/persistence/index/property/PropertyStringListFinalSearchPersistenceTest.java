@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 
+import com.ijioio.aes.annotation.Attribute;
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityIndex;
 import com.ijioio.aes.annotation.EntityIndexProperty;
@@ -14,14 +15,14 @@ import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.EntityReference;
 import com.ijioio.aes.core.Property;
-import com.ijioio.test.model.PropertyStringListSearchPersistence;
-import com.ijioio.test.model.PropertyStringListSearchPersistenceIndex;
+import com.ijioio.test.model.PropertyStringListFinalSearchPersistence;
+import com.ijioio.test.model.PropertyStringListFinalSearchPersistenceIndex;
 
-public class PropertyStringListSearchPersistenceTest extends
-		BasePropertyCollectionSearchPersistenceTest<PropertyStringListSearchPersistenceIndex, List<String>, String> {
+public class PropertyStringListFinalSearchPersistenceTest extends
+		BasePropertyCollectionSearchPersistenceTest<PropertyStringListFinalSearchPersistenceIndex, List<String>, String> {
 
 	@Entity( //
-			name = PropertyStringListSearchPersistencePrototype.NAME, //
+			name = PropertyStringListFinalSearchPersistencePrototype.NAME, //
 			types = { //
 					@Type(name = "List<String>", type = Type.LIST, parameters = @Parameter(name = Type.STRING)) //
 			}, //
@@ -30,49 +31,49 @@ public class PropertyStringListSearchPersistenceTest extends
 			}, //
 			indexes = { //
 					@EntityIndex( //
-							name = PropertyStringListSearchPersistencePrototype.INDEX_NAME, //
+							name = PropertyStringListFinalSearchPersistencePrototype.INDEX_NAME, //
 							properties = { //
-									@EntityIndexProperty(name = "valueStringList", type = "List<String>") //
+									@EntityIndexProperty(name = "valueStringList", type = "List<String>", attributes = Attribute.FINAL) //
 							} //
 					) //
 			} //
 	)
-	public static interface PropertyStringListSearchPersistencePrototype {
+	public static interface PropertyStringListFinalSearchPersistencePrototype {
 
-		public static final String NAME = "com.ijioio.test.model.PropertyStringListSearchPersistence";
+		public static final String NAME = "com.ijioio.test.model.PropertyStringListFinalSearchPersistence";
 
-		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyStringListSearchPersistenceIndex";
+		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyStringListFinalSearchPersistenceIndex";
 	}
 
 	@Override
 	protected String getSqlScriptFileName() throws Exception {
-		return "property-string-list-search-persistence.sql";
+		return "property-string-list-final-search-persistence.sql";
 	}
 
 	@Override
 	protected boolean isFinal() {
-		return false;
+		return true;
 	}
 
 	@Override
-	protected Class<PropertyStringListSearchPersistenceIndex> getIndexClass() {
-		return PropertyStringListSearchPersistenceIndex.class;
+	protected Class<PropertyStringListFinalSearchPersistenceIndex> getIndexClass() {
+		return PropertyStringListFinalSearchPersistenceIndex.class;
 	}
 
 	@Override
-	protected List<PropertyStringListSearchPersistenceIndex> createIndexes() {
+	protected List<PropertyStringListFinalSearchPersistenceIndex> createIndexes() {
 
-		List<PropertyStringListSearchPersistenceIndex> indexes = new ArrayList<>();
+		List<PropertyStringListFinalSearchPersistenceIndex> indexes = new ArrayList<>();
 
 		int count = random.nextInt(INDEX_MAX_COUNT) + 1;
 
 		for (int i = 0; i < count; i++) {
 
-			PropertyStringListSearchPersistenceIndex index = new PropertyStringListSearchPersistenceIndex();
+			PropertyStringListFinalSearchPersistenceIndex index = new PropertyStringListFinalSearchPersistenceIndex();
 
-			index.setId(String.format("property-string-list-search-persistence-index-%s", i + 1));
-			index.setSource(EntityReference.of(String.format("property-string-list-search-persistence-%s", i + 1),
-					PropertyStringListSearchPersistence.class));
+			index.setId(String.format("property-string-list-final-search-persistence-index-%s", i + 1));
+			index.setSource(EntityReference.of(String.format("property-string-list-final-search-persistence-%s", i + 1),
+					PropertyStringListFinalSearchPersistence.class));
 
 			List<String> value = new ArrayList<>();
 
@@ -80,7 +81,8 @@ public class PropertyStringListSearchPersistenceTest extends
 				value.add(String.format("value%s%s", i + 1, j + 1));
 			}
 
-			index.setValueStringList(value);
+			index.getValueStringList().clear();
+			index.getValueStringList().addAll(value);
 
 			indexes.add(index);
 		}
@@ -119,17 +121,19 @@ public class PropertyStringListSearchPersistenceTest extends
 
 	@Override
 	protected Property<List<String>> getProperty() {
-		return PropertyStringListSearchPersistenceIndex.Properties.valueStringList;
+		return PropertyStringListFinalSearchPersistenceIndex.Properties.valueStringList;
 	}
 
 	@Override
-	protected List<String> getPropertyValue(PropertyStringListSearchPersistenceIndex index) {
+	protected List<String> getPropertyValue(PropertyStringListFinalSearchPersistenceIndex index) {
 		return index.getValueStringList();
 	}
 
 	@Override
-	protected void setPropertyValue(PropertyStringListSearchPersistenceIndex index, List<String> value) {
-		index.setValueStringList(value);
+	protected void setPropertyValue(PropertyStringListFinalSearchPersistenceIndex index, List<String> value) {
+
+		index.getValueStringList().clear();
+		index.getValueStringList().addAll(value);
 	}
 
 	@Override

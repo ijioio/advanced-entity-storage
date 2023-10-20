@@ -128,29 +128,23 @@ public class EntityProcessor extends AbstractProcessor {
 			TypeName type = handler.getType();
 			TypeName implementationType = handler.getImplementationType();
 
-			if (type.equals(CodeGenTypeUtil.BOOLEAN_TYPE_NAME)) {
-				methods.add(MethodSpec.methodBuilder(String.format("is%s", TextUtil.capitalize(property.getName())))
-						.addModifiers(Modifier.PUBLIC).returns(type).addStatement("return $L", property.getName())
-						.build());
-			} else {
-				methods.add(MethodSpec.methodBuilder(String.format("get%s", TextUtil.capitalize(property.getName())))
-						.addModifiers(Modifier.PUBLIC).returns(type).addStatement("return $L", property.getName())
-						.build());
-			}
-
 			if (property.isFinal()) {
-
 				fields.add(FieldSpec.builder(type, property.getName()).addModifiers(Modifier.PRIVATE, Modifier.FINAL)
 						.initializer((implementationType instanceof ParameterizedTypeName) ? "new $T<>()" : "new $T()",
 								(implementationType instanceof ParameterizedTypeName)
 										? ((ParameterizedTypeName) implementationType).rawType
 										: implementationType)
 						.build());
-
 			} else {
-
 				fields.add(FieldSpec.builder(type, property.getName()).addModifiers(Modifier.PRIVATE).build());
+			}
 
+			methods.add(MethodSpec
+					.methodBuilder(String.format("%s%s", type.equals(CodeGenTypeUtil.BOOLEAN_TYPE_NAME) ? "is" : "get",
+							TextUtil.capitalize(property.getName())))
+					.addModifiers(Modifier.PUBLIC).returns(type).addStatement("return $L", property.getName()).build());
+
+			if (!property.isFinal()) {
 				methods.add(MethodSpec.methodBuilder(String.format("set%s", TextUtil.capitalize(property.getName())))
 						.addModifiers(Modifier.PUBLIC).addParameter(type, property.getName())
 						.addStatement("this.$L = $L", property.getName(), property.getName()).build());
@@ -292,22 +286,29 @@ public class EntityProcessor extends AbstractProcessor {
 			CodeGenTypeHandler handler = CodeGenTypeUtil.getTypeHandler(property, entity.getTypes(), messager);
 
 			TypeName type = handler.getType();
+			TypeName implementationType = handler.getImplementationType();
 
-			fields.add(FieldSpec.builder(type, property.getName()).addModifiers(Modifier.PRIVATE).build());
-
-			if (type.equals(CodeGenTypeUtil.BOOLEAN_TYPE_NAME)) {
-				methods.add(MethodSpec.methodBuilder(String.format("is%s", TextUtil.capitalize(property.getName())))
-						.addModifiers(Modifier.PUBLIC).returns(type).addStatement("return $L", property.getName())
+			if (property.isFinal()) {
+				fields.add(FieldSpec.builder(type, property.getName()).addModifiers(Modifier.PRIVATE, Modifier.FINAL)
+						.initializer((implementationType instanceof ParameterizedTypeName) ? "new $T<>()" : "new $T()",
+								(implementationType instanceof ParameterizedTypeName)
+										? ((ParameterizedTypeName) implementationType).rawType
+										: implementationType)
 						.build());
 			} else {
-				methods.add(MethodSpec.methodBuilder(String.format("get%s", TextUtil.capitalize(property.getName())))
-						.addModifiers(Modifier.PUBLIC).returns(type).addStatement("return $L", property.getName())
-						.build());
+				fields.add(FieldSpec.builder(type, property.getName()).addModifiers(Modifier.PRIVATE).build());
 			}
 
-			methods.add(MethodSpec.methodBuilder(String.format("set%s", TextUtil.capitalize(property.getName())))
-					.addModifiers(Modifier.PUBLIC).addParameter(type, property.getName())
-					.addStatement("this.$L = $L", property.getName(), property.getName()).build());
+			methods.add(MethodSpec
+					.methodBuilder(String.format("%s%s", type.equals(CodeGenTypeUtil.BOOLEAN_TYPE_NAME) ? "is" : "get",
+							TextUtil.capitalize(property.getName())))
+					.addModifiers(Modifier.PUBLIC).returns(type).addStatement("return $L", property.getName()).build());
+
+			if (!property.isFinal()) {
+				methods.add(MethodSpec.methodBuilder(String.format("set%s", TextUtil.capitalize(property.getName())))
+						.addModifiers(Modifier.PUBLIC).addParameter(type, property.getName())
+						.addStatement("this.$L = $L", property.getName(), property.getName()).build());
+			}
 		}
 
 		methods.add(generateGetWriters(entity, index));
@@ -362,13 +363,13 @@ public class EntityProcessor extends AbstractProcessor {
 
 			TypeName type = handler.getType();
 
-//			if (property.isFinal()) {
-//				codeBlockBuilder.addStatement("writers.put($T.$S, ($T value) -> {})",
-//						ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME), property.getName(), type);
-//			} else {
-			codeBlockBuilder.addStatement("writers.put($T.$L, ($T value) -> $L = value)",
-					ClassName.bestGuess("Properties"), property.getName(), type.box(), property.getName());
-//			}
+			if (property.isFinal()) {
+				codeBlockBuilder.addStatement("writers.put($T.$L, ($T value) -> {})", ClassName.bestGuess("Properties"),
+						property.getName(), type.box());
+			} else {
+				codeBlockBuilder.addStatement("writers.put($T.$L, ($T value) -> $L = value)",
+						ClassName.bestGuess("Properties"), property.getName(), type.box(), property.getName());
+			}
 		}
 
 		codeBlockBuilder.add("\n");

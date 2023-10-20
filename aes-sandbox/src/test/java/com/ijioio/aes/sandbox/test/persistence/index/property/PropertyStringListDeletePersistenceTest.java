@@ -14,14 +14,14 @@ import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.EntityReference;
 import com.ijioio.aes.core.Property;
-import com.ijioio.test.model.PropertyStringListSearchPersistence;
-import com.ijioio.test.model.PropertyStringListSearchPersistenceIndex;
+import com.ijioio.test.model.PropertyStringListDeletePersistence;
+import com.ijioio.test.model.PropertyStringListDeletePersistenceIndex;
 
-public class PropertyStringListSearchPersistenceTest extends
-		BasePropertyCollectionSearchPersistenceTest<PropertyStringListSearchPersistenceIndex, List<String>, String> {
+public class PropertyStringListDeletePersistenceTest extends
+		BasePropertyCollectionDeletePersistenceTest<PropertyStringListDeletePersistenceIndex, List<String>, String> {
 
 	@Entity( //
-			name = PropertyStringListSearchPersistencePrototype.NAME, //
+			name = PropertyStringListDeletePersistencePrototype.NAME, //
 			types = { //
 					@Type(name = "List<String>", type = Type.LIST, parameters = @Parameter(name = Type.STRING)) //
 			}, //
@@ -30,23 +30,23 @@ public class PropertyStringListSearchPersistenceTest extends
 			}, //
 			indexes = { //
 					@EntityIndex( //
-							name = PropertyStringListSearchPersistencePrototype.INDEX_NAME, //
+							name = PropertyStringListDeletePersistencePrototype.INDEX_NAME, //
 							properties = { //
 									@EntityIndexProperty(name = "valueStringList", type = "List<String>") //
 							} //
 					) //
 			} //
 	)
-	public static interface PropertyStringListSearchPersistencePrototype {
+	public static interface PropertyStringListDeletePersistencePrototype {
 
-		public static final String NAME = "com.ijioio.test.model.PropertyStringListSearchPersistence";
+		public static final String NAME = "com.ijioio.test.model.PropertyStringListDeletePersistence";
 
-		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyStringListSearchPersistenceIndex";
+		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyStringListDeletePersistenceIndex";
 	}
 
 	@Override
 	protected String getSqlScriptFileName() throws Exception {
-		return "property-string-list-search-persistence.sql";
+		return "property-string-list-delete-persistence.sql";
 	}
 
 	@Override
@@ -55,24 +55,24 @@ public class PropertyStringListSearchPersistenceTest extends
 	}
 
 	@Override
-	protected Class<PropertyStringListSearchPersistenceIndex> getIndexClass() {
-		return PropertyStringListSearchPersistenceIndex.class;
+	protected Class<PropertyStringListDeletePersistenceIndex> getIndexClass() {
+		return PropertyStringListDeletePersistenceIndex.class;
 	}
 
 	@Override
-	protected List<PropertyStringListSearchPersistenceIndex> createIndexes() {
+	protected List<PropertyStringListDeletePersistenceIndex> createIndexes() {
 
-		List<PropertyStringListSearchPersistenceIndex> indexes = new ArrayList<>();
+		List<PropertyStringListDeletePersistenceIndex> indexes = new ArrayList<>();
 
 		int count = random.nextInt(INDEX_MAX_COUNT) + 1;
 
 		for (int i = 0; i < count; i++) {
 
-			PropertyStringListSearchPersistenceIndex index = new PropertyStringListSearchPersistenceIndex();
+			PropertyStringListDeletePersistenceIndex index = new PropertyStringListDeletePersistenceIndex();
 
-			index.setId(String.format("property-string-list-search-persistence-index-%s", i + 1));
-			index.setSource(EntityReference.of(String.format("property-string-list-search-persistence-%s", i + 1),
-					PropertyStringListSearchPersistence.class));
+			index.setId(String.format("property-string-list-delete-persistence-index-%s", i + 1));
+			index.setSource(EntityReference.of(String.format("property-string-list-delete-persistence-%s", i + 1),
+					PropertyStringListDeletePersistence.class));
 
 			List<String> value = new ArrayList<>();
 
@@ -119,16 +119,16 @@ public class PropertyStringListSearchPersistenceTest extends
 
 	@Override
 	protected Property<List<String>> getProperty() {
-		return PropertyStringListSearchPersistenceIndex.Properties.valueStringList;
+		return PropertyStringListDeletePersistenceIndex.Properties.valueStringList;
 	}
 
 	@Override
-	protected List<String> getPropertyValue(PropertyStringListSearchPersistenceIndex index) {
+	protected List<String> getPropertyValue(PropertyStringListDeletePersistenceIndex index) {
 		return index.getValueStringList();
 	}
 
 	@Override
-	protected void setPropertyValue(PropertyStringListSearchPersistenceIndex index, List<String> value) {
+	protected void setPropertyValue(PropertyStringListDeletePersistenceIndex index, List<String> value) {
 		index.setValueStringList(value);
 	}
 

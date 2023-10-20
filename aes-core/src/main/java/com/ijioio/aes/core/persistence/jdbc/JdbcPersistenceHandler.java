@@ -439,18 +439,26 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 
 				Array array = resultSet.getObject(context.getNextIndex(), Array.class);
 
-				if (array == null) {
+				if (array != null) {
+
+					Collection<String> collection = values != null ? values
+							: List.class.isAssignableFrom(type.getRawType()) ? new ArrayList<>()
+									: new LinkedHashSet<>();
+
+					collection.clear();
+					collection.addAll(Arrays.stream((Object[]) array.getArray()).map(item -> (String) item)
+							.collect(Collectors.toList()));
+
+					return collection;
+
+				} else {
+
+					if (values != null) {
+						values.clear();
+					}
+
 					return null;
 				}
-
-				Collection<String> collection = List.class.isAssignableFrom(type.getRawType()) ? new ArrayList<>()
-						: new LinkedHashSet<>();
-
-				collection.clear();
-				collection.addAll(Arrays.stream((Object[]) array.getArray()).map(item -> (String) item)
-						.collect(Collectors.toList()));
-
-				return collection;
 
 			} catch (SQLException e) {
 				throw new PersistenceException(e);
@@ -751,8 +759,10 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 
 			if (nameValues != null) {
 
-				Collection<Class> collection = List.class.isAssignableFrom(type.getRawType()) ? new ArrayList<>()
-						: new LinkedHashSet<>();
+				Collection<Class> collection = values != null ? values
+						: List.class.isAssignableFrom(type.getRawType()) ? new ArrayList<>() : new LinkedHashSet<>();
+
+				collection.clear();
 
 				for (String nameValue : nameValues) {
 
@@ -766,6 +776,10 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 				return collection;
 
 			} else {
+
+				if (values != null) {
+					values.clear();
+				}
 
 				return null;
 			}
@@ -945,9 +959,10 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 
 			if (idValues != null && typeValues != null) {
 
-				Collection<EntityReference> collection = List.class.isAssignableFrom(type.getRawType())
-						? new ArrayList<>()
-						: new LinkedHashSet<>();
+				Collection<EntityReference> collection = values != null ? values
+						: List.class.isAssignableFrom(type.getRawType()) ? new ArrayList<>() : new LinkedHashSet<>();
+
+				collection.clear();
 
 				Iterator<String> idValuesIterator = idValues.iterator();
 				Iterator<Class> typeValuesIterator = typeValues.iterator();
@@ -969,6 +984,10 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 				return collection;
 
 			} else {
+
+				if (values != null) {
+					values.clear();
+				}
 
 				return null;
 			}
@@ -1090,7 +1109,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 				context.resetIndex();
 
 				for (Pair<TypeReference<?>, PropertyReader<?>> reader : readers) {
-					write(context, ((TypeReference) reader.getFirst()), reader.getSecond(), true);
+					write(context, ((TypeReference) reader.getFirst()), reader.getSecond().read(), true);
 				}
 
 				System.out.println(statement);

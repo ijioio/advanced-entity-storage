@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIf;
 
 import com.ijioio.aes.core.BaseEntity;
 import com.ijioio.aes.core.BaseEntityIndex;
@@ -114,6 +115,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@DisabledIf("isFinal")
 	@Test
 	public void testSearchNull() throws Exception {
 
@@ -156,6 +158,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@DisabledIf("isFinal")
 	@Test
 	public void testSearchEqualsNull() throws Exception {
 
@@ -205,6 +208,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@DisabledIf("isFinal")
 	@Test
 	public void testSearchNotEqualsNull() throws Exception {
 
@@ -254,6 +258,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@DisabledIf("isFinal")
 	@Test
 	public void testSearchGreaterNull() throws Exception {
 
@@ -301,6 +306,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@DisabledIf("isFinal")
 	@Test
 	public void testSearchGreaterOrEqualsNull() throws Exception {
 
@@ -348,6 +354,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@DisabledIf("isFinal")
 	@Test
 	public void testSearchLowerNull() throws Exception {
 
@@ -395,6 +402,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		check(expectedIndexes, actualIndexes);
 	}
 
+	@DisabledIf("isFinal")
 	@Test
 	public void testSearchLowerOrEqualsNull() throws Exception {
 
@@ -439,6 +447,8 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 	}
 
 	protected abstract String getSqlScriptFileName() throws Exception;
+
+	protected abstract boolean isFinal();
 
 	protected abstract Class<I> getIndexClass();
 

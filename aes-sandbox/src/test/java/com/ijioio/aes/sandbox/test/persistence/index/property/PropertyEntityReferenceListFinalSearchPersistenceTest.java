@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 
+import com.ijioio.aes.annotation.Attribute;
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityIndex;
 import com.ijioio.aes.annotation.EntityIndexProperty;
@@ -17,14 +18,14 @@ import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.EntityReference;
 import com.ijioio.aes.core.Property;
 import com.ijioio.aes.sandbox.test.persistence.index.property.BasePropertySearchPersistenceTest.Some;
-import com.ijioio.test.model.PropertyEntityReferenceListSearchPersistence;
-import com.ijioio.test.model.PropertyEntityReferenceListSearchPersistenceIndex;
+import com.ijioio.test.model.PropertyEntityReferenceListFinalSearchPersistence;
+import com.ijioio.test.model.PropertyEntityReferenceListFinalSearchPersistenceIndex;
 
-public class PropertyEntityReferenceListSearchPersistenceTest extends
-		BasePropertyCollectionSearchPersistenceTest<PropertyEntityReferenceListSearchPersistenceIndex, List<EntityReference<? extends Some>>, EntityReference<? extends Some>> {
+public class PropertyEntityReferenceListFinalSearchPersistenceTest extends
+		BasePropertyCollectionSearchPersistenceTest<PropertyEntityReferenceListFinalSearchPersistenceIndex, List<EntityReference<? extends Some>>, EntityReference<? extends Some>> {
 
 	@Entity( //
-			name = PropertyEntityReferenceListSearchPersistencePrototype.NAME, //
+			name = PropertyEntityReferenceListFinalSearchPersistencePrototype.NAME, //
 			types = { //
 					@Type(name = "EntityReference<? extends Some>", type = Type.ENTITY_REFERENCE, parameters = @Parameter(name = Some.NAME, wildcard = true)), //
 					@Type(name = "List<EntityReference<? extends Some>>", type = Type.LIST, parameters = @Parameter(name = "EntityReference<? extends Some>")) //
@@ -34,50 +35,50 @@ public class PropertyEntityReferenceListSearchPersistenceTest extends
 			}, //
 			indexes = { //
 					@EntityIndex( //
-							name = PropertyEntityReferenceListSearchPersistencePrototype.INDEX_NAME, //
+							name = PropertyEntityReferenceListFinalSearchPersistencePrototype.INDEX_NAME, //
 							properties = { //
-									@EntityIndexProperty(name = "valueEntityReferenceList", type = "List<EntityReference<? extends Some>>") //
+									@EntityIndexProperty(name = "valueEntityReferenceList", type = "List<EntityReference<? extends Some>>", attributes = Attribute.FINAL) //
 							} //
 					) //
 			} //
 	)
-	public static interface PropertyEntityReferenceListSearchPersistencePrototype {
+	public static interface PropertyEntityReferenceListFinalSearchPersistencePrototype {
 
-		public static final String NAME = "com.ijioio.test.model.PropertyEntityReferenceListSearchPersistence";
+		public static final String NAME = "com.ijioio.test.model.PropertyEntityReferenceListFinalSearchPersistence";
 
-		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyEntityReferenceListSearchPersistenceIndex";
+		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyEntityReferenceListFinalSearchPersistenceIndex";
 	}
 
 	@Override
 	protected String getSqlScriptFileName() throws Exception {
-		return "property-entity-reference-list-search-persistence.sql";
+		return "property-entity-reference-list-final-search-persistence.sql";
 	}
 
 	@Override
 	protected boolean isFinal() {
-		return false;
+		return true;
 	}
 
 	@Override
-	protected Class<PropertyEntityReferenceListSearchPersistenceIndex> getIndexClass() {
-		return PropertyEntityReferenceListSearchPersistenceIndex.class;
+	protected Class<PropertyEntityReferenceListFinalSearchPersistenceIndex> getIndexClass() {
+		return PropertyEntityReferenceListFinalSearchPersistenceIndex.class;
 	}
 
 	@Override
-	protected List<PropertyEntityReferenceListSearchPersistenceIndex> createIndexes() {
+	protected List<PropertyEntityReferenceListFinalSearchPersistenceIndex> createIndexes() {
 
-		List<PropertyEntityReferenceListSearchPersistenceIndex> indexes = new ArrayList<>();
+		List<PropertyEntityReferenceListFinalSearchPersistenceIndex> indexes = new ArrayList<>();
 
 		int count = random.nextInt(INDEX_MAX_COUNT) + 1;
 
 		for (int i = 0; i < count; i++) {
 
-			PropertyEntityReferenceListSearchPersistenceIndex index = new PropertyEntityReferenceListSearchPersistenceIndex();
+			PropertyEntityReferenceListFinalSearchPersistenceIndex index = new PropertyEntityReferenceListFinalSearchPersistenceIndex();
 
-			index.setId(String.format("property-entity-reference-list-search-persistence-index-%s", i + 1));
-			index.setSource(
-					EntityReference.of(String.format("property-entity-reference-list-search-persistence-%s", i + 1),
-							PropertyEntityReferenceListSearchPersistence.class));
+			index.setId(String.format("property-entity-reference-list-final-search-persistence-index-%s", i + 1));
+			index.setSource(EntityReference.of(
+					String.format("property-entity-reference-list-final-search-persistence-%s", i + 1),
+					PropertyEntityReferenceListFinalSearchPersistence.class));
 
 			List<EntityReference<? extends Some>> value = new ArrayList<>();
 
@@ -86,7 +87,8 @@ public class PropertyEntityReferenceListSearchPersistenceTest extends
 						collectionTypes.get(i + 1).get(j)));
 			}
 
-			index.setValueEntityReferenceList(value);
+			index.getValueEntityReferenceList().clear();
+			index.getValueEntityReferenceList().addAll(value);
 
 			indexes.add(index);
 		}
@@ -125,19 +127,21 @@ public class PropertyEntityReferenceListSearchPersistenceTest extends
 
 	@Override
 	protected Property<List<EntityReference<? extends Some>>> getProperty() {
-		return PropertyEntityReferenceListSearchPersistenceIndex.Properties.valueEntityReferenceList;
+		return PropertyEntityReferenceListFinalSearchPersistenceIndex.Properties.valueEntityReferenceList;
 	}
 
 	@Override
 	protected List<EntityReference<? extends Some>> getPropertyValue(
-			PropertyEntityReferenceListSearchPersistenceIndex index) {
+			PropertyEntityReferenceListFinalSearchPersistenceIndex index) {
 		return index.getValueEntityReferenceList();
 	}
 
 	@Override
-	protected void setPropertyValue(PropertyEntityReferenceListSearchPersistenceIndex index,
+	protected void setPropertyValue(PropertyEntityReferenceListFinalSearchPersistenceIndex index,
 			List<EntityReference<? extends Some>> value) {
-		index.setValueEntityReferenceList(value);
+
+		index.getValueEntityReferenceList().clear();
+		index.getValueEntityReferenceList().addAll(value);
 	}
 
 	@Override

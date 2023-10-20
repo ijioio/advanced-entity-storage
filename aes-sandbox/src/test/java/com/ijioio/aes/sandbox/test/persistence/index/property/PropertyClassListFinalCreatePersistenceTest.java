@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 
+import com.ijioio.aes.annotation.Attribute;
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityIndex;
 import com.ijioio.aes.annotation.EntityIndexProperty;
@@ -17,14 +18,14 @@ import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.EntityReference;
 import com.ijioio.aes.sandbox.test.persistence.index.property.BasePropertyCreatePersistenceTest.Some;
-import com.ijioio.test.model.PropertyClassListCreatePersistence;
-import com.ijioio.test.model.PropertyClassListCreatePersistenceIndex;
+import com.ijioio.test.model.PropertyClassListFinalCreatePersistence;
+import com.ijioio.test.model.PropertyClassListFinalCreatePersistenceIndex;
 
-public class PropertyClassListCreatePersistenceTest extends
-		BasePropertyCollectionCreatePersistenceTest<PropertyClassListCreatePersistenceIndex, List<Class<? extends Some>>, Class<? extends Some>> {
+public class PropertyClassListFinalCreatePersistenceTest extends
+		BasePropertyCollectionCreatePersistenceTest<PropertyClassListFinalCreatePersistenceIndex, List<Class<? extends Some>>, Class<? extends Some>> {
 
 	@Entity( //
-			name = PropertyClassListCreatePersistencePrototype.NAME, //
+			name = PropertyClassListFinalCreatePersistencePrototype.NAME, //
 			types = { //
 					@Type(name = "Class<? extends Some>", type = Type.CLASS, parameters = @Parameter(name = Some.NAME, wildcard = true)), //
 					@Type(name = "List<Class<? extends Some>>", type = Type.LIST, parameters = @Parameter(name = "Class<? extends Some>")) //
@@ -34,43 +35,43 @@ public class PropertyClassListCreatePersistenceTest extends
 			}, //
 			indexes = { //
 					@EntityIndex( //
-							name = PropertyClassListCreatePersistencePrototype.INDEX_NAME, //
+							name = PropertyClassListFinalCreatePersistencePrototype.INDEX_NAME, //
 							properties = { //
-									@EntityIndexProperty(name = "valueClassList", type = "List<Class<? extends Some>>") //
+									@EntityIndexProperty(name = "valueClassList", type = "List<Class<? extends Some>>", attributes = Attribute.FINAL) //
 							} //
 					) //
 			} //
 	)
-	public static interface PropertyClassListCreatePersistencePrototype {
+	public static interface PropertyClassListFinalCreatePersistencePrototype {
 
-		public static final String NAME = "com.ijioio.test.model.PropertyClassListCreatePersistence";
+		public static final String NAME = "com.ijioio.test.model.PropertyClassListFinalCreatePersistence";
 
-		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyClassListCreatePersistenceIndex";
+		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyClassListFinalCreatePersistenceIndex";
 	}
 
 	@Override
 	protected String getSqlScriptFileName() throws Exception {
-		return "property-class-list-create-persistence.sql";
+		return "property-class-list-final-create-persistence.sql";
 	}
 
 	@Override
 	protected boolean isFinal() {
-		return false;
+		return true;
 	}
 
 	@Override
 	protected String getTableName() {
-		return PropertyClassListCreatePersistenceIndex.class.getSimpleName();
+		return PropertyClassListFinalCreatePersistenceIndex.class.getSimpleName();
 	}
 
 	@Override
-	protected PropertyClassListCreatePersistenceIndex createIndex() {
+	protected PropertyClassListFinalCreatePersistenceIndex createIndex() {
 
-		PropertyClassListCreatePersistenceIndex index = new PropertyClassListCreatePersistenceIndex();
+		PropertyClassListFinalCreatePersistenceIndex index = new PropertyClassListFinalCreatePersistenceIndex();
 
-		index.setId("property-class-list-create-persistence-index");
-		index.setSource(
-				EntityReference.of("property-class-list-create-persistence", PropertyClassListCreatePersistence.class));
+		index.setId("property-class-list-final-create-persistence-index");
+		index.setSource(EntityReference.of("property-class-list-final-create-persistence",
+				PropertyClassListFinalCreatePersistence.class));
 
 		List<Class<? extends Some>> value = new ArrayList<>();
 
@@ -78,7 +79,8 @@ public class PropertyClassListCreatePersistenceTest extends
 			value.add(types.get(i));
 		}
 
-		index.setValueClassList(value);
+		index.getValueClassList().clear();
+		index.getValueClassList().addAll(value);
 
 		return index;
 	}
@@ -89,13 +91,16 @@ public class PropertyClassListCreatePersistenceTest extends
 	}
 
 	@Override
-	protected List<Class<? extends Some>> getPropertyValue(PropertyClassListCreatePersistenceIndex index) {
+	protected List<Class<? extends Some>> getPropertyValue(PropertyClassListFinalCreatePersistenceIndex index) {
 		return index.getValueClassList();
 	}
 
 	@Override
-	protected void setPropertyValue(PropertyClassListCreatePersistenceIndex index, List<Class<? extends Some>> value) {
-		index.setValueClassList(value);
+	protected void setPropertyValue(PropertyClassListFinalCreatePersistenceIndex index,
+			List<Class<? extends Some>> value) {
+
+		index.getValueClassList().clear();
+		index.getValueClassList().addAll(value);
 	}
 
 	@Override

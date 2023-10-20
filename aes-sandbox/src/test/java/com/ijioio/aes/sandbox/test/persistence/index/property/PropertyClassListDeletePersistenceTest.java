@@ -16,15 +16,15 @@ import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.EntityReference;
 import com.ijioio.aes.core.Property;
-import com.ijioio.aes.sandbox.test.persistence.index.property.BasePropertySearchPersistenceTest.Some;
-import com.ijioio.test.model.PropertyClassListSearchPersistence;
-import com.ijioio.test.model.PropertyClassListSearchPersistenceIndex;
+import com.ijioio.aes.sandbox.test.persistence.index.property.BasePropertyDeletePersistenceTest.Some;
+import com.ijioio.test.model.PropertyClassListDeletePersistence;
+import com.ijioio.test.model.PropertyClassListDeletePersistenceIndex;
 
-public class PropertyClassListSearchPersistenceTest extends
-		BasePropertyCollectionSearchPersistenceTest<PropertyClassListSearchPersistenceIndex, List<Class<? extends Some>>, Class<? extends Some>> {
+public class PropertyClassListDeletePersistenceTest extends
+		BasePropertyCollectionDeletePersistenceTest<PropertyClassListDeletePersistenceIndex, List<Class<? extends Some>>, Class<? extends Some>> {
 
 	@Entity( //
-			name = PropertyClassListSearchPersistencePrototype.NAME, //
+			name = PropertyClassListDeletePersistencePrototype.NAME, //
 			types = { //
 					@Type(name = "Class<? extends Some>", type = Type.CLASS, parameters = @Parameter(name = Some.NAME, wildcard = true)), //
 					@Type(name = "List<Class<? extends Some>>", type = Type.LIST, parameters = @Parameter(name = "Class<? extends Some>")) //
@@ -34,23 +34,23 @@ public class PropertyClassListSearchPersistenceTest extends
 			}, //
 			indexes = { //
 					@EntityIndex( //
-							name = PropertyClassListSearchPersistencePrototype.INDEX_NAME, //
+							name = PropertyClassListDeletePersistencePrototype.INDEX_NAME, //
 							properties = { //
 									@EntityIndexProperty(name = "valueClassList", type = "List<Class<? extends Some>>") //
 							} //
 					) //
 			} //
 	)
-	public static interface PropertyClassListSearchPersistencePrototype {
+	public static interface PropertyClassListDeletePersistencePrototype {
 
-		public static final String NAME = "com.ijioio.test.model.PropertyClassListSearchPersistence";
+		public static final String NAME = "com.ijioio.test.model.PropertyClassListDeletePersistence";
 
-		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyClassListSearchPersistenceIndex";
+		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyClassListDeletePersistenceIndex";
 	}
 
 	@Override
 	protected String getSqlScriptFileName() throws Exception {
-		return "property-class-list-search-persistence.sql";
+		return "property-class-list-delete-persistence.sql";
 	}
 
 	@Override
@@ -59,24 +59,24 @@ public class PropertyClassListSearchPersistenceTest extends
 	}
 
 	@Override
-	protected Class<PropertyClassListSearchPersistenceIndex> getIndexClass() {
-		return PropertyClassListSearchPersistenceIndex.class;
+	protected Class<PropertyClassListDeletePersistenceIndex> getIndexClass() {
+		return PropertyClassListDeletePersistenceIndex.class;
 	}
 
 	@Override
-	protected List<PropertyClassListSearchPersistenceIndex> createIndexes() {
+	protected List<PropertyClassListDeletePersistenceIndex> createIndexes() {
 
-		List<PropertyClassListSearchPersistenceIndex> indexes = new ArrayList<>();
+		List<PropertyClassListDeletePersistenceIndex> indexes = new ArrayList<>();
 
 		int count = random.nextInt(INDEX_MAX_COUNT) + 1;
 
 		for (int i = 0; i < count; i++) {
 
-			PropertyClassListSearchPersistenceIndex index = new PropertyClassListSearchPersistenceIndex();
+			PropertyClassListDeletePersistenceIndex index = new PropertyClassListDeletePersistenceIndex();
 
-			index.setId(String.format("property-class-list-search-persistence-index-%s", i + 1));
-			index.setSource(EntityReference.of(String.format("property-class-list-search-persistence-%s", i + 1),
-					PropertyClassListSearchPersistence.class));
+			index.setId(String.format("property-class-list-delete-persistence-index-%s", i + 1));
+			index.setSource(EntityReference.of(String.format("property-class-list-delete-persistence-%s", i + 1),
+					PropertyClassListDeletePersistence.class));
 
 			List<Class<? extends Some>> value = new ArrayList<>();
 
@@ -123,16 +123,16 @@ public class PropertyClassListSearchPersistenceTest extends
 
 	@Override
 	protected Property<List<Class<? extends Some>>> getProperty() {
-		return PropertyClassListSearchPersistenceIndex.Properties.valueClassList;
+		return PropertyClassListDeletePersistenceIndex.Properties.valueClassList;
 	}
 
 	@Override
-	protected List<Class<? extends Some>> getPropertyValue(PropertyClassListSearchPersistenceIndex index) {
+	protected List<Class<? extends Some>> getPropertyValue(PropertyClassListDeletePersistenceIndex index) {
 		return index.getValueClassList();
 	}
 
 	@Override
-	protected void setPropertyValue(PropertyClassListSearchPersistenceIndex index, List<Class<? extends Some>> value) {
+	protected void setPropertyValue(PropertyClassListDeletePersistenceIndex index, List<Class<? extends Some>> value) {
 		index.setValueClassList(value);
 	}
 

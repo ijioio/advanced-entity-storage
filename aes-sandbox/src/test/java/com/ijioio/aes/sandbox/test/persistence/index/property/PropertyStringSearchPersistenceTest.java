@@ -45,6 +45,11 @@ public class PropertyStringSearchPersistenceTest
 	}
 
 	@Override
+	protected boolean isFinal() {
+		return false;
+	}
+
+	@Override
 	protected Class<PropertyStringSearchPersistenceIndex> getIndexClass() {
 		return PropertyStringSearchPersistenceIndex.class;
 	}

@@ -16,15 +16,15 @@ import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.EntityReference;
 import com.ijioio.aes.core.Property;
-import com.ijioio.aes.sandbox.test.persistence.index.property.BasePropertySearchPersistenceTest.Some;
-import com.ijioio.test.model.PropertyEntityReferenceListSearchPersistence;
-import com.ijioio.test.model.PropertyEntityReferenceListSearchPersistenceIndex;
+import com.ijioio.aes.sandbox.test.persistence.index.property.BasePropertyDeletePersistenceTest.Some;
+import com.ijioio.test.model.PropertyEntityReferenceListDeletePersistence;
+import com.ijioio.test.model.PropertyEntityReferenceListDeletePersistenceIndex;
 
-public class PropertyEntityReferenceListSearchPersistenceTest extends
-		BasePropertyCollectionSearchPersistenceTest<PropertyEntityReferenceListSearchPersistenceIndex, List<EntityReference<? extends Some>>, EntityReference<? extends Some>> {
+public class PropertyEntityReferenceListDeletePersistenceTest extends
+		BasePropertyCollectionDeletePersistenceTest<PropertyEntityReferenceListDeletePersistenceIndex, List<EntityReference<? extends Some>>, EntityReference<? extends Some>> {
 
 	@Entity( //
-			name = PropertyEntityReferenceListSearchPersistencePrototype.NAME, //
+			name = PropertyEntityReferenceListDeletePersistencePrototype.NAME, //
 			types = { //
 					@Type(name = "EntityReference<? extends Some>", type = Type.ENTITY_REFERENCE, parameters = @Parameter(name = Some.NAME, wildcard = true)), //
 					@Type(name = "List<EntityReference<? extends Some>>", type = Type.LIST, parameters = @Parameter(name = "EntityReference<? extends Some>")) //
@@ -34,23 +34,23 @@ public class PropertyEntityReferenceListSearchPersistenceTest extends
 			}, //
 			indexes = { //
 					@EntityIndex( //
-							name = PropertyEntityReferenceListSearchPersistencePrototype.INDEX_NAME, //
+							name = PropertyEntityReferenceListDeletePersistencePrototype.INDEX_NAME, //
 							properties = { //
 									@EntityIndexProperty(name = "valueEntityReferenceList", type = "List<EntityReference<? extends Some>>") //
 							} //
 					) //
 			} //
 	)
-	public static interface PropertyEntityReferenceListSearchPersistencePrototype {
+	public static interface PropertyEntityReferenceListDeletePersistencePrototype {
 
-		public static final String NAME = "com.ijioio.test.model.PropertyEntityReferenceListSearchPersistence";
+		public static final String NAME = "com.ijioio.test.model.PropertyEntityReferenceListDeletePersistence";
 
-		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyEntityReferenceListSearchPersistenceIndex";
+		public static final String INDEX_NAME = "com.ijioio.test.model.PropertyEntityReferenceListDeletePersistenceIndex";
 	}
 
 	@Override
 	protected String getSqlScriptFileName() throws Exception {
-		return "property-entity-reference-list-search-persistence.sql";
+		return "property-entity-reference-list-delete-persistence.sql";
 	}
 
 	@Override
@@ -59,25 +59,25 @@ public class PropertyEntityReferenceListSearchPersistenceTest extends
 	}
 
 	@Override
-	protected Class<PropertyEntityReferenceListSearchPersistenceIndex> getIndexClass() {
-		return PropertyEntityReferenceListSearchPersistenceIndex.class;
+	protected Class<PropertyEntityReferenceListDeletePersistenceIndex> getIndexClass() {
+		return PropertyEntityReferenceListDeletePersistenceIndex.class;
 	}
 
 	@Override
-	protected List<PropertyEntityReferenceListSearchPersistenceIndex> createIndexes() {
+	protected List<PropertyEntityReferenceListDeletePersistenceIndex> createIndexes() {
 
-		List<PropertyEntityReferenceListSearchPersistenceIndex> indexes = new ArrayList<>();
+		List<PropertyEntityReferenceListDeletePersistenceIndex> indexes = new ArrayList<>();
 
 		int count = random.nextInt(INDEX_MAX_COUNT) + 1;
 
 		for (int i = 0; i < count; i++) {
 
-			PropertyEntityReferenceListSearchPersistenceIndex index = new PropertyEntityReferenceListSearchPersistenceIndex();
+			PropertyEntityReferenceListDeletePersistenceIndex index = new PropertyEntityReferenceListDeletePersistenceIndex();
 
-			index.setId(String.format("property-entity-reference-list-search-persistence-index-%s", i + 1));
+			index.setId(String.format("property-entity-reference-list-delete-persistence-index-%s", i + 1));
 			index.setSource(
-					EntityReference.of(String.format("property-entity-reference-list-search-persistence-%s", i + 1),
-							PropertyEntityReferenceListSearchPersistence.class));
+					EntityReference.of(String.format("property-entity-reference-list-delete-persistence-%s", i + 1),
+							PropertyEntityReferenceListDeletePersistence.class));
 
 			List<EntityReference<? extends Some>> value = new ArrayList<>();
 
@@ -125,17 +125,17 @@ public class PropertyEntityReferenceListSearchPersistenceTest extends
 
 	@Override
 	protected Property<List<EntityReference<? extends Some>>> getProperty() {
-		return PropertyEntityReferenceListSearchPersistenceIndex.Properties.valueEntityReferenceList;
+		return PropertyEntityReferenceListDeletePersistenceIndex.Properties.valueEntityReferenceList;
 	}
 
 	@Override
 	protected List<EntityReference<? extends Some>> getPropertyValue(
-			PropertyEntityReferenceListSearchPersistenceIndex index) {
+			PropertyEntityReferenceListDeletePersistenceIndex index) {
 		return index.getValueEntityReferenceList();
 	}
 
 	@Override
-	protected void setPropertyValue(PropertyEntityReferenceListSearchPersistenceIndex index,
+	protected void setPropertyValue(PropertyEntityReferenceListDeletePersistenceIndex index,
 			List<EntityReference<? extends Some>> value) {
 		index.setValueEntityReferenceList(value);
 	}
