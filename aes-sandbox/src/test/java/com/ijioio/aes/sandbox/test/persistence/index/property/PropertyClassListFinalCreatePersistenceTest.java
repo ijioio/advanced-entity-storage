@@ -55,11 +55,6 @@ public class PropertyClassListFinalCreatePersistenceTest extends
 	}
 
 	@Override
-	protected boolean isNullPropertyValueAllowed() {
-		return false;
-	}
-
-	@Override
 	protected String getTableName() {
 		return PropertyClassListFinalCreatePersistenceIndex.class.getSimpleName();
 	}
@@ -101,6 +96,11 @@ public class PropertyClassListFinalCreatePersistenceTest extends
 
 		index.getValueClassList().clear();
 		index.getValueClassList().addAll(value);
+	}
+
+	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return false;
 	}
 
 	@Override

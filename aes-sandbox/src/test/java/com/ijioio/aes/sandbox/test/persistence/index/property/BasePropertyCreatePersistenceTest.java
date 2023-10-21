@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledIf;
+import org.junit.jupiter.api.condition.EnabledIf;
 
 import com.ijioio.aes.core.BaseEntity;
 import com.ijioio.aes.core.EntityIndex;
@@ -115,7 +115,7 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 		}
 	}
 
-	@DisabledIf("isNullPropertyValueAllowed")
+	@EnabledIf("isNullPropertyValueAllowed")
 	@Test
 	public void testCreateNull() throws Exception {
 
@@ -143,8 +143,6 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 
 	protected abstract String getSqlScriptFileName() throws Exception;
 
-	protected abstract boolean isNullPropertyValueAllowed();
-
 	protected abstract String getTableName();
 
 	protected abstract I createIndex();
@@ -152,6 +150,8 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 	protected abstract V getPropertyValue(I index);
 
 	protected abstract void setPropertyValue(I index, V value);
+
+	protected abstract boolean isNullPropertyValueAllowed();
 
 	protected abstract void checkPropertyValue(V value, ResultSet resultSet) throws Exception;
 }

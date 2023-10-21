@@ -49,11 +49,6 @@ public class PropertyClassCreatePersistenceTest
 	}
 
 	@Override
-	protected boolean isNullPropertyValueAllowed() {
-		return true;
-	}
-
-	@Override
 	protected String getTableName() {
 		return PropertyClassCreatePersistenceIndex.class.getSimpleName();
 	}
@@ -78,6 +73,11 @@ public class PropertyClassCreatePersistenceTest
 	@Override
 	protected void setPropertyValue(PropertyClassCreatePersistenceIndex index, Class<? extends Some> value) {
 		index.setValueClass(value);
+	}
+
+	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
 	}
 
 	@Override
