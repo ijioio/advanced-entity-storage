@@ -118,6 +118,11 @@ public class PropertyStringListSearchPersistenceTest extends
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
+	}
+
+	@Override
 	protected List<String> getPropertyValue(PropertyStringListSearchPersistenceIndex index) {
 		return index.getValueStringList();
 	}
@@ -125,11 +130,6 @@ public class PropertyStringListSearchPersistenceTest extends
 	@Override
 	protected void setPropertyValue(PropertyStringListSearchPersistenceIndex index, List<String> value) {
 		index.setValueStringList(value);
-	}
-
-	@Override
-	protected boolean isNullPropertyValueAllowed() {
-		return true;
 	}
 
 	@Override

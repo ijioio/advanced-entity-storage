@@ -77,6 +77,11 @@ public class PropertyStringSearchPersistenceTest
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
+	}
+
+	@Override
 	protected String getPropertyValue(PropertyStringSearchPersistenceIndex index) {
 		return index.getValueString();
 	}
@@ -84,11 +89,6 @@ public class PropertyStringSearchPersistenceTest
 	@Override
 	protected void setPropertyValue(PropertyStringSearchPersistenceIndex index, String value) {
 		index.setValueString(value);
-	}
-
-	@Override
-	protected boolean isNullPropertyValueAllowed() {
-		return true;
 	}
 
 	@Override

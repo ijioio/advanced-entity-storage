@@ -124,6 +124,11 @@ public class PropertyEntityReferenceListSearchPersistenceTest extends
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
+	}
+
+	@Override
 	protected List<EntityReference<? extends Some>> getPropertyValue(
 			PropertyEntityReferenceListSearchPersistenceIndex index) {
 		return index.getValueEntityReferenceList();
@@ -133,11 +138,6 @@ public class PropertyEntityReferenceListSearchPersistenceTest extends
 	protected void setPropertyValue(PropertyEntityReferenceListSearchPersistenceIndex index,
 			List<EntityReference<? extends Some>> value) {
 		index.setValueEntityReferenceList(value);
-	}
-
-	@Override
-	protected boolean isNullPropertyValueAllowed() {
-		return true;
 	}
 
 	@Override

@@ -124,6 +124,11 @@ public class PropertyClassListFinalSearchPersistenceTest extends
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return false;
+	}
+
+	@Override
 	protected List<Class<? extends Some>> getPropertyValue(PropertyClassListFinalSearchPersistenceIndex index) {
 		return index.getValueClassList();
 	}
@@ -134,11 +139,6 @@ public class PropertyClassListFinalSearchPersistenceTest extends
 
 		index.getValueClassList().clear();
 		index.getValueClassList().addAll(value);
-	}
-
-	@Override
-	protected boolean isNullPropertyValueAllowed() {
-		return false;
 	}
 
 	@Override

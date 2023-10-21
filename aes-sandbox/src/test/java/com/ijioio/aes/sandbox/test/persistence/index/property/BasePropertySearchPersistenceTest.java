@@ -454,11 +454,11 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 
 	protected abstract Property<V> getProperty();
 
+	protected abstract boolean isNullPropertyValueAllowed();
+
 	protected abstract V getPropertyValue(I index);
 
 	protected abstract void setPropertyValue(I index, V value);
-
-	protected abstract boolean isNullPropertyValueAllowed();
 
 	protected abstract int comparePropertyValue(V value1, V value2);
 
