@@ -65,9 +65,21 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		// Empty
 	}
 
+	protected static List<Character> characters = new ArrayList<>();
+
 	protected static List<Class<? extends Some>> types = new ArrayList<>();
 
 	static {
+
+		characters.add(Character.valueOf('a'));
+		characters.add(Character.valueOf('b'));
+		characters.add(Character.valueOf('c'));
+		characters.add(Character.valueOf('d'));
+		characters.add(Character.valueOf('e'));
+		characters.add(Character.valueOf('f'));
+		characters.add(Character.valueOf('g'));
+		characters.add(Character.valueOf('h'));
+		characters.add(Character.valueOf('i'));
 
 		types.add(Some1.class);
 		types.add(Some2.class);
