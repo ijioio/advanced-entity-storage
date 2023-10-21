@@ -15,7 +15,7 @@ import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceContext;
 import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandler;
 
 @SuppressWarnings("rawtypes")
-public class JdbcEntityReferencePersistenceValueHandler extends JdbcBasePersistenceValueHandler<EntityReference> {
+public class JdbcEntityReferencePersistenceValueHandler extends BaseJdbcPersistenceValueHandler<EntityReference> {
 
 	protected final TypeReference<String> idType = TypeReference.of(String.class);
 

@@ -17,7 +17,7 @@ import com.ijioio.aes.core.persistence.PersistenceException;
 import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceContext;
 import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandler;
 
-public class JdbcBooleanPersistenceValueHandler extends JdbcBasePersistenceValueHandler<Boolean> {
+public class JdbcBooleanPersistenceValueHandler extends BaseJdbcPersistenceValueHandler<Boolean> {
 
 	@Override
 	public Class<Boolean> getType() {

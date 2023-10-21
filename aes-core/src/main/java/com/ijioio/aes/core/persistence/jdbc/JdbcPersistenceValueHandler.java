@@ -1,12 +1,10 @@
-package com.ijioio.aes.core.persistence.jdbc.value.handler;
+package com.ijioio.aes.core.persistence.jdbc;
 
 import java.util.Collection;
 import java.util.List;
 
 import com.ijioio.aes.core.TypeReference;
 import com.ijioio.aes.core.persistence.PersistenceException;
-import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceContext;
-import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandler;
 
 public interface JdbcPersistenceValueHandler<T> {
 

@@ -18,7 +18,7 @@ import com.ijioio.aes.core.persistence.PersistenceException;
 import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceContext;
 import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandler;
 
-public class JdbcCharacterPersistenceValueHandler extends JdbcBasePersistenceValueHandler<Character> {
+public class JdbcCharacterPersistenceValueHandler extends BaseJdbcPersistenceValueHandler<Character> {
 
 	@Override
 	public Class<Character> getType() {

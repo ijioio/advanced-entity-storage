@@ -40,7 +40,6 @@ import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcBooleanPersistence
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcCharacterPersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcClassPersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcEntityReferencePersistenceValueHandler;
-import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcPersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcStringPersistenceValueHandler;
 import com.ijioio.aes.core.util.TupleUtil.Pair;
 

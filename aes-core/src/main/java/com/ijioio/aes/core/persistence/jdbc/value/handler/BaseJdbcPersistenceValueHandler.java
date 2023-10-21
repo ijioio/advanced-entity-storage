@@ -8,8 +8,9 @@ import java.util.Set;
 
 import com.ijioio.aes.core.TypeReference;
 import com.ijioio.aes.core.persistence.PersistenceException;
+import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceValueHandler;
 
-public abstract class JdbcBasePersistenceValueHandler<T> implements JdbcPersistenceValueHandler<T> {
+public abstract class BaseJdbcPersistenceValueHandler<T> implements JdbcPersistenceValueHandler<T> {
 
 	protected Collection<T> getCollection(TypeReference<? extends Collection<T>> type, Collection<T> values)
 			throws PersistenceException {

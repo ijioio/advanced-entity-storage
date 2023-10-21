@@ -10,7 +10,7 @@ import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceContext;
 import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandler;
 
 @SuppressWarnings("rawtypes")
-public class JdbcClassPersistenceValueHandler extends JdbcBasePersistenceValueHandler<Class> {
+public class JdbcClassPersistenceValueHandler extends BaseJdbcPersistenceValueHandler<Class> {
 
 	protected final TypeReference<String> nameType = TypeReference.of(String.class);
 
