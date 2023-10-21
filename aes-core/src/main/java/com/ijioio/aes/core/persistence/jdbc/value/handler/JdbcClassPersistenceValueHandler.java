@@ -14,7 +14,7 @@ public class JdbcClassPersistenceValueHandler extends JdbcBasePersistenceValueHa
 
 	protected final TypeReference<String> nameType = TypeReference.of(String.class);
 
-	protected final TypeReference<Collection<String>> nameCollectionType = new TypeReference<Collection<String>>() {
+	protected final TypeReference<List<String>> nameListType = new TypeReference<List<String>>() {
 	};
 
 	@Override
@@ -47,11 +47,11 @@ public class JdbcClassPersistenceValueHandler extends JdbcBasePersistenceValueHa
 				nameValues.add(value != null ? value.getName() : null);
 			}
 
-			handler.write(context, nameCollectionType, nameValues, search);
+			handler.write(context, nameListType, nameValues, search);
 
 		} else {
 
-			handler.write(context, nameCollectionType, null, search);
+			handler.write(context, nameListType, null, search);
 		}
 	}
 
@@ -72,7 +72,7 @@ public class JdbcClassPersistenceValueHandler extends JdbcBasePersistenceValueHa
 	public Collection<Class> readCollection(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
 			TypeReference<? extends Collection<Class>> type, Collection<Class> values) throws PersistenceException {
 
-		Collection<String> nameValues = handler.read(context, nameCollectionType, null);
+		List<String> nameValues = handler.read(context, nameListType, null);
 
 		if (nameValues != null) {
 
