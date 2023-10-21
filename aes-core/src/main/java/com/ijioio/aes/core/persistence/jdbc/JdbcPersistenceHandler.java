@@ -37,6 +37,7 @@ import com.ijioio.aes.core.TypeReference;
 import com.ijioio.aes.core.persistence.PersistenceException;
 import com.ijioio.aes.core.persistence.PersistenceHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcBooleanPersistenceValueHandler;
+import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcCharacterPersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcClassPersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcEntityReferencePersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcPersistenceValueHandler;
@@ -44,46 +45,6 @@ import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcStringPersistenceV
 import com.ijioio.aes.core.util.TupleUtil.Pair;
 
 public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenceContext> {
-
-	private static final JdbcPersistenceValueHandler<Character> HANDLER_CHARACTER = new JdbcPersistenceValueHandler<Character>() {
-
-		@Override
-		public Class<Character> getType() {
-			return Character.class;
-		}
-
-		@Override
-		public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
-				TypeReference<Character> type, boolean search) {
-			return Collections.singletonList(name);
-		};
-
-		@Override
-		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Character> type,
-				Character value, boolean search) throws PersistenceException {
-
-			PreparedStatement statement = context.getStatement();
-
-			try {
-				statement.setObject(context.getNextIndex(), value);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		}
-
-		@Override
-		public Character read(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-				TypeReference<Character> type, Character value) throws PersistenceException {
-
-			ResultSet resultSet = context.getResultSet();
-
-			try {
-				return resultSet.getObject(context.getNextIndex(), Character.class);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		};
-	};
 
 	private static final JdbcPersistenceValueHandler<Byte> HANDLER_BYTE = new JdbcPersistenceValueHandler<Byte>() {
 
@@ -579,7 +540,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 	public JdbcPersistenceHandler() {
 
 		registerValueHandler(new JdbcBooleanPersistenceValueHandler());
-		registerValueHandler(HANDLER_CHARACTER);
+		registerValueHandler(new JdbcCharacterPersistenceValueHandler());
 		registerValueHandler(HANDLER_BYTE);
 		registerValueHandler(HANDLER_SHORT);
 		registerValueHandler(HANDLER_INTEGER);
