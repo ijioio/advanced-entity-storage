@@ -79,6 +79,11 @@ public class PropertyClassListCreatePersistenceTest extends
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
+	}
+
+	@Override
 	protected List<Class<? extends Some>> createEmptyPropertyValue() {
 		return Collections.emptyList();
 	}
@@ -91,11 +96,6 @@ public class PropertyClassListCreatePersistenceTest extends
 	@Override
 	protected void setPropertyValue(PropertyClassListCreatePersistenceIndex index, List<Class<? extends Some>> value) {
 		index.setValueClassList(value);
-	}
-
-	@Override
-	protected boolean isNullPropertyValueAllowed() {
-		return true;
 	}
 
 	@Override

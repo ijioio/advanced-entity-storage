@@ -79,6 +79,11 @@ public class PropertyEntityReferenceListCreatePersistenceTest extends
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
+	}
+
+	@Override
 	protected List<EntityReference<? extends Some>> createEmptyPropertyValue() {
 		return Collections.emptyList();
 	}
@@ -93,11 +98,6 @@ public class PropertyEntityReferenceListCreatePersistenceTest extends
 	protected void setPropertyValue(PropertyEntityReferenceListCreatePersistenceIndex index,
 			List<EntityReference<? extends Some>> value) {
 		index.setValueEntityReferenceList(value);
-	}
-
-	@Override
-	protected boolean isNullPropertyValueAllowed() {
-		return true;
 	}
 
 	@Override

@@ -61,6 +61,11 @@ public class PropertyBooleanCreatePersistenceTest
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return false;
+	}
+
+	@Override
 	protected Boolean getPropertyValue(PropertyBooleanCreatePersistenceIndex index) {
 		return index.isValueBoolean();
 	}
@@ -68,11 +73,6 @@ public class PropertyBooleanCreatePersistenceTest
 	@Override
 	protected void setPropertyValue(PropertyBooleanCreatePersistenceIndex index, Boolean value) {
 		index.setValueBoolean(value);
-	}
-
-	@Override
-	protected boolean isNullPropertyValueAllowed() {
-		return false;
 	}
 
 	@Override

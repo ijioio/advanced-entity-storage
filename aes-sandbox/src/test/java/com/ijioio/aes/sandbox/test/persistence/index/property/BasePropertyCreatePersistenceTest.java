@@ -147,11 +147,11 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 
 	protected abstract I createIndex();
 
+	protected abstract boolean isNullPropertyValueAllowed();
+
 	protected abstract V getPropertyValue(I index);
 
 	protected abstract void setPropertyValue(I index, V value);
-
-	protected abstract boolean isNullPropertyValueAllowed();
 
 	protected abstract void checkPropertyValue(V value, ResultSet resultSet) throws Exception;
 }

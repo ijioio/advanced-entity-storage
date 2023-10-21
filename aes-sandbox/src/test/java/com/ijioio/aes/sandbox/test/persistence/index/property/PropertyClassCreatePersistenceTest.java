@@ -66,6 +66,11 @@ public class PropertyClassCreatePersistenceTest
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
+	}
+
+	@Override
 	protected Class<? extends Some> getPropertyValue(PropertyClassCreatePersistenceIndex index) {
 		return index.getValueClass();
 	}
@@ -73,11 +78,6 @@ public class PropertyClassCreatePersistenceTest
 	@Override
 	protected void setPropertyValue(PropertyClassCreatePersistenceIndex index, Class<? extends Some> value) {
 		index.setValueClass(value);
-	}
-
-	@Override
-	protected boolean isNullPropertyValueAllowed() {
-		return true;
 	}
 
 	@Override

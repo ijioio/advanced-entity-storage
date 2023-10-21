@@ -77,6 +77,11 @@ public class PropertyStringListFinalCreatePersistenceTest extends
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return false;
+	}
+
+	@Override
 	protected List<String> createEmptyPropertyValue() {
 		return Collections.emptyList();
 	}
@@ -91,11 +96,6 @@ public class PropertyStringListFinalCreatePersistenceTest extends
 
 		index.getValueStringList().clear();
 		index.getValueStringList().addAll(value);
-	}
-
-	@Override
-	protected boolean isNullPropertyValueAllowed() {
-		return false;
 	}
 
 	@Override
