@@ -49,8 +49,8 @@ public class PropertyClassCreatePersistenceTest
 	}
 
 	@Override
-	protected boolean isFinal() {
-		return false;
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
 	}
 
 	@Override

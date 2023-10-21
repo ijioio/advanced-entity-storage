@@ -115,7 +115,7 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 		}
 	}
 
-	@DisabledIf("isFinal")
+	@DisabledIf("isNullPropertyValueAllowed")
 	@Test
 	public void testCreateNull() throws Exception {
 
@@ -143,7 +143,7 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 
 	protected abstract String getSqlScriptFileName() throws Exception;
 
-	protected abstract boolean isFinal();
+	protected abstract boolean isNullPropertyValueAllowed();
 
 	protected abstract String getTableName();
 

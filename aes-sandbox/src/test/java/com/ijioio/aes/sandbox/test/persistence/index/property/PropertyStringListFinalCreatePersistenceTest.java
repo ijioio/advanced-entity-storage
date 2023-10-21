@@ -51,8 +51,8 @@ public class PropertyStringListFinalCreatePersistenceTest extends
 	}
 
 	@Override
-	protected boolean isFinal() {
-		return true;
+	protected boolean isNullPropertyValueAllowed() {
+		return false;
 	}
 
 	@Override
