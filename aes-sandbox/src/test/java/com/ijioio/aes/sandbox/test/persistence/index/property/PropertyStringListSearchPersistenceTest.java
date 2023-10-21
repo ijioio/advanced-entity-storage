@@ -50,11 +50,6 @@ public class PropertyStringListSearchPersistenceTest extends
 	}
 
 	@Override
-	protected boolean isFinal() {
-		return false;
-	}
-
-	@Override
 	protected Class<PropertyStringListSearchPersistenceIndex> getIndexClass() {
 		return PropertyStringListSearchPersistenceIndex.class;
 	}
@@ -130,6 +125,11 @@ public class PropertyStringListSearchPersistenceTest extends
 	@Override
 	protected void setPropertyValue(PropertyStringListSearchPersistenceIndex index, List<String> value) {
 		index.setValueStringList(value);
+	}
+
+	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
 	}
 
 	@Override

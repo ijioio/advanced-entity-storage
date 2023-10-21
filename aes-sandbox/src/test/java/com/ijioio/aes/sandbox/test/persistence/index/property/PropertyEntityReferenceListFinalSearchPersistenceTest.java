@@ -55,11 +55,6 @@ public class PropertyEntityReferenceListFinalSearchPersistenceTest extends
 	}
 
 	@Override
-	protected boolean isFinal() {
-		return true;
-	}
-
-	@Override
 	protected Class<PropertyEntityReferenceListFinalSearchPersistenceIndex> getIndexClass() {
 		return PropertyEntityReferenceListFinalSearchPersistenceIndex.class;
 	}
@@ -142,6 +137,11 @@ public class PropertyEntityReferenceListFinalSearchPersistenceTest extends
 
 		index.getValueEntityReferenceList().clear();
 		index.getValueEntityReferenceList().addAll(value);
+	}
+
+	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return false;
 	}
 
 	@Override

@@ -51,11 +51,6 @@ public class PropertyClassSearchPersistenceTest
 	}
 
 	@Override
-	protected boolean isFinal() {
-		return false;
-	}
-
-	@Override
 	protected Class<PropertyClassSearchPersistenceIndex> getIndexClass() {
 		return PropertyClassSearchPersistenceIndex.class;
 	}
@@ -95,6 +90,11 @@ public class PropertyClassSearchPersistenceTest
 	@Override
 	protected void setPropertyValue(PropertyClassSearchPersistenceIndex index, Class<? extends Some> value) {
 		index.setValueClass(value);
+	}
+
+	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
 	}
 
 	@Override
