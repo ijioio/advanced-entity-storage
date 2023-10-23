@@ -4,10 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,53 +41,13 @@ import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcFloatPersistenceVa
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcInstantPersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcIntegerPersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcLocalDatePersistenceValueHandler;
+import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcLocalTimePersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcLongPersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcShortPersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcStringPersistenceValueHandler;
 import com.ijioio.aes.core.util.TupleUtil.Pair;
 
 public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenceContext> {
-
-	private static final JdbcPersistenceValueHandler<LocalTime> HANDLER_LOCAL_TIME = new JdbcPersistenceValueHandler<LocalTime>() {
-
-		@Override
-		public Class<LocalTime> getType() {
-			return LocalTime.class;
-		}
-
-		@Override
-		public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
-				TypeReference<LocalTime> type, boolean search) {
-			return Collections.singletonList(name);
-		};
-
-		@Override
-		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<LocalTime> type,
-				LocalTime value, boolean search) throws PersistenceException {
-
-			PreparedStatement statement = context.getStatement();
-
-			try {
-				statement.setObject(context.getNextIndex(), value != null ? Time.valueOf(value) : null);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		}
-
-		@Override
-		public LocalTime read(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-				TypeReference<LocalTime> type, LocalTime value) throws PersistenceException {
-
-			ResultSet resultSet = context.getResultSet();
-
-			try {
-				return Optional.ofNullable(resultSet.getObject(context.getNextIndex(), Time.class))
-						.map(item -> item.toLocalTime()).orElse(null);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		};
-	};
 
 	private static final JdbcPersistenceValueHandler<LocalDateTime> HANDLER_LOCAL_DATE_TIME = new JdbcPersistenceValueHandler<LocalDateTime>() {
 
@@ -232,7 +190,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 		registerValueHandler(new JdbcStringPersistenceValueHandler());
 		registerValueHandler(new JdbcInstantPersistenceValueHandler());
 		registerValueHandler(new JdbcLocalDatePersistenceValueHandler());
-		registerValueHandler(HANDLER_LOCAL_TIME);
+		registerValueHandler(new JdbcLocalTimePersistenceValueHandler());
 		registerValueHandler(HANDLER_LOCAL_DATE_TIME);
 		registerValueHandler(HANDLER_ENUM);
 		registerValueHandler(new JdbcClassPersistenceValueHandler());
