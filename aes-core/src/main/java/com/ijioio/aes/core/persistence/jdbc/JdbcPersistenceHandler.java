@@ -31,6 +31,7 @@ import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcBooleanPersistence
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcBytePersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcCharacterPersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcClassPersistenceValueHandler;
+import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcCollectionPersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcDoublePersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcEntityReferencePersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcEnumPersistenceValueHandler;
@@ -46,48 +47,6 @@ import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcStringPersistenceV
 import com.ijioio.aes.core.util.TupleUtil.Pair;
 
 public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenceContext> {
-
-	@SuppressWarnings("rawtypes")
-	private static final JdbcPersistenceValueHandler<Collection> HANDLER_COLLECTION = new JdbcPersistenceValueHandler<Collection>() {
-
-		@Override
-		public Class<Collection> getType() {
-			return Collection.class;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
-				TypeReference<Collection> type, boolean search) throws PersistenceException {
-
-			JdbcPersistenceValueHandler elementHandler = handler
-					.getValueHandler(type.getParameterTypes()[0].getRawType());
-
-			return elementHandler.getColumns(context, handler, name, type, search);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-				TypeReference<Collection> type, Collection value, boolean search) throws PersistenceException {
-
-			JdbcPersistenceValueHandler elementHandler = handler
-					.getValueHandler(type.getParameterTypes()[0].getRawType());
-
-			elementHandler.writeCollection(context, handler, type, value, search);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public Collection read(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-				TypeReference<Collection> type, Collection value) throws PersistenceException {
-
-			JdbcPersistenceValueHandler elementHandler = handler
-					.getValueHandler(type.getParameterTypes()[0].getRawType());
-
-			return elementHandler.readCollection(context, handler, type, value);
-		}
-	};
 
 	private final Map<String, JdbcPersistenceValueHandler<?>> handlers = new HashMap<>();
 
@@ -108,7 +67,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 		registerValueHandler(new JdbcLocalDateTimePersistenceValueHandler());
 		registerValueHandler(new JdbcEnumPersistenceValueHandler());
 		registerValueHandler(new JdbcClassPersistenceValueHandler());
-		registerValueHandler(HANDLER_COLLECTION);
+		registerValueHandler(new JdbcCollectionPersistenceValueHandler());
 		registerValueHandler(new JdbcEntityReferencePersistenceValueHandler());
 	}
 
@@ -157,12 +116,38 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	public <T> void writeCollection(JdbcPersistenceContext context, TypeReference<Collection<T>> type,
+			Collection<T> value, boolean search) throws PersistenceException {
+
+		JdbcPersistenceValueHandler<T> handler = getValueHandler(type.getParameterTypes()[0].getRawType());
+
+		if (handler != null) {
+			handler.writeCollection(context, this, type, value, search);
+		} else {
+			throw new PersistenceException(String.format("type %s is not supported", type));
+		}
+	}
+
 	public <T> T read(JdbcPersistenceContext context, TypeReference<T> type, T value) throws PersistenceException {
 
 		JdbcPersistenceValueHandler<T> handler = getValueHandler(type.getRawType());
 
 		if (handler != null) {
 			return handler.read(context, this, type, value);
+		} else {
+			throw new PersistenceException(String.format("type %s is not supported", type));
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> Collection<T> readCollection(JdbcPersistenceContext context, TypeReference<? extends Collection<T>> type,
+			Collection<T> value) throws PersistenceException {
+
+		JdbcPersistenceValueHandler<T> handler = getValueHandler(type.getParameterTypes()[0].getRawType());
+
+		if (handler != null) {
+			return handler.readCollection(context, this, type, value);
 		} else {
 			throw new PersistenceException(String.format("type %s is not supported", type));
 		}
