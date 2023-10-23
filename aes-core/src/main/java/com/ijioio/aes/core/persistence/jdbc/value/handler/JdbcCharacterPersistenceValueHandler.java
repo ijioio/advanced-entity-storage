@@ -113,5 +113,4 @@ public class JdbcCharacterPersistenceValueHandler extends BaseJdbcPersistenceVal
 			throw new PersistenceException(e);
 		}
 	}
-
 }

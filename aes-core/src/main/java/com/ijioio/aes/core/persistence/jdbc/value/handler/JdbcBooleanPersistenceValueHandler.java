@@ -110,5 +110,4 @@ public class JdbcBooleanPersistenceValueHandler extends BaseJdbcPersistenceValue
 			throw new PersistenceException(e);
 		}
 	}
-
 }

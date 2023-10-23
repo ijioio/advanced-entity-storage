@@ -115,5 +115,4 @@ public class JdbcInstantPersistenceValueHandler extends BaseJdbcPersistenceValue
 			throw new PersistenceException(e);
 		}
 	}
-
 }

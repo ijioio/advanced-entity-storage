@@ -109,5 +109,4 @@ public class JdbcFloatPersistenceValueHandler extends BaseJdbcPersistenceValueHa
 			throw new PersistenceException(e);
 		}
 	}
-
 }

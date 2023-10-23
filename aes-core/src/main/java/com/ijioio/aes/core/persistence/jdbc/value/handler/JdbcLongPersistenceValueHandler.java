@@ -110,5 +110,4 @@ public class JdbcLongPersistenceValueHandler extends BaseJdbcPersistenceValueHan
 			throw new PersistenceException(e);
 		}
 	}
-
 }

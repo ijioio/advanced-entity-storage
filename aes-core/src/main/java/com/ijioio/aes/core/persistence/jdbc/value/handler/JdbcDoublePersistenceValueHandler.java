@@ -110,5 +110,4 @@ public class JdbcDoublePersistenceValueHandler extends BaseJdbcPersistenceValueH
 			throw new PersistenceException(e);
 		}
 	}
-
 }

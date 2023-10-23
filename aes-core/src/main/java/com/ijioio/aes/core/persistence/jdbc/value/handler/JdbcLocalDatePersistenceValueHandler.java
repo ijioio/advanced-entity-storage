@@ -1,15 +1,18 @@
 package com.ijioio.aes.core.persistence.jdbc.value.handler;
 
 import java.sql.Array;
+import java.sql.Date;
 import java.sql.JDBCType;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.ijioio.aes.core.TypeReference;
@@ -17,27 +20,27 @@ import com.ijioio.aes.core.persistence.PersistenceException;
 import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceContext;
 import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandler;
 
-public class JdbcShortPersistenceValueHandler extends BaseJdbcPersistenceValueHandler<Short> {
+public class JdbcLocalDatePersistenceValueHandler extends BaseJdbcPersistenceValueHandler<LocalDate> {
 
 	@Override
-	public Class<Short> getType() {
-		return Short.class;
+	public Class<LocalDate> getType() {
+		return LocalDate.class;
 	}
 
 	@Override
 	public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
-			TypeReference<Short> type, boolean search) {
+			TypeReference<LocalDate> type, boolean search) {
 		return Collections.singletonList(name);
 	}
 
 	@Override
-	public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Short> type,
-			Short value, boolean search) throws PersistenceException {
+	public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<LocalDate> type,
+			LocalDate value, boolean search) throws PersistenceException {
 
 		PreparedStatement statement = context.getStatement();
 
 		try {
-			statement.setObject(context.getNextIndex(), value, Types.SMALLINT);
+			statement.setObject(context.getNextIndex(), value != null ? Date.valueOf(value) : null, Types.DATE);
 		} catch (SQLException e) {
 			throw new PersistenceException(e);
 		}
@@ -45,7 +48,7 @@ public class JdbcShortPersistenceValueHandler extends BaseJdbcPersistenceValueHa
 
 	@Override
 	public void writeCollection(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-			TypeReference<? extends Collection<Short>> type, Collection<Short> values, boolean search)
+			TypeReference<? extends Collection<LocalDate>> type, Collection<LocalDate> values, boolean search)
 			throws PersistenceException {
 
 		PreparedStatement statement = context.getStatement();
@@ -53,8 +56,8 @@ public class JdbcShortPersistenceValueHandler extends BaseJdbcPersistenceValueHa
 		try {
 
 			Array array = values != null
-					? statement.getConnection().createArrayOf(JDBCType.valueOf(Types.SMALLINT).getName(),
-							values.toArray())
+					? statement.getConnection().createArrayOf(JDBCType.valueOf(Types.DATE).getName(),
+							values.stream().map(item -> item != null ? Date.valueOf(item) : null).toArray())
 					: null;
 
 			statement.setObject(context.getNextIndex(), array, Types.ARRAY);
@@ -65,21 +68,23 @@ public class JdbcShortPersistenceValueHandler extends BaseJdbcPersistenceValueHa
 	}
 
 	@Override
-	public Short read(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Short> type,
-			Short value) throws PersistenceException {
+	public LocalDate read(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<LocalDate> type,
+			LocalDate value) throws PersistenceException {
 
 		ResultSet resultSet = context.getResultSet();
 
 		try {
-			return resultSet.getObject(context.getNextIndex(), Short.class);
+			return Optional.ofNullable(resultSet.getObject(context.getNextIndex(), Date.class))
+					.map(item -> item.toLocalDate()).orElse(null);
 		} catch (SQLException e) {
 			throw new PersistenceException(e);
 		}
 	}
 
 	@Override
-	public Collection<Short> readCollection(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-			TypeReference<? extends Collection<Short>> type, Collection<Short> values) throws PersistenceException {
+	public Collection<LocalDate> readCollection(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
+			TypeReference<? extends Collection<LocalDate>> type, Collection<LocalDate> values)
+			throws PersistenceException {
 
 		ResultSet resultSet = context.getResultSet();
 
@@ -89,11 +94,11 @@ public class JdbcShortPersistenceValueHandler extends BaseJdbcPersistenceValueHa
 
 			if (array != null) {
 
-				Collection<Short> collection = getCollection(type, values);
+				Collection<LocalDate> collection = getCollection(type, values);
 
 				collection.clear();
-				collection.addAll(Arrays.stream((Object[]) array.getArray()).map(item -> (Short) item)
-						.collect(Collectors.toList()));
+				collection.addAll(Arrays.stream((Object[]) array.getArray())
+						.map(item -> item != null ? ((Date) item).toLocalDate() : null).collect(Collectors.toList()));
 
 				return collection;
 
