@@ -76,7 +76,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> JdbcPersistenceValueHandler<T> getValueHandler(Class<T> type) {
+	public <T> JdbcPersistenceValueHandler<T> getValueHandler(Class<T> type) throws PersistenceException {
 
 		JdbcPersistenceValueHandler<T> handler = (JdbcPersistenceValueHandler<T>) handlers.get(type.getName());
 
@@ -89,68 +89,11 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 			}
 		}
 
+		if (handler == null) {
+			throw new PersistenceException(String.format("type %s is not supported", type));
+		}
+
 		return handler;
-	}
-
-	public <T> List<String> getColumns(JdbcPersistenceContext context, String name, TypeReference<T> type,
-			boolean search) throws PersistenceException {
-
-		JdbcPersistenceValueHandler<T> handler = getValueHandler(type.getRawType());
-
-		if (handler != null) {
-			return handler.getColumns(context, this, name, type, search);
-		} else {
-			throw new PersistenceException(String.format("type %s is not supported", type));
-		}
-	}
-
-	public <T> void write(JdbcPersistenceContext context, TypeReference<T> type, T value, boolean search)
-			throws PersistenceException {
-
-		JdbcPersistenceValueHandler<T> handler = getValueHandler(type.getRawType());
-
-		if (handler != null) {
-			handler.write(context, this, type, value, search);
-		} else {
-			throw new PersistenceException(String.format("type %s is not supported", type));
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> void writeCollection(JdbcPersistenceContext context, TypeReference<Collection<T>> type,
-			Collection<T> value, boolean search) throws PersistenceException {
-
-		JdbcPersistenceValueHandler<T> handler = getValueHandler(type.getParameterTypes()[0].getRawType());
-
-		if (handler != null) {
-			handler.writeCollection(context, this, type, value, search);
-		} else {
-			throw new PersistenceException(String.format("type %s is not supported", type));
-		}
-	}
-
-	public <T> T read(JdbcPersistenceContext context, TypeReference<T> type, T value) throws PersistenceException {
-
-		JdbcPersistenceValueHandler<T> handler = getValueHandler(type.getRawType());
-
-		if (handler != null) {
-			return handler.read(context, this, type, value);
-		} else {
-			throw new PersistenceException(String.format("type %s is not supported", type));
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> Collection<T> readCollection(JdbcPersistenceContext context, TypeReference<? extends Collection<T>> type,
-			Collection<T> value) throws PersistenceException {
-
-		JdbcPersistenceValueHandler<T> handler = getValueHandler(type.getParameterTypes()[0].getRawType());
-
-		if (handler != null) {
-			return handler.readCollection(context, this, type, value);
-		} else {
-			throw new PersistenceException(String.format("type %s is not supported", type));
-		}
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -167,7 +110,8 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 			List<String> columns = new ArrayList<>();
 
 			for (Property<?> property : properties) {
-				columns.addAll(getColumns(context, property.getName(), property.getType(), false));
+				columns.addAll(((JdbcPersistenceValueHandler) getValueHandler(property.getType().getRawType()))
+						.getColumns(context, this, property.getName(), property.getType(), false));
 			}
 
 			String sql = String.format("insert into %s (%s) values (%s)", index.getClass().getSimpleName(),
@@ -190,7 +134,8 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 								String.format("reader for property %s is not found", property.getName()));
 					}
 
-					write(context, ((Property) property).getType(), reader.read(), false);
+					((JdbcPersistenceValueHandler) getValueHandler(property.getType().getRawType())).write(context,
+							this, ((Property) property).getType(), reader.read(), false);
 				}
 
 				System.out.println(statement);
@@ -224,7 +169,8 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 				context.resetIndex();
 
 				for (Pair<TypeReference<?>, PropertyReader<?>> reader : readers) {
-					write(context, ((TypeReference) reader.getFirst()), reader.getSecond().read(), true);
+					((JdbcPersistenceValueHandler) getValueHandler(reader.getFirst().getRawType())).write(context, this,
+							reader.getFirst(), reader.getSecond().read(), true);
 				}
 
 				System.out.println(statement);
@@ -258,8 +204,8 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 				context.resetIndex();
 
 				for (Pair<TypeReference<?>, PropertyReader<?>> queryValueReader : queryValueReaders) {
-					write(context, (TypeReference) queryValueReader.getFirst(), queryValueReader.getSecond().read(),
-							true);
+					((JdbcPersistenceValueHandler) getValueHandler(queryValueReader.getFirst().getRawType())).write(
+							context, this, queryValueReader.getFirst(), queryValueReader.getSecond().read(), true);
 				}
 
 				System.out.println(statement);
@@ -297,8 +243,9 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 										String.format("reader for property %s is not found", property.getName()));
 							}
 
-							((PropertyWriter) writer)
-									.write(read(context, ((Property) property).getType(), reader.read()));
+							((PropertyWriter) writer).write(
+									((JdbcPersistenceValueHandler) getValueHandler(property.getType().getRawType()))
+											.read(context, this, ((Property) property).getType(), reader.read()));
 						}
 
 						indexes.add(index);
@@ -338,6 +285,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 		return sql.toString();
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private <I extends EntityIndex<?>> String handleSearchQuery(JdbcPersistenceContext context, SearchQuery<I> query,
 			List<Pair<TypeReference<?>, PropertyReader<?>>> readers) throws PersistenceException {
 
@@ -348,7 +296,8 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 		List<String> columns = new ArrayList<>();
 
 		for (Property<?> property : properties) {
-			columns.addAll(getColumns(context, property.getName(), property.getType(), false));
+			columns.addAll(((JdbcPersistenceValueHandler) getValueHandler(property.getType().getRawType()))
+					.getColumns(context, this, property.getName(), property.getType(), false));
 		}
 
 		String conditions = handleAndCriterion(context, AndSearchCriterion.of(query.getCriterions()), readers);
@@ -392,7 +341,8 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 			readers.add(Pair.of(type, () -> value));
 		}
 
-		List<String> columns = getColumns(context, property.getName(), property.getType(), true);
+		List<String> columns = getValueHandler(property.getType().getRawType()).getColumns(context, this,
+				property.getName(), property.getType(), true);
 
 		String operation = getOperation(criterion.getOperation(), value);
 
@@ -516,6 +466,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 		}
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private String handleSortings(JdbcPersistenceContext context, Map<Property<?>, Order> sortings)
 			throws PersistenceException {
 
@@ -526,7 +477,8 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 			Property<?> property = sorting.getKey();
 			String order = getOrder(sorting.getValue());
 
-			List<String> columns = getColumns(context, property.getName(), property.getType(), true);
+			List<String> columns = ((JdbcPersistenceValueHandler) getValueHandler(property.getType().getRawType()))
+					.getColumns(context, this, property.getName(), property.getType(), true);
 
 			for (String column : columns) {
 				sqls.add(String.format("%s %s", column, order));

@@ -25,13 +25,14 @@ public class JdbcClassPersistenceValueHandler extends BaseJdbcPersistenceValueHa
 	@Override
 	public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
 			TypeReference<Class> type, boolean search) throws PersistenceException {
-		return handler.getColumns(context, name, nameType, search);
+		return handler.getValueHandler(nameType.getRawType()).getColumns(context, handler, name, nameType, search);
 	}
 
 	@Override
 	public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Class> type,
 			Class value, boolean search) throws PersistenceException {
-		handler.write(context, nameType, value != null ? value.getName() : null, search);
+		handler.getValueHandler(nameType.getRawType()).write(context, handler, nameType,
+				value != null ? value.getName() : null, search);
 	}
 
 	@Override
@@ -47,11 +48,12 @@ public class JdbcClassPersistenceValueHandler extends BaseJdbcPersistenceValueHa
 				nameValues.add(value != null ? value.getName() : null);
 			}
 
-			handler.write(context, nameListType, nameValues, search);
+			handler.getValueHandler(nameListType.getRawType()).write(context, handler, nameListType, nameValues,
+					search);
 
 		} else {
 
-			handler.write(context, nameListType, null, search);
+			handler.getValueHandler(nameListType.getRawType()).write(context, handler, nameListType, null, search);
 		}
 	}
 
@@ -59,7 +61,7 @@ public class JdbcClassPersistenceValueHandler extends BaseJdbcPersistenceValueHa
 	public Class read(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Class> type,
 			Class value) throws PersistenceException {
 
-		String nameValue = handler.read(context, nameType, null);
+		String nameValue = handler.getValueHandler(nameType.getRawType()).read(context, handler, nameType, null);
 
 		try {
 			return nameValue != null ? Class.forName(nameValue) : null;
@@ -72,7 +74,8 @@ public class JdbcClassPersistenceValueHandler extends BaseJdbcPersistenceValueHa
 	public Collection<Class> readCollection(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
 			TypeReference<? extends Collection<Class>> type, Collection<Class> values) throws PersistenceException {
 
-		List<String> nameValues = handler.read(context, nameListType, null);
+		List<String> nameValues = handler.getValueHandler(nameListType.getRawType()).read(context, handler,
+				nameListType, null);
 
 		if (nameValues != null) {
 

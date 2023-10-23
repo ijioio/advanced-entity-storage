@@ -36,9 +36,11 @@ public class JdbcEntityReferencePersistenceValueHandler extends BaseJdbcPersiste
 	public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
 			TypeReference<EntityReference> type, boolean search) throws PersistenceException {
 		return Stream
-				.of(handler.getColumns(context, String.format("%sId", name), idType, search),
+				.of(handler.getValueHandler(idType.getRawType()).getColumns(context, handler,
+						String.format("%sId", name), idType, search),
 						search ? Collections.<String>emptyList()
-								: handler.getColumns(context, String.format("%sType", name), typeType, search))
+								: handler.getValueHandler(typeType.getRawType()).getColumns(context, handler,
+										String.format("%sType", name), typeType, search))
 				.flatMap(item -> item.stream()).collect(Collectors.toList());
 	}
 
@@ -46,10 +48,12 @@ public class JdbcEntityReferencePersistenceValueHandler extends BaseJdbcPersiste
 	public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
 			TypeReference<EntityReference> type, EntityReference value, boolean search) throws PersistenceException {
 
-		handler.write(context, idType, value != null ? value.getId() : null, search);
+		handler.getValueHandler(idType.getRawType()).write(context, handler, idType,
+				value != null ? value.getId() : null, search);
 
 		if (!search) {
-			handler.write(context, typeType, value != null ? value.getType() : null, search);
+			handler.getValueHandler(typeType.getRawType()).write(context, handler, typeType,
+					value != null ? value.getType() : null, search);
 		}
 	}
 
@@ -69,18 +73,19 @@ public class JdbcEntityReferencePersistenceValueHandler extends BaseJdbcPersiste
 				typeValues.add(value != null ? value.getType() : null);
 			}
 
-			handler.write(context, idListType, idValues, search);
+			handler.getValueHandler(idListType.getRawType()).write(context, handler, idListType, idValues, search);
 
 			if (!search) {
-				handler.write(context, typeListType, typeValues, search);
+				handler.getValueHandler(typeListType.getRawType()).write(context, handler, typeListType, typeValues,
+						search);
 			}
 
 		} else {
 
-			handler.write(context, idListType, null, search);
+			handler.getValueHandler(idListType.getRawType()).write(context, handler, idListType, null, search);
 
 			if (!search) {
-				handler.write(context, typeListType, null, search);
+				handler.getValueHandler(typeListType.getRawType()).write(context, handler, typeListType, null, search);
 			}
 		}
 	}
@@ -90,8 +95,8 @@ public class JdbcEntityReferencePersistenceValueHandler extends BaseJdbcPersiste
 	public EntityReference read(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
 			TypeReference<EntityReference> type, EntityReference value) throws PersistenceException {
 
-		String idValue = handler.read(context, idType, null);
-		Class typeValue = handler.read(context, typeType, null);
+		String idValue = handler.getValueHandler(idType.getRawType()).read(context, handler, idType, null);
+		Class typeValue = handler.getValueHandler(typeType.getRawType()).read(context, handler, typeType, null);
 
 		if ((idValue == null && typeValue != null) || (idValue != null && typeValue == null)) {
 			throw new PersistenceException(
@@ -107,8 +112,10 @@ public class JdbcEntityReferencePersistenceValueHandler extends BaseJdbcPersiste
 			TypeReference<? extends Collection<EntityReference>> type, Collection<EntityReference> values)
 			throws PersistenceException {
 
-		List<String> idValues = handler.read(context, idListType, null);
-		List<Class> typeValues = handler.read(context, typeListType, null);
+		List<String> idValues = handler.getValueHandler(idListType.getRawType()).read(context, handler, idListType,
+				null);
+		List<Class> typeValues = handler.getValueHandler(typeListType.getRawType()).read(context, handler, typeListType,
+				null);
 
 		if ((idValues == null && typeValues != null) || (idValues != null && typeValues == null)
 				|| (idValues != null && typeValues != null && idValues.size() != typeValues.size())) {

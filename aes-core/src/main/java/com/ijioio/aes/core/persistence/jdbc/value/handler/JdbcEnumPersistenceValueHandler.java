@@ -25,13 +25,14 @@ public class JdbcEnumPersistenceValueHandler extends BaseJdbcPersistenceValueHan
 	@Override
 	public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
 			TypeReference<Enum> type, boolean search) throws PersistenceException {
-		return handler.getColumns(context, name, nameType, search);
+		return handler.getValueHandler(nameType.getRawType()).getColumns(context, handler, name, nameType, search);
 	}
 
 	@Override
 	public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Enum> type,
 			Enum value, boolean search) throws PersistenceException {
-		handler.write(context, nameType, value != null ? value.name() : null, search);
+		handler.getValueHandler(nameType.getRawType()).write(context, handler, nameType,
+				value != null ? value.name() : null, search);
 	}
 
 	@Override
@@ -47,11 +48,12 @@ public class JdbcEnumPersistenceValueHandler extends BaseJdbcPersistenceValueHan
 				nameValues.add(value != null ? value.name() : null);
 			}
 
-			handler.write(context, nameListType, nameValues, search);
+			handler.getValueHandler(nameListType.getRawType()).write(context, handler, nameListType, nameValues,
+					search);
 
 		} else {
 
-			handler.write(context, nameListType, null, search);
+			handler.getValueHandler(nameListType.getRawType()).write(context, handler, nameListType, null, search);
 		}
 	}
 
@@ -60,7 +62,7 @@ public class JdbcEnumPersistenceValueHandler extends BaseJdbcPersistenceValueHan
 	public Enum read(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Enum> type,
 			Enum value) throws PersistenceException {
 
-		String nameValue = handler.read(context, nameType, null);
+		String nameValue = handler.getValueHandler(nameType.getRawType()).read(context, handler, nameType, null);
 
 		try {
 			return nameValue != null ? Enum.valueOf(type.getRawType(), nameValue) : null;
@@ -74,7 +76,8 @@ public class JdbcEnumPersistenceValueHandler extends BaseJdbcPersistenceValueHan
 	public Collection<Enum> readCollection(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
 			TypeReference<? extends Collection<Enum>> type, Collection<Enum> values) throws PersistenceException {
 
-		List<String> nameValues = handler.read(context, nameListType, null);
+		List<String> nameValues = handler.getValueHandler(nameListType.getRawType()).read(context, handler,
+				nameListType, null);
 
 		if (nameValues != null) {
 

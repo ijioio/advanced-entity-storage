@@ -20,14 +20,21 @@ public class JdbcCollectionPersistenceValueHandler extends BaseJdbcPersistenceVa
 	@Override
 	public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
 			TypeReference<Collection> type, boolean search) throws PersistenceException {
-		return handler.getColumns(context, name, type.getParameterTypes()[0], search);
+
+		TypeReference elementType = type.getParameterTypes()[0];
+
+		return handler.getValueHandler(elementType.getRawType()).getColumns(context, handler, name, elementType,
+				search);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Collection> type,
 			Collection value, boolean search) throws PersistenceException {
-		handler.writeCollection(context, (TypeReference) type, value, search);
+
+		TypeReference elementType = type.getParameterTypes()[0];
+
+		handler.getValueHandler(elementType.getRawType()).writeCollection(context, handler, type, value, search);
 	}
 
 	@Override
@@ -41,7 +48,10 @@ public class JdbcCollectionPersistenceValueHandler extends BaseJdbcPersistenceVa
 	@Override
 	public Collection read(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
 			TypeReference<Collection> type, Collection value) throws PersistenceException {
-		return handler.readCollection(context, (TypeReference) type, value);
+
+		TypeReference elementType = type.getParameterTypes()[0];
+
+		return handler.getValueHandler(elementType.getRawType()).readCollection(context, handler, type, value);
 	}
 
 	@Override
