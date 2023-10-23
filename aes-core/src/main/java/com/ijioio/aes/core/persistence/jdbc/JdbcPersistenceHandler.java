@@ -6,12 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.ijioio.aes.core.EntityIndex;
@@ -35,6 +33,7 @@ import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcCharacterPersisten
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcClassPersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcDoublePersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcEntityReferencePersistenceValueHandler;
+import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcEnumPersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcFloatPersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcInstantPersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcIntegerPersistenceValueHandler;
@@ -47,49 +46,6 @@ import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcStringPersistenceV
 import com.ijioio.aes.core.util.TupleUtil.Pair;
 
 public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenceContext> {
-
-	@SuppressWarnings("rawtypes")
-	private static final JdbcPersistenceValueHandler<Enum> HANDLER_ENUM = new JdbcPersistenceValueHandler<Enum>() {
-
-		@Override
-		public Class<Enum> getType() {
-			return Enum.class;
-		}
-
-		@Override
-		public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
-				TypeReference<Enum> type, boolean search) {
-			return Collections.singletonList(name);
-		};
-
-		@Override
-		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Enum> type,
-				Enum value, boolean search) throws PersistenceException {
-
-			PreparedStatement statement = context.getStatement();
-
-			try {
-				statement.setObject(context.getNextIndex(), value != null ? value.name() : null);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public Enum read(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Enum> type,
-				Enum value) throws PersistenceException {
-
-			ResultSet resultSet = context.getResultSet();
-
-			try {
-				return Optional.ofNullable(resultSet.getObject(context.getNextIndex(), String.class))
-						.map(item -> Enum.valueOf(type.getRawType(), item)).orElse(null);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		}
-	};
 
 	@SuppressWarnings("rawtypes")
 	private static final JdbcPersistenceValueHandler<Collection> HANDLER_COLLECTION = new JdbcPersistenceValueHandler<Collection>() {
@@ -150,7 +106,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 		registerValueHandler(new JdbcLocalDatePersistenceValueHandler());
 		registerValueHandler(new JdbcLocalTimePersistenceValueHandler());
 		registerValueHandler(new JdbcLocalDateTimePersistenceValueHandler());
-		registerValueHandler(HANDLER_ENUM);
+		registerValueHandler(new JdbcEnumPersistenceValueHandler());
 		registerValueHandler(new JdbcClassPersistenceValueHandler());
 		registerValueHandler(HANDLER_COLLECTION);
 		registerValueHandler(new JdbcEntityReferencePersistenceValueHandler());
