@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -43,6 +42,7 @@ import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcClassPersistenceVa
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcDoublePersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcEntityReferencePersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcFloatPersistenceValueHandler;
+import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcInstantPersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcIntegerPersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcLongPersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcShortPersistenceValueHandler;
@@ -50,47 +50,6 @@ import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcStringPersistenceV
 import com.ijioio.aes.core.util.TupleUtil.Pair;
 
 public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenceContext> {
-
-	private static final JdbcPersistenceValueHandler<Instant> HANDLER_INSTANT = new JdbcPersistenceValueHandler<Instant>() {
-
-		@Override
-		public Class<Instant> getType() {
-			return Instant.class;
-		}
-
-		@Override
-		public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
-				TypeReference<Instant> type, boolean search) {
-			return Collections.singletonList(name);
-		};
-
-		@Override
-		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Instant> type,
-				Instant value, boolean search) throws PersistenceException {
-
-			PreparedStatement statement = context.getStatement();
-
-			try {
-				statement.setObject(context.getNextIndex(), value != null ? Timestamp.from(value) : null);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		}
-
-		@Override
-		public Instant read(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Instant> type,
-				Instant value) throws PersistenceException {
-
-			ResultSet resultSet = context.getResultSet();
-
-			try {
-				return Optional.ofNullable(resultSet.getObject(context.getNextIndex(), Timestamp.class))
-						.map(item -> item.toInstant()).orElse(null);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		};
-	};
 
 	private static final JdbcPersistenceValueHandler<LocalDate> HANDLER_LOCAL_DATE = new JdbcPersistenceValueHandler<LocalDate>() {
 
@@ -313,7 +272,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 		registerValueHandler(new JdbcFloatPersistenceValueHandler());
 		registerValueHandler(new JdbcDoublePersistenceValueHandler());
 		registerValueHandler(new JdbcStringPersistenceValueHandler());
-		registerValueHandler(HANDLER_INSTANT);
+		registerValueHandler(new JdbcInstantPersistenceValueHandler());
 		registerValueHandler(HANDLER_LOCAL_DATE);
 		registerValueHandler(HANDLER_LOCAL_TIME);
 		registerValueHandler(HANDLER_LOCAL_DATE_TIME);
