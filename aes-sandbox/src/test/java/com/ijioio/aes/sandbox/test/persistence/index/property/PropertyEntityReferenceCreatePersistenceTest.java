@@ -49,11 +49,6 @@ public class PropertyEntityReferenceCreatePersistenceTest extends
 	}
 
 	@Override
-	protected boolean isFinal() {
-		return false;
-	}
-
-	@Override
 	protected String getTableName() {
 		return PropertyEntityReferenceCreatePersistenceIndex.class.getSimpleName();
 	}
@@ -69,6 +64,11 @@ public class PropertyEntityReferenceCreatePersistenceTest extends
 		index.setValueEntityReference(EntityReference.of("some", Some.class));
 
 		return index;
+	}
+
+	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
 	}
 
 	@Override

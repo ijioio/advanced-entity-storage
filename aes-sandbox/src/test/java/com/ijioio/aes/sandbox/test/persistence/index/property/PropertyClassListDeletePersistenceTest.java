@@ -54,11 +54,6 @@ public class PropertyClassListDeletePersistenceTest extends
 	}
 
 	@Override
-	protected boolean isFinal() {
-		return false;
-	}
-
-	@Override
 	protected Class<PropertyClassListDeletePersistenceIndex> getIndexClass() {
 		return PropertyClassListDeletePersistenceIndex.class;
 	}
@@ -124,6 +119,11 @@ public class PropertyClassListDeletePersistenceTest extends
 	@Override
 	protected Property<List<Class<? extends Some>>> getProperty() {
 		return PropertyClassListDeletePersistenceIndex.Properties.valueClassList;
+	}
+
+	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
 	}
 
 	@Override

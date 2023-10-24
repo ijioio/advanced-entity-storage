@@ -51,11 +51,6 @@ public class PropertyStringListFinalSearchPersistenceTest extends
 	}
 
 	@Override
-	protected boolean isFinal() {
-		return true;
-	}
-
-	@Override
 	protected Class<PropertyStringListFinalSearchPersistenceIndex> getIndexClass() {
 		return PropertyStringListFinalSearchPersistenceIndex.class;
 	}
@@ -122,6 +117,11 @@ public class PropertyStringListFinalSearchPersistenceTest extends
 	@Override
 	protected Property<List<String>> getProperty() {
 		return PropertyStringListFinalSearchPersistenceIndex.Properties.valueStringList;
+	}
+
+	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return false;
 	}
 
 	@Override

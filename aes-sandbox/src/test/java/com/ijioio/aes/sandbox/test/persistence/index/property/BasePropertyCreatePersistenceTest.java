@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledIf;
+import org.junit.jupiter.api.condition.EnabledIf;
 
 import com.ijioio.aes.core.BaseEntity;
 import com.ijioio.aes.core.EntityIndex;
@@ -60,9 +60,21 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 		// Empty
 	}
 
+	protected static List<Character> characters = new ArrayList<>();
+
 	protected static List<Class<? extends Some>> types = new ArrayList<>();
 
 	static {
+
+		characters.add(Character.valueOf('a'));
+		characters.add(Character.valueOf('b'));
+		characters.add(Character.valueOf('c'));
+		characters.add(Character.valueOf('d'));
+		characters.add(Character.valueOf('e'));
+		characters.add(Character.valueOf('f'));
+		characters.add(Character.valueOf('g'));
+		characters.add(Character.valueOf('h'));
+		characters.add(Character.valueOf('i'));
 
 		types.add(Some1.class);
 		types.add(Some2.class);
@@ -115,7 +127,7 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 		}
 	}
 
-	@DisabledIf("isFinal")
+	@EnabledIf("isNullPropertyValueAllowed")
 	@Test
 	public void testCreateNull() throws Exception {
 
@@ -143,11 +155,11 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 
 	protected abstract String getSqlScriptFileName() throws Exception;
 
-	protected abstract boolean isFinal();
-
 	protected abstract String getTableName();
 
 	protected abstract I createIndex();
+
+	protected abstract boolean isNullPropertyValueAllowed();
 
 	protected abstract V getPropertyValue(I index);
 

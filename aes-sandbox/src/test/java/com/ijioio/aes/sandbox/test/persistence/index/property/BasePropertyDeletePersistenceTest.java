@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledIf;
+import org.junit.jupiter.api.condition.EnabledIf;
 
 import com.ijioio.aes.core.BaseEntity;
 import com.ijioio.aes.core.BaseEntityIndex;
@@ -66,9 +66,21 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 		// Empty
 	}
 
+	protected static List<Character> characters = new ArrayList<>();
+
 	protected static List<Class<? extends Some>> types = new ArrayList<>();
 
 	static {
+
+		characters.add(Character.valueOf('a'));
+		characters.add(Character.valueOf('b'));
+		characters.add(Character.valueOf('c'));
+		characters.add(Character.valueOf('d'));
+		characters.add(Character.valueOf('e'));
+		characters.add(Character.valueOf('f'));
+		characters.add(Character.valueOf('g'));
+		characters.add(Character.valueOf('h'));
+		characters.add(Character.valueOf('i'));
 
 		types.add(Some1.class);
 		types.add(Some2.class);
@@ -122,7 +134,7 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 		check(expectedIndexes, actualIndexes);
 	}
 
-	@DisabledIf("isFinal")
+	@EnabledIf("isNullPropertyValueAllowed")
 	@Test
 	public void testSearchNull() throws Exception {
 
@@ -177,7 +189,7 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 		check(expectedIndexes, actualIndexes);
 	}
 
-	@DisabledIf("isFinal")
+	@EnabledIf("isNullPropertyValueAllowed")
 	@Test
 	public void testSearchEqualsNull() throws Exception {
 
@@ -239,7 +251,7 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 		check(expectedIndexes, actualIndexes);
 	}
 
-	@DisabledIf("isFinal")
+	@EnabledIf("isNullPropertyValueAllowed")
 	@Test
 	public void testSearchNotEqualsNull() throws Exception {
 
@@ -301,7 +313,7 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 		check(expectedIndexes, actualIndexes);
 	}
 
-	@DisabledIf("isFinal")
+	@EnabledIf("isNullPropertyValueAllowed")
 	@Test
 	public void testSearchGreaterNull() throws Exception {
 
@@ -355,7 +367,7 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 		check(expectedIndexes, actualIndexes);
 	}
 
-	@DisabledIf("isFinal")
+	@EnabledIf("isNullPropertyValueAllowed")
 	@Test
 	public void testSearchGreaterOrEqualsNull() throws Exception {
 
@@ -409,7 +421,7 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 		check(expectedIndexes, actualIndexes);
 	}
 
-	@DisabledIf("isFinal")
+	@EnabledIf("isNullPropertyValueAllowed")
 	@Test
 	public void testSearchLowerNull() throws Exception {
 
@@ -463,7 +475,7 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 		check(expectedIndexes, actualIndexes);
 	}
 
-	@DisabledIf("isFinal")
+	@EnabledIf("isNullPropertyValueAllowed")
 	@Test
 	public void testSearchLowerOrEqualsNull() throws Exception {
 
@@ -509,13 +521,13 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 
 	protected abstract String getSqlScriptFileName() throws Exception;
 
-	protected abstract boolean isFinal();
-
 	protected abstract Class<I> getIndexClass();
 
 	protected abstract List<I> createIndexes();
 
 	protected abstract Property<V> getProperty();
+
+	protected abstract boolean isNullPropertyValueAllowed();
 
 	protected abstract V getPropertyValue(I index);
 

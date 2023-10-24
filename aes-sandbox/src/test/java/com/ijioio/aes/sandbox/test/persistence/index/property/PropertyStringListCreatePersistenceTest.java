@@ -50,11 +50,6 @@ public class PropertyStringListCreatePersistenceTest extends
 	}
 
 	@Override
-	protected boolean isFinal() {
-		return false;
-	}
-
-	@Override
 	protected String getTableName() {
 		return PropertyStringListCreatePersistenceIndex.class.getSimpleName();
 	}
@@ -77,6 +72,11 @@ public class PropertyStringListCreatePersistenceTest extends
 		index.setValueStringList(value);
 
 		return index;
+	}
+
+	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
 	}
 
 	@Override

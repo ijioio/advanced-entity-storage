@@ -1,35 +1,18 @@
 package com.ijioio.aes.core.persistence.jdbc;
 
-import java.sql.Array;
 import java.sql.Connection;
-import java.sql.Date;
-import java.sql.JDBCType;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.ijioio.aes.core.EntityIndex;
-import com.ijioio.aes.core.EntityReference;
 import com.ijioio.aes.core.Operation;
 import com.ijioio.aes.core.Order;
 import com.ijioio.aes.core.Property;
@@ -44,977 +27,48 @@ import com.ijioio.aes.core.SearchQuery;
 import com.ijioio.aes.core.TypeReference;
 import com.ijioio.aes.core.persistence.PersistenceException;
 import com.ijioio.aes.core.persistence.PersistenceHandler;
+import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcBooleanPersistenceValueHandler;
+import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcBytePersistenceValueHandler;
+import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcCharacterPersistenceValueHandler;
+import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcClassPersistenceValueHandler;
+import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcCollectionPersistenceValueHandler;
+import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcDoublePersistenceValueHandler;
+import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcEntityReferencePersistenceValueHandler;
+import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcEnumPersistenceValueHandler;
+import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcFloatPersistenceValueHandler;
+import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcInstantPersistenceValueHandler;
+import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcIntegerPersistenceValueHandler;
+import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcLocalDatePersistenceValueHandler;
+import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcLocalDateTimePersistenceValueHandler;
+import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcLocalTimePersistenceValueHandler;
+import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcLongPersistenceValueHandler;
+import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcShortPersistenceValueHandler;
+import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcStringPersistenceValueHandler;
 import com.ijioio.aes.core.util.TupleUtil.Pair;
 
 public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenceContext> {
-
-	private static final JdbcPersistenceValueHandler<Boolean> HANDLER_BOOLEAN = new JdbcPersistenceValueHandler<Boolean>() {
-
-		@Override
-		public Class<Boolean> getType() {
-			return Boolean.class;
-		}
-
-		@Override
-		public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
-				TypeReference<Boolean> type, boolean search) {
-			return Collections.singletonList(name);
-		};
-
-		@Override
-		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Boolean> type,
-				Boolean value, boolean search) throws PersistenceException {
-
-			PreparedStatement statement = context.getStatement();
-
-			try {
-				statement.setObject(context.getNextIndex(), value);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		}
-
-		@Override
-		public Boolean read(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Boolean> type,
-				Boolean value) throws PersistenceException {
-
-			ResultSet resultSet = context.getResultSet();
-
-			try {
-				return resultSet.getObject(context.getNextIndex(), Boolean.class);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		};
-	};
-
-	private static final JdbcPersistenceValueHandler<Character> HANDLER_CHARACTER = new JdbcPersistenceValueHandler<Character>() {
-
-		@Override
-		public Class<Character> getType() {
-			return Character.class;
-		}
-
-		@Override
-		public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
-				TypeReference<Character> type, boolean search) {
-			return Collections.singletonList(name);
-		};
-
-		@Override
-		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Character> type,
-				Character value, boolean search) throws PersistenceException {
-
-			PreparedStatement statement = context.getStatement();
-
-			try {
-				statement.setObject(context.getNextIndex(), value);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		}
-
-		@Override
-		public Character read(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-				TypeReference<Character> type, Character value) throws PersistenceException {
-
-			ResultSet resultSet = context.getResultSet();
-
-			try {
-				return resultSet.getObject(context.getNextIndex(), Character.class);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		};
-	};
-
-	private static final JdbcPersistenceValueHandler<Byte> HANDLER_BYTE = new JdbcPersistenceValueHandler<Byte>() {
-
-		@Override
-		public Class<Byte> getType() {
-			return Byte.class;
-		}
-
-		@Override
-		public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
-				TypeReference<Byte> type, boolean search) {
-			return Collections.singletonList(name);
-		};
-
-		@Override
-		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Byte> type,
-				Byte value, boolean search) throws PersistenceException {
-
-			PreparedStatement statement = context.getStatement();
-
-			try {
-				statement.setObject(context.getNextIndex(), value);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		}
-
-		@Override
-		public Byte read(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Byte> type,
-				Byte value) throws PersistenceException {
-
-			ResultSet resultSet = context.getResultSet();
-
-			try {
-				return resultSet.getObject(context.getNextIndex(), Byte.class);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		};
-	};
-
-	private static final JdbcPersistenceValueHandler<Short> HANDLER_SHORT = new JdbcPersistenceValueHandler<Short>() {
-
-		@Override
-		public Class<Short> getType() {
-			return Short.class;
-		}
-
-		@Override
-		public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
-				TypeReference<Short> type, boolean search) {
-			return Collections.singletonList(name);
-		};
-
-		@Override
-		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Short> type,
-				Short value, boolean search) throws PersistenceException {
-
-			PreparedStatement statement = context.getStatement();
-
-			try {
-				statement.setObject(context.getNextIndex(), value);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		}
-
-		@Override
-		public Short read(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Short> type,
-				Short value) throws PersistenceException {
-
-			ResultSet resultSet = context.getResultSet();
-
-			try {
-				return resultSet.getObject(context.getNextIndex(), Short.class);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		};
-	};
-
-	private static final JdbcPersistenceValueHandler<Integer> HANDLER_INTEGER = new JdbcPersistenceValueHandler<Integer>() {
-
-		@Override
-		public Class<Integer> getType() {
-			return Integer.class;
-		}
-
-		@Override
-		public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
-				TypeReference<Integer> type, boolean search) {
-			return Collections.singletonList(name);
-		};
-
-		@Override
-		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Integer> type,
-				Integer value, boolean search) throws PersistenceException {
-
-			PreparedStatement statement = context.getStatement();
-
-			try {
-				statement.setObject(context.getNextIndex(), value);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		}
-
-		@Override
-		public Integer read(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Integer> type,
-				Integer value) throws PersistenceException {
-
-			ResultSet resultSet = context.getResultSet();
-
-			try {
-				return resultSet.getObject(context.getNextIndex(), Integer.class);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		};
-	};
-
-	private static final JdbcPersistenceValueHandler<Long> HANDLER_LONG = new JdbcPersistenceValueHandler<Long>() {
-
-		@Override
-		public Class<Long> getType() {
-			return Long.class;
-		}
-
-		@Override
-		public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
-				TypeReference<Long> type, boolean search) {
-			return Collections.singletonList(name);
-		};
-
-		@Override
-		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Long> type,
-				Long value, boolean search) throws PersistenceException {
-
-			PreparedStatement statement = context.getStatement();
-
-			try {
-				statement.setObject(context.getNextIndex(), value);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		}
-
-		@Override
-		public Long read(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Long> type,
-				Long value) throws PersistenceException {
-
-			ResultSet resultSet = context.getResultSet();
-
-			try {
-				return resultSet.getObject(context.getNextIndex(), Long.class);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		};
-	};
-
-	private static final JdbcPersistenceValueHandler<Float> HANDLER_FLOAT = new JdbcPersistenceValueHandler<Float>() {
-
-		@Override
-		public Class<Float> getType() {
-			return Float.class;
-		}
-
-		@Override
-		public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
-				TypeReference<Float> type, boolean search) {
-			return Collections.singletonList(name);
-		};
-
-		@Override
-		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Float> type,
-				Float value, boolean search) throws PersistenceException {
-
-			PreparedStatement statement = context.getStatement();
-
-			try {
-				statement.setObject(context.getNextIndex(), value);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		}
-
-		@Override
-		public Float read(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Float> type,
-				Float value) throws PersistenceException {
-
-			ResultSet resultSet = context.getResultSet();
-
-			try {
-				return resultSet.getObject(context.getNextIndex(), Float.class);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		};
-	};
-
-	private static final JdbcPersistenceValueHandler<Double> HANDLER_DOUBLE = new JdbcPersistenceValueHandler<Double>() {
-
-		@Override
-		public Class<Double> getType() {
-			return Double.class;
-		}
-
-		@Override
-		public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
-				TypeReference<Double> type, boolean search) {
-			return Collections.singletonList(name);
-		};
-
-		@Override
-		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Double> type,
-				Double value, boolean search) throws PersistenceException {
-
-			PreparedStatement statement = context.getStatement();
-
-			try {
-				statement.setObject(context.getNextIndex(), value);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		}
-
-		@Override
-		public Double read(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Double> type,
-				Double value) throws PersistenceException {
-
-			ResultSet resultSet = context.getResultSet();
-
-			try {
-				return resultSet.getObject(context.getNextIndex(), Double.class);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		};
-	};
-
-	private static final JdbcPersistenceValueHandler<String> HANDLER_STRING = new JdbcPersistenceValueHandler<String>() {
-
-		@Override
-		public Class<String> getType() {
-			return String.class;
-		}
-
-		@Override
-		public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
-				TypeReference<String> type, boolean search) {
-			return Collections.singletonList(name);
-		};
-
-		@Override
-		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<String> type,
-				String value, boolean search) throws PersistenceException {
-
-			PreparedStatement statement = context.getStatement();
-
-			try {
-				statement.setObject(context.getNextIndex(), value, Types.VARCHAR);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		}
-
-		@Override
-		public void writeCollection(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-				TypeReference<? extends Collection<String>> type, Collection<String> values, boolean search)
-				throws PersistenceException {
-
-			PreparedStatement statement = context.getStatement();
-
-			try {
-
-				Array array = values != null
-						? statement.getConnection().createArrayOf(JDBCType.valueOf(Types.VARCHAR).getName(),
-								values.toArray())
-						: null;
-
-				statement.setObject(context.getNextIndex(), array, Types.ARRAY);
-
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		};
-
-		@Override
-		public String read(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<String> type,
-				String value) throws PersistenceException {
-
-			ResultSet resultSet = context.getResultSet();
-
-			try {
-				return resultSet.getObject(context.getNextIndex(), String.class);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		};
-
-		@Override
-		public Collection<String> readCollection(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-				TypeReference<? extends Collection<String>> type, Collection<String> values)
-				throws PersistenceException {
-
-			ResultSet resultSet = context.getResultSet();
-
-			try {
-
-				Array array = resultSet.getObject(context.getNextIndex(), Array.class);
-
-				if (array != null) {
-
-					Collection<String> collection = values != null ? values
-							: List.class.isAssignableFrom(type.getRawType()) ? new ArrayList<>()
-									: new LinkedHashSet<>();
-
-					collection.clear();
-					collection.addAll(Arrays.stream((Object[]) array.getArray()).map(item -> (String) item)
-							.collect(Collectors.toList()));
-
-					return collection;
-
-				} else {
-
-					if (values != null) {
-						values.clear();
-					}
-
-					return null;
-				}
-
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		};
-	};
-
-	private static final JdbcPersistenceValueHandler<Instant> HANDLER_INSTANT = new JdbcPersistenceValueHandler<Instant>() {
-
-		@Override
-		public Class<Instant> getType() {
-			return Instant.class;
-		}
-
-		@Override
-		public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
-				TypeReference<Instant> type, boolean search) {
-			return Collections.singletonList(name);
-		};
-
-		@Override
-		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Instant> type,
-				Instant value, boolean search) throws PersistenceException {
-
-			PreparedStatement statement = context.getStatement();
-
-			try {
-				statement.setObject(context.getNextIndex(), value != null ? Timestamp.from(value) : null);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		}
-
-		@Override
-		public Instant read(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Instant> type,
-				Instant value) throws PersistenceException {
-
-			ResultSet resultSet = context.getResultSet();
-
-			try {
-				return Optional.ofNullable(resultSet.getObject(context.getNextIndex(), Timestamp.class))
-						.map(item -> item.toInstant()).orElse(null);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		};
-	};
-
-	private static final JdbcPersistenceValueHandler<LocalDate> HANDLER_LOCAL_DATE = new JdbcPersistenceValueHandler<LocalDate>() {
-
-		@Override
-		public Class<LocalDate> getType() {
-			return LocalDate.class;
-		}
-
-		@Override
-		public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
-				TypeReference<LocalDate> type, boolean search) {
-			return Collections.singletonList(name);
-		};
-
-		@Override
-		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<LocalDate> type,
-				LocalDate value, boolean search) throws PersistenceException {
-
-			PreparedStatement statement = context.getStatement();
-
-			try {
-				statement.setObject(context.getNextIndex(), value != null ? Date.valueOf(value) : null);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		}
-
-		@Override
-		public LocalDate read(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-				TypeReference<LocalDate> type, LocalDate value) throws PersistenceException {
-
-			ResultSet resultSet = context.getResultSet();
-
-			try {
-				return Optional.ofNullable(resultSet.getObject(context.getNextIndex(), Date.class))
-						.map(item -> item.toLocalDate()).orElse(null);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		};
-	};
-
-	private static final JdbcPersistenceValueHandler<LocalTime> HANDLER_LOCAL_TIME = new JdbcPersistenceValueHandler<LocalTime>() {
-
-		@Override
-		public Class<LocalTime> getType() {
-			return LocalTime.class;
-		}
-
-		@Override
-		public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
-				TypeReference<LocalTime> type, boolean search) {
-			return Collections.singletonList(name);
-		};
-
-		@Override
-		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<LocalTime> type,
-				LocalTime value, boolean search) throws PersistenceException {
-
-			PreparedStatement statement = context.getStatement();
-
-			try {
-				statement.setObject(context.getNextIndex(), value != null ? Time.valueOf(value) : null);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		}
-
-		@Override
-		public LocalTime read(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-				TypeReference<LocalTime> type, LocalTime value) throws PersistenceException {
-
-			ResultSet resultSet = context.getResultSet();
-
-			try {
-				return Optional.ofNullable(resultSet.getObject(context.getNextIndex(), Time.class))
-						.map(item -> item.toLocalTime()).orElse(null);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		};
-	};
-
-	private static final JdbcPersistenceValueHandler<LocalDateTime> HANDLER_LOCAL_DATE_TIME = new JdbcPersistenceValueHandler<LocalDateTime>() {
-
-		@Override
-		public Class<LocalDateTime> getType() {
-			return LocalDateTime.class;
-		}
-
-		@Override
-		public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
-				TypeReference<LocalDateTime> type, boolean search) {
-			return Collections.singletonList(name);
-		};
-
-		@Override
-		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-				TypeReference<LocalDateTime> type, LocalDateTime value, boolean search) throws PersistenceException {
-
-			PreparedStatement statement = context.getStatement();
-
-			try {
-				statement.setObject(context.getNextIndex(), value != null ? Timestamp.valueOf(value) : null);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		}
-
-		@Override
-		public LocalDateTime read(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-				TypeReference<LocalDateTime> type, LocalDateTime value) throws PersistenceException {
-
-			ResultSet resultSet = context.getResultSet();
-
-			try {
-				return Optional.ofNullable(resultSet.getObject(context.getNextIndex(), Timestamp.class))
-						.map(item -> item.toLocalDateTime()).orElse(null);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		};
-	};
-
-	@SuppressWarnings("rawtypes")
-	private static final JdbcPersistenceValueHandler<Enum> HANDLER_ENUM = new JdbcPersistenceValueHandler<Enum>() {
-
-		@Override
-		public Class<Enum> getType() {
-			return Enum.class;
-		}
-
-		@Override
-		public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
-				TypeReference<Enum> type, boolean search) {
-			return Collections.singletonList(name);
-		};
-
-		@Override
-		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Enum> type,
-				Enum value, boolean search) throws PersistenceException {
-
-			PreparedStatement statement = context.getStatement();
-
-			try {
-				statement.setObject(context.getNextIndex(), value != null ? value.name() : null);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public Enum read(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Enum> type,
-				Enum value) throws PersistenceException {
-
-			ResultSet resultSet = context.getResultSet();
-
-			try {
-				return Optional.ofNullable(resultSet.getObject(context.getNextIndex(), String.class))
-						.map(item -> Enum.valueOf(type.getRawType(), item)).orElse(null);
-			} catch (SQLException e) {
-				throw new PersistenceException(e);
-			}
-		}
-	};
-
-	@SuppressWarnings("rawtypes")
-	private static final JdbcPersistenceValueHandler<Class> HANDLER_CLASS = new JdbcPersistenceValueHandler<Class>() {
-
-		@Override
-		public Class<Class> getType() {
-			return Class.class;
-		}
-
-		@Override
-		public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
-				TypeReference<Class> type, boolean search) {
-
-			TypeReference<String> nameType = TypeReference.of(String.class);
-
-			JdbcPersistenceValueHandler<String> nameHandler = handler.getValueHandler(nameType.getRawType());
-
-			return nameHandler.getColumns(context, handler, name, nameType, search);
-		};
-
-		@Override
-		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Class> type,
-				Class value, boolean search) throws PersistenceException {
-
-			TypeReference<String> nameType = TypeReference.of(String.class);
-
-			JdbcPersistenceValueHandler<String> nameHandler = handler.getValueHandler(nameType.getRawType());
-
-			nameHandler.write(context, handler, nameType, value != null ? value.getName() : null, search);
-		}
-
-		@Override
-		public void writeCollection(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-				TypeReference<? extends Collection<Class>> type, Collection<Class> values, boolean search)
-				throws PersistenceException {
-
-			TypeReference<List<String>> nameType = new TypeReference<List<String>>() {
-			};
-
-			JdbcPersistenceValueHandler<List<String>> nameHandler = handler.getValueHandler(nameType.getRawType());
-
-			if (values != null) {
-
-				List<String> nameValues = new ArrayList<>();
-
-				for (Class value : values) {
-					nameValues.add(value != null ? value.getName() : null);
-				}
-
-				nameHandler.write(context, handler, nameType, nameValues, search);
-
-			} else {
-
-				nameHandler.write(context, handler, nameType, null, search);
-			}
-		};
-
-		@Override
-		public Class read(JdbcPersistenceContext context, JdbcPersistenceHandler handler, TypeReference<Class> type,
-				Class value) throws PersistenceException {
-
-			TypeReference<String> nameType = TypeReference.of(String.class);
-
-			JdbcPersistenceValueHandler<String> nameHandler = handler.getValueHandler(nameType.getRawType());
-
-			String nameValue = nameHandler.read(context, handler, nameType, null);
-
-			try {
-				return nameValue != null ? Class.forName(nameValue) : null;
-			} catch (ClassNotFoundException e) {
-				throw new PersistenceException(e);
-			}
-		};
-
-		@Override
-		public Collection<Class> readCollection(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-				TypeReference<? extends Collection<Class>> type, Collection<Class> values) throws PersistenceException {
-
-			TypeReference<List<String>> nameType = new TypeReference<List<String>>() {
-			};
-
-			JdbcPersistenceValueHandler<List<String>> nameHandler = handler.getValueHandler(nameType.getRawType());
-
-			Collection<String> nameValues = nameHandler.read(context, handler, nameType, null);
-
-			if (nameValues != null) {
-
-				Collection<Class> collection = values != null ? values
-						: List.class.isAssignableFrom(type.getRawType()) ? new ArrayList<>() : new LinkedHashSet<>();
-
-				collection.clear();
-
-				for (String nameValue : nameValues) {
-
-					try {
-						collection.add(nameValue != null ? Class.forName(nameValue) : null);
-					} catch (ClassNotFoundException e) {
-						throw new PersistenceException(e);
-					}
-				}
-
-				return collection;
-
-			} else {
-
-				if (values != null) {
-					values.clear();
-				}
-
-				return null;
-			}
-		};
-	};
-
-	@SuppressWarnings("rawtypes")
-	private static final JdbcPersistenceValueHandler<Collection> HANDLER_COLLECTION = new JdbcPersistenceValueHandler<Collection>() {
-
-		@Override
-		public Class<Collection> getType() {
-			return Collection.class;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
-				TypeReference<Collection> type, boolean search) {
-
-			JdbcPersistenceValueHandler elementHandler = handler
-					.getValueHandler(type.getParameterTypes()[0].getRawType());
-
-			return elementHandler.getColumns(context, handler, name, type, search);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-				TypeReference<Collection> type, Collection value, boolean search) throws PersistenceException {
-
-			JdbcPersistenceValueHandler elementHandler = handler
-					.getValueHandler(type.getParameterTypes()[0].getRawType());
-
-			elementHandler.writeCollection(context, handler, type, value, search);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public Collection read(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-				TypeReference<Collection> type, Collection value) throws PersistenceException {
-
-			JdbcPersistenceValueHandler elementHandler = handler
-					.getValueHandler(type.getParameterTypes()[0].getRawType());
-
-			return elementHandler.readCollection(context, handler, type, value);
-		}
-	};
-
-	@SuppressWarnings("rawtypes")
-	private static final JdbcPersistenceValueHandler<EntityReference> HANDLER_ENTITY_REFERENCE = new JdbcPersistenceValueHandler<EntityReference>() {
-
-		@Override
-		public Class<EntityReference> getType() {
-			return EntityReference.class;
-		}
-
-		@Override
-		public List<String> getColumns(JdbcPersistenceContext context, JdbcPersistenceHandler handler, String name,
-				TypeReference<EntityReference> type, boolean search) {
-
-			TypeReference<String> idProperty = TypeReference.of(String.class);
-			TypeReference<Class> typeProperty = TypeReference.of(Class.class);
-
-			JdbcPersistenceValueHandler<String> idHandler = handler.getValueHandler(idProperty.getRawType());
-			JdbcPersistenceValueHandler<Class> typeHandler = handler.getValueHandler(typeProperty.getRawType());
-
-			return Stream
-					.of(idHandler.getColumns(context, handler, String.format("%sId", name), idProperty, search),
-							search ? Collections.<String>emptyList()
-									: typeHandler.getColumns(context, handler, String.format("%sType", name),
-											typeProperty, search))
-					.flatMap(item -> item.stream()).collect(Collectors.toList());
-		}
-
-		@Override
-		public void write(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-				TypeReference<EntityReference> type, EntityReference value, boolean search)
-				throws PersistenceException {
-
-			TypeReference<String> idProperty = TypeReference.of(String.class);
-			TypeReference<Class> typeProperty = TypeReference.of(Class.class);
-
-			JdbcPersistenceValueHandler<String> idHandler = handler.getValueHandler(idProperty.getRawType());
-			JdbcPersistenceValueHandler<Class> typeHandler = handler.getValueHandler(typeProperty.getRawType());
-
-			idHandler.write(context, handler, idProperty, value != null ? value.getId() : null, search);
-
-			if (!search) {
-				typeHandler.write(context, handler, typeProperty, value != null ? value.getType() : null, search);
-			}
-		}
-
-		@Override
-		public void writeCollection(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-				TypeReference<? extends Collection<EntityReference>> type, Collection<EntityReference> values,
-				boolean search) throws PersistenceException {
-
-			TypeReference<List<String>> idType = new TypeReference<List<String>>() {
-			};
-			TypeReference<List<Class>> typeType = new TypeReference<List<Class>>() {
-			};
-
-			JdbcPersistenceValueHandler<List<String>> idHandler = handler.getValueHandler(idType.getRawType());
-			JdbcPersistenceValueHandler<List<Class>> typeHandler = handler.getValueHandler(typeType.getRawType());
-
-			if (values != null) {
-
-				List<String> idValues = new ArrayList<>();
-				List<Class> typeValues = new ArrayList<>();
-
-				for (EntityReference value : values) {
-
-					idValues.add(value != null ? value.getId() : null);
-					typeValues.add(value != null ? value.getType() : null);
-				}
-
-				idHandler.write(context, handler, idType, idValues, search);
-
-				if (!search) {
-					typeHandler.write(context, handler, typeType, typeValues, search);
-				}
-
-			} else {
-
-				idHandler.write(context, handler, idType, null, search);
-
-				if (!search) {
-					typeHandler.write(context, handler, typeType, null, search);
-				}
-			}
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public EntityReference read(JdbcPersistenceContext context, JdbcPersistenceHandler handler,
-				TypeReference<EntityReference> type, EntityReference value) throws PersistenceException {
-
-			TypeReference<String> idType = TypeReference.of(String.class);
-			TypeReference<Class> typeType = TypeReference.of(Class.class);
-
-			JdbcPersistenceValueHandler<String> idHandler = handler.getValueHandler(idType.getRawType());
-			JdbcPersistenceValueHandler<Class> typeHandler = handler.getValueHandler(typeType.getRawType());
-
-			String idValue = idHandler.read(context, handler, idType, null);
-			Class typeValue = typeHandler.read(context, handler, typeType, null);
-
-			if ((idValue == null && typeValue != null) || (idValue != null && typeValue == null)) {
-				throw new PersistenceException(
-						String.format("id value %s and type value %s are incosistent", idValue, typeValue));
-			}
-
-			return idValue != null && typeValue != null ? EntityReference.of(idValue, typeValue) : null;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public Collection<EntityReference> readCollection(JdbcPersistenceContext context,
-				JdbcPersistenceHandler handler, TypeReference<? extends Collection<EntityReference>> type,
-				Collection<EntityReference> values) throws PersistenceException {
-
-			TypeReference<List<String>> idType = new TypeReference<List<String>>() {
-			};
-			TypeReference<List<Class>> typeType = new TypeReference<List<Class>>() {
-			};
-
-			JdbcPersistenceValueHandler<List<String>> idHandler = handler.getValueHandler(idType.getRawType());
-			JdbcPersistenceValueHandler<List<Class>> typeHandler = handler.getValueHandler(typeType.getRawType());
-
-			Collection<String> idValues = idHandler.read(context, handler, idType, null);
-			Collection<Class> typeValues = typeHandler.read(context, handler, typeType, null);
-
-			if ((idValues == null && typeValues != null) || (idValues != null && typeValues == null)
-					|| (idValues != null && typeValues != null && idValues.size() != typeValues.size())) {
-				throw new PersistenceException(
-						String.format("id values %s and type values %s are incosistent", idValues, typeValues));
-			}
-
-			if (idValues != null && typeValues != null) {
-
-				Collection<EntityReference> collection = values != null ? values
-						: List.class.isAssignableFrom(type.getRawType()) ? new ArrayList<>() : new LinkedHashSet<>();
-
-				collection.clear();
-
-				Iterator<String> idValuesIterator = idValues.iterator();
-				Iterator<Class> typeValuesIterator = typeValues.iterator();
-
-				while (idValuesIterator.hasNext()) {
-
-					String idValue = idValuesIterator.next();
-					Class typeValue = typeValuesIterator.next();
-
-					if ((idValue == null && typeValue != null) || (idValue != null && typeValue == null)) {
-						throw new PersistenceException(
-								String.format("id value %s and type value %s are incosistent", idValue, typeValue));
-					}
-
-					collection
-							.add(idValue != null && typeValue != null ? EntityReference.of(idValue, typeValue) : null);
-				}
-
-				return collection;
-
-			} else {
-
-				if (values != null) {
-					values.clear();
-				}
-
-				return null;
-			}
-		}
-	};
 
 	private final Map<String, JdbcPersistenceValueHandler<?>> handlers = new HashMap<>();
 
 	public JdbcPersistenceHandler() {
 
-		registerValueHandler(HANDLER_BOOLEAN);
-		registerValueHandler(HANDLER_CHARACTER);
-		registerValueHandler(HANDLER_BYTE);
-		registerValueHandler(HANDLER_SHORT);
-		registerValueHandler(HANDLER_INTEGER);
-		registerValueHandler(HANDLER_LONG);
-		registerValueHandler(HANDLER_FLOAT);
-		registerValueHandler(HANDLER_DOUBLE);
-		registerValueHandler(HANDLER_STRING);
-		registerValueHandler(HANDLER_INSTANT);
-		registerValueHandler(HANDLER_LOCAL_DATE);
-		registerValueHandler(HANDLER_LOCAL_TIME);
-		registerValueHandler(HANDLER_LOCAL_DATE_TIME);
-		registerValueHandler(HANDLER_ENUM);
-		registerValueHandler(HANDLER_CLASS);
-		registerValueHandler(HANDLER_COLLECTION);
-		registerValueHandler(HANDLER_ENTITY_REFERENCE);
+		registerValueHandler(new JdbcBooleanPersistenceValueHandler());
+		registerValueHandler(new JdbcCharacterPersistenceValueHandler());
+		registerValueHandler(new JdbcBytePersistenceValueHandler());
+		registerValueHandler(new JdbcShortPersistenceValueHandler());
+		registerValueHandler(new JdbcIntegerPersistenceValueHandler());
+		registerValueHandler(new JdbcLongPersistenceValueHandler());
+		registerValueHandler(new JdbcFloatPersistenceValueHandler());
+		registerValueHandler(new JdbcDoublePersistenceValueHandler());
+		registerValueHandler(new JdbcStringPersistenceValueHandler());
+		registerValueHandler(new JdbcInstantPersistenceValueHandler());
+		registerValueHandler(new JdbcLocalDatePersistenceValueHandler());
+		registerValueHandler(new JdbcLocalTimePersistenceValueHandler());
+		registerValueHandler(new JdbcLocalDateTimePersistenceValueHandler());
+		registerValueHandler(new JdbcEnumPersistenceValueHandler());
+		registerValueHandler(new JdbcClassPersistenceValueHandler());
+		registerValueHandler(new JdbcCollectionPersistenceValueHandler());
+		registerValueHandler(new JdbcEntityReferencePersistenceValueHandler());
 	}
 
 	public <T> void registerValueHandler(JdbcPersistenceValueHandler<T> handler) {
@@ -1022,7 +76,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> JdbcPersistenceValueHandler<T> getValueHandler(Class<T> type) {
+	public <T> JdbcPersistenceValueHandler<T> getValueHandler(Class<T> type) throws PersistenceException {
 
 		JdbcPersistenceValueHandler<T> handler = (JdbcPersistenceValueHandler<T>) handlers.get(type.getName());
 
@@ -1033,6 +87,10 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 			} else if (Collection.class.isAssignableFrom(type)) {
 				handler = (JdbcPersistenceValueHandler<T>) handlers.get(Collection.class.getName());
 			}
+		}
+
+		if (handler == null) {
+			throw new PersistenceException(String.format("type %s is not supported", type));
 		}
 
 		return handler;
@@ -1052,7 +110,8 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 			List<String> columns = new ArrayList<>();
 
 			for (Property<?> property : properties) {
-				columns.addAll(getColumns(context, property.getName(), property.getType(), false));
+				columns.addAll(((JdbcPersistenceValueHandler) getValueHandler(property.getType().getRawType()))
+						.getColumns(context, this, property.getName(), property.getType(), false));
 			}
 
 			String sql = String.format("insert into %s (%s) values (%s)", index.getClass().getSimpleName(),
@@ -1075,7 +134,8 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 								String.format("reader for property %s is not found", property.getName()));
 					}
 
-					write(context, ((Property) property).getType(), reader.read(), false);
+					((JdbcPersistenceValueHandler) getValueHandler(property.getType().getRawType())).write(context,
+							this, ((Property) property).getType(), reader.read(), false);
 				}
 
 				System.out.println(statement);
@@ -1109,7 +169,8 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 				context.resetIndex();
 
 				for (Pair<TypeReference<?>, PropertyReader<?>> reader : readers) {
-					write(context, ((TypeReference) reader.getFirst()), reader.getSecond().read(), true);
+					((JdbcPersistenceValueHandler) getValueHandler(reader.getFirst().getRawType())).write(context, this,
+							reader.getFirst(), reader.getSecond().read(), true);
 				}
 
 				System.out.println(statement);
@@ -1143,8 +204,8 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 				context.resetIndex();
 
 				for (Pair<TypeReference<?>, PropertyReader<?>> queryValueReader : queryValueReaders) {
-					write(context, (TypeReference) queryValueReader.getFirst(), queryValueReader.getSecond().read(),
-							true);
+					((JdbcPersistenceValueHandler) getValueHandler(queryValueReader.getFirst().getRawType())).write(
+							context, this, queryValueReader.getFirst(), queryValueReader.getSecond().read(), true);
 				}
 
 				System.out.println(statement);
@@ -1182,8 +243,9 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 										String.format("reader for property %s is not found", property.getName()));
 							}
 
-							((PropertyWriter) writer)
-									.write(read(context, ((Property) property).getType(), reader.read()));
+							((PropertyWriter) writer).write(
+									((JdbcPersistenceValueHandler) getValueHandler(property.getType().getRawType()))
+											.read(context, this, ((Property) property).getType(), reader.read()));
 						}
 
 						indexes.add(index);
@@ -1195,41 +257,6 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 
 		} catch (SQLException e) {
 			throw new PersistenceException(e);
-		}
-	}
-
-	private <T> List<String> getColumns(JdbcPersistenceContext context, String name, TypeReference<T> type,
-			boolean search) throws PersistenceException {
-
-		JdbcPersistenceValueHandler<T> handler = getValueHandler(type.getRawType());
-
-		if (handler != null) {
-			return handler.getColumns(context, this, name, type, search);
-		} else {
-			throw new PersistenceException(String.format("type %s is not supported", type));
-		}
-	}
-
-	private <T> void write(JdbcPersistenceContext context, TypeReference<T> type, T value, boolean search)
-			throws PersistenceException {
-
-		JdbcPersistenceValueHandler<T> handler = getValueHandler(type.getRawType());
-
-		if (handler != null) {
-			handler.write(context, this, type, value, search);
-		} else {
-			throw new PersistenceException(String.format("type %s is not supported", type));
-		}
-	}
-
-	private <T> T read(JdbcPersistenceContext context, TypeReference<T> type, T value) throws PersistenceException {
-
-		JdbcPersistenceValueHandler<T> handler = getValueHandler(type.getRawType());
-
-		if (handler != null) {
-			return handler.read(context, this, type, value);
-		} else {
-			throw new PersistenceException(String.format("type %s is not supported", type));
 		}
 	}
 
@@ -1258,6 +285,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 		return sql.toString();
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private <I extends EntityIndex<?>> String handleSearchQuery(JdbcPersistenceContext context, SearchQuery<I> query,
 			List<Pair<TypeReference<?>, PropertyReader<?>>> readers) throws PersistenceException {
 
@@ -1268,7 +296,8 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 		List<String> columns = new ArrayList<>();
 
 		for (Property<?> property : properties) {
-			columns.addAll(getColumns(context, property.getName(), property.getType(), false));
+			columns.addAll(((JdbcPersistenceValueHandler) getValueHandler(property.getType().getRawType()))
+					.getColumns(context, this, property.getName(), property.getType(), false));
 		}
 
 		String conditions = handleAndCriterion(context, AndSearchCriterion.of(query.getCriterions()), readers);
@@ -1312,7 +341,8 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 			readers.add(Pair.of(type, () -> value));
 		}
 
-		List<String> columns = getColumns(context, property.getName(), property.getType(), true);
+		List<String> columns = getValueHandler(property.getType().getRawType()).getColumns(context, this,
+				property.getName(), property.getType(), true);
 
 		String operation = getOperation(criterion.getOperation(), value);
 
@@ -1436,6 +466,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 		}
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private String handleSortings(JdbcPersistenceContext context, Map<Property<?>, Order> sortings)
 			throws PersistenceException {
 
@@ -1446,7 +477,8 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 			Property<?> property = sorting.getKey();
 			String order = getOrder(sorting.getValue());
 
-			List<String> columns = getColumns(context, property.getName(), property.getType(), true);
+			List<String> columns = ((JdbcPersistenceValueHandler) getValueHandler(property.getType().getRawType()))
+					.getColumns(context, this, property.getName(), property.getType(), true);
 
 			for (String column : columns) {
 				sqls.add(String.format("%s %s", column, order));

@@ -51,11 +51,6 @@ public class PropertyEntityReferenceSearchPersistenceTest extends
 	}
 
 	@Override
-	protected boolean isFinal() {
-		return false;
-	}
-
-	@Override
 	protected Class<PropertyEntityReferenceSearchPersistenceIndex> getIndexClass() {
 		return PropertyEntityReferenceSearchPersistenceIndex.class;
 	}
@@ -85,6 +80,11 @@ public class PropertyEntityReferenceSearchPersistenceTest extends
 	@Override
 	protected Property<EntityReference<? extends Some>> getProperty() {
 		return PropertyEntityReferenceSearchPersistenceIndex.Properties.valueEntityReference;
+	}
+
+	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
 	}
 
 	@Override

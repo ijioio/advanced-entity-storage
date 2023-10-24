@@ -51,11 +51,6 @@ public class PropertyEntityReferenceDeletePersistenceTest extends
 	}
 
 	@Override
-	protected boolean isFinal() {
-		return false;
-	}
-
-	@Override
 	protected Class<PropertyEntityReferenceDeletePersistenceIndex> getIndexClass() {
 		return PropertyEntityReferenceDeletePersistenceIndex.class;
 	}
@@ -85,6 +80,11 @@ public class PropertyEntityReferenceDeletePersistenceTest extends
 	@Override
 	protected Property<EntityReference<? extends Some>> getProperty() {
 		return PropertyEntityReferenceDeletePersistenceIndex.Properties.valueEntityReference;
+	}
+
+	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
 	}
 
 	@Override
