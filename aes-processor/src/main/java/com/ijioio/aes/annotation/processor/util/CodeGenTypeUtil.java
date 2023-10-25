@@ -140,6 +140,46 @@ public class CodeGenTypeUtil {
 			.bestGuess("com.ijioio.aes.core.EntityReference");
 
 	/**
+	 * Type name for base entity index type.
+	 */
+	public static final ClassName BASE_ENTITY_INDEX_TYPE_NAME = ClassName
+			.bestGuess("com.ijioio.aes.core.BaseEntityIndex");
+
+	/**
+	 * Type name for property type.
+	 */
+	public static final ClassName PROPERTY_TYPE_NAME = ClassName.bestGuess("com.ijioio.aes.core.Property");
+
+	/**
+	 * Type name for type reference type.
+	 */
+	public static final ClassName TYPE_REFERENCE_TYPE_NAME = ClassName.bestGuess("com.ijioio.aes.core.TypeReference");
+
+	/**
+	 * Type name for type introspection exception type.
+	 */
+	public static final ClassName INTROSPECTION_EXCEPTION_TYPE_NAME = ClassName
+			.bestGuess("com.ijioio.aes.core.IntrospectionException");
+
+	/**
+	 * Type name for serialization context.
+	 */
+	public static final ClassName SERIALIZATION_CONTEXT_TYPE_NAME = ClassName
+			.bestGuess("com.ijioio.aes.core.serialization.SerializationContext");
+
+	/**
+	 * Type name for serialization handler.
+	 */
+	public static final ClassName SERIALIZATION_HANDLER_TYPE_NAME = ClassName
+			.bestGuess("com.ijioio.aes.core.serialization.SerializationHandler");
+
+	/**
+	 * Type name for serialization exception.
+	 */
+	public static final ClassName SERIALIZATION_EXCEPTION_TYPE_NAME = ClassName
+			.bestGuess("com.ijioio.aes.core.serialization.SerializationException");
+
+	/**
 	 * Type name for serialization reader.
 	 */
 	public static final ClassName SERIALIZATION_READER_TYPE_NAME = ClassName

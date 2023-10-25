@@ -27,7 +27,6 @@ import com.ijioio.aes.annotation.processor.exception.ProcessorException;
 import com.ijioio.aes.annotation.processor.util.CodeGenTypeUtil;
 import com.ijioio.aes.annotation.processor.util.CodeGenTypeUtil.CodeGenTypeHandler;
 import com.ijioio.aes.annotation.processor.util.TextUtil;
-import com.ijioio.aes.annotation.processor.util.TypeUtil;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
@@ -215,10 +214,8 @@ public class EntityProcessor extends AbstractProcessor {
 
 		List<ParameterSpec> parameters = new ArrayList<>();
 
-		parameters.add(ParameterSpec.builder(ClassName.bestGuess(TypeUtil.SERIALIZATION_CONTEXT_TYPE_NAME), "context")
-				.build());
-		parameters.add(ParameterSpec.builder(ClassName.bestGuess(TypeUtil.SERIALIZATION_HANDLER_TYPE_NAME), "handler")
-				.build());
+		parameters.add(ParameterSpec.builder(CodeGenTypeUtil.SERIALIZATION_CONTEXT_TYPE_NAME, "context").build());
+		parameters.add(ParameterSpec.builder(CodeGenTypeUtil.SERIALIZATION_HANDLER_TYPE_NAME, "handler").build());
 
 		CodeBlock codeBlock = codeBlockBuilder.build();
 
@@ -259,10 +256,8 @@ public class EntityProcessor extends AbstractProcessor {
 
 		List<ParameterSpec> parameters = new ArrayList<>();
 
-		parameters.add(ParameterSpec.builder(ClassName.bestGuess(TypeUtil.SERIALIZATION_CONTEXT_TYPE_NAME), "context")
-				.build());
-		parameters.add(ParameterSpec.builder(ClassName.bestGuess(TypeUtil.SERIALIZATION_HANDLER_TYPE_NAME), "handler")
-				.build());
+		parameters.add(ParameterSpec.builder(CodeGenTypeUtil.SERIALIZATION_CONTEXT_TYPE_NAME, "context").build());
+		parameters.add(ParameterSpec.builder(CodeGenTypeUtil.SERIALIZATION_HANDLER_TYPE_NAME, "handler").build());
 
 		CodeBlock codeBlock = codeBlockBuilder.build();
 
@@ -319,7 +314,7 @@ public class EntityProcessor extends AbstractProcessor {
 		TypeSpec propertiesType = generateProperties(entity, index);
 
 		ClassName className = ClassName.bestGuess(index.getName());
-		TypeName parentTypeName = ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.BASE_ENTITY_INDEX_TYPE_NAME),
+		TypeName parentTypeName = ParameterizedTypeName.get(CodeGenTypeUtil.BASE_ENTITY_INDEX_TYPE_NAME,
 				ClassName.bestGuess(entity.getName()));
 
 		List<Modifier> modifiers = new ArrayList<>();
@@ -346,8 +341,8 @@ public class EntityProcessor extends AbstractProcessor {
 
 		codeBlockBuilder.add("\n");
 		codeBlockBuilder.addStatement("$T properties = new $T<>(super.getProperties())",
-				ParameterizedTypeName.get(ClassName.get(Collection.class), ParameterizedTypeName.get(
-						ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME), WildcardTypeName.subtypeOf(TypeName.OBJECT))),
+				ParameterizedTypeName.get(ClassName.get(Collection.class), ParameterizedTypeName
+						.get(CodeGenTypeUtil.PROPERTY_TYPE_NAME, WildcardTypeName.subtypeOf(TypeName.OBJECT))),
 				ArrayList.class);
 		codeBlockBuilder.add("\n");
 		codeBlockBuilder.addStatement("properties.addAll($T.values)", ClassName.bestGuess("Properties"));
@@ -362,11 +357,8 @@ public class EntityProcessor extends AbstractProcessor {
 
 		MethodSpec method = MethodSpec.methodBuilder("getProperties").addAnnotations(annotations)
 				.addModifiers(Modifier.PUBLIC)
-				.returns(
-						ParameterizedTypeName
-								.get(ClassName.get(Collection.class),
-										ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME),
-												WildcardTypeName.subtypeOf(TypeName.OBJECT))))
+				.returns(ParameterizedTypeName.get(ClassName.get(Collection.class), ParameterizedTypeName
+						.get(CodeGenTypeUtil.PROPERTY_TYPE_NAME, WildcardTypeName.subtypeOf(TypeName.OBJECT))))
 				.addCode(codeBlock).build();
 
 		return method;
@@ -436,16 +428,16 @@ public class EntityProcessor extends AbstractProcessor {
 
 		List<ParameterSpec> parameters = new ArrayList<>();
 
-		parameters.add(ParameterSpec.builder(
-				ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME), TypeVariableName.get("T")),
-				"property").build());
+		parameters.add(ParameterSpec
+				.builder(ParameterizedTypeName.get(CodeGenTypeUtil.PROPERTY_TYPE_NAME, TypeVariableName.get("T")),
+						"property")
+				.build());
 
 		CodeBlock codeBlock = codeBlockBuilder.build();
 
 		MethodSpec method = MethodSpec.methodBuilder("read").addAnnotations(annotations).addModifiers(Modifier.PUBLIC)
 				.addTypeVariable(TypeVariableName.get("T")).returns(TypeVariableName.get("T")).addParameters(parameters)
-				.addCode(codeBlock).addException(ClassName.bestGuess(TypeUtil.INTROSPECTION_EXCEPTION_TYPE_NAME))
-				.build();
+				.addCode(codeBlock).addException(CodeGenTypeUtil.INTROSPECTION_EXCEPTION_TYPE_NAME).build();
 
 		return method;
 	}
@@ -516,16 +508,17 @@ public class EntityProcessor extends AbstractProcessor {
 
 		List<ParameterSpec> parameters = new ArrayList<>();
 
-		parameters.add(ParameterSpec.builder(
-				ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME), TypeVariableName.get("T")),
-				"property").build());
+		parameters.add(ParameterSpec
+				.builder(ParameterizedTypeName.get(CodeGenTypeUtil.PROPERTY_TYPE_NAME, TypeVariableName.get("T")),
+						"property")
+				.build());
 		parameters.add(ParameterSpec.builder(TypeVariableName.get("T"), "value").build());
 
 		CodeBlock codeBlock = codeBlockBuilder.build();
 
 		MethodSpec method = MethodSpec.methodBuilder("write").addAnnotations(annotations).addModifiers(Modifier.PUBLIC)
 				.addTypeVariable(TypeVariableName.get("T")).addParameters(parameters).addCode(codeBlock)
-				.addException(ClassName.bestGuess(TypeUtil.INTROSPECTION_EXCEPTION_TYPE_NAME)).build();
+				.addException(CodeGenTypeUtil.INTROSPECTION_EXCEPTION_TYPE_NAME).build();
 
 		return method;
 	}
@@ -547,22 +540,20 @@ public class EntityProcessor extends AbstractProcessor {
 
 			TypeName type = handler.getType();
 
-			fields.add(
-					FieldSpec
-							.builder(ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME),
-									type.box()), property.getName())
-							.addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-							.initializer("$T.of($S, new $T() {})", ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME),
-									property.getName(), ParameterizedTypeName
-											.get(ClassName.bestGuess(TypeUtil.TYPE_REFERENCE_TYPE_NAME), type.box()))
-							.build());
+			fields.add(FieldSpec
+					.builder(ParameterizedTypeName.get(CodeGenTypeUtil.PROPERTY_TYPE_NAME, type.box()),
+							property.getName())
+					.addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+					.initializer("$T.of($S, new $T() {})", CodeGenTypeUtil.PROPERTY_TYPE_NAME, property.getName(),
+							ParameterizedTypeName.get(CodeGenTypeUtil.TYPE_REFERENCE_TYPE_NAME, type.box()))
+					.build());
 
 			codeBlockBuilder.addStatement("values.add($L)", property.getName());
 		}
 
 		fields.add(FieldSpec
 				.builder(ParameterizedTypeName.get(ClassName.get(List.class),
-						ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME),
+						ParameterizedTypeName.get(CodeGenTypeUtil.PROPERTY_TYPE_NAME,
 								WildcardTypeName.subtypeOf(TypeName.OBJECT))),
 						"values")
 				.addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
