@@ -134,51 +134,22 @@ public class CodeGenTypeUtil {
 	public static final ClassName LINKED_HASH_MAP_TYPE_NAME = ClassName.get(LinkedHashMap.class);
 
 	/**
-	 * Type name for base entity type.
-	 */
-	public static final ClassName BASE_ENTITY_TYPE_NAME = ClassName.bestGuess("com.ijioio.aes.core.BaseEntity");
-
-	/**
-	 * Type name for base entity index type.
-	 */
-	public static final ClassName BASE_ENTITY_INDEX_TYPE_NAME = ClassName
-			.bestGuess("com.ijioio.aes.core.BaseEntityIndex");
-
-	/**
 	 * Type name for entity reference type.
 	 */
 	public static final ClassName ENTITY_REFERENCE_TYPE_NAME = ClassName
 			.bestGuess("com.ijioio.aes.core.EntityReference");
 
 	/**
-	 * Type name for serialization context.
+	 * Type name for serialization reader.
 	 */
-	public static final ClassName SERIALIZATION_CONTEXT_TYPE_NAME = ClassName
-			.bestGuess("com.ijioio.aes.core.serialization.SerializationContext");
-
-	/**
-	 * Type name for serialization handler.
-	 */
-	public static final ClassName SERIALIZATION_HANDLER_TYPE_NAME = ClassName
-			.bestGuess("com.ijioio.aes.core.serialization.SerializationHandler");
-
-	/**
-	 * Type name for serialization exception.
-	 */
-	public static final ClassName SERIALIZATION_EXCEPTION_TYPE_NAME = ClassName
-			.bestGuess("com.ijioio.aes.core.serialization.SerializationException");
+	public static final ClassName SERIALIZATION_READER_TYPE_NAME = ClassName
+			.bestGuess("com.ijioio.aes.core.serialization.SerializationReader");
 
 	/**
 	 * Type name for serialization writer.
 	 */
 	public static final ClassName SERIALIZATION_WRITER_TYPE_NAME = ClassName
 			.bestGuess("com.ijioio.aes.core.serialization.SerializationWriter");
-
-	/**
-	 * Type name for serialization reader.
-	 */
-	public static final ClassName SERIALIZATION_READER_TYPE_NAME = ClassName
-			.bestGuess("com.ijioio.aes.core.serialization.SerializationReader");
 
 	/**
 	 * Type handler providing some various actions.

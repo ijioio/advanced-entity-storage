@@ -2,9 +2,7 @@ package com.ijioio.aes.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Base class for all entity indexes.
@@ -45,25 +43,29 @@ public abstract class BaseEntityIndex<E extends Entity> extends BaseIdentity imp
 		return Properties.values;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Map<Property<?>, PropertyWriter<?>> getWriters() {
+	public <T> T read(Property<T> property) throws IntrospectionException {
 
-		Map<Property<?>, PropertyWriter<?>> writers = new LinkedHashMap<>();
-
-		writers.put(Properties.id, (String value) -> setId(value));
-		writers.put(Properties.source, (EntityReference<E> value) -> setSource(value));
-
-		return writers;
+		if (Properties.id.equals(property)) {
+			return (T) getId();
+		} else if (Properties.source.equals(property)) {
+			return (T) getSource();
+		} else {
+			throw new IntrospectionException(String.format("property %s is not supported", property));
+		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Map<Property<?>, PropertyReader<?>> getReaders() {
+	public <T> void write(Property<T> property, T value) throws IntrospectionException {
 
-		Map<Property<?>, PropertyReader<?>> readers = new LinkedHashMap<>();
-
-		readers.put(Properties.id, () -> getId());
-		readers.put(Properties.source, () -> getSource());
-
-		return readers;
+		if (Properties.id.equals(property)) {
+			setId((String) value);
+		} else if (Properties.source.equals(property)) {
+			setSource((EntityReference<E>) value);
+		} else {
+			throw new IntrospectionException(String.format("property %s is not supported", property));
+		}
 	}
 }

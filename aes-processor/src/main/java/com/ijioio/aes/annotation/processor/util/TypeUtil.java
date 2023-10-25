@@ -125,19 +125,9 @@ public class TypeUtil {
 	public static final String TYPE_REFERENCE_TYPE_NAME = "com.ijioio.aes.core.TypeReference";
 
 	/**
-	 * Fully qualified name for collection property type.
+	 * Fully qualified name for type introspection exception type.
 	 */
-	public static final String COLLECTION_PROPERTY_TYPE_NAME = "com.ijioio.aes.core.CollectionProperty";
-
-	/**
-	 * Fully qualified name for property writer.
-	 */
-	public static final String PROPERTY_WRITER_TYPE_NAME = "com.ijioio.aes.core.PropertyWriter";
-
-	/**
-	 * Fully qualified name for property reader.
-	 */
-	public static final String PROPERTY_READER_TYPE_NAME = "com.ijioio.aes.core.PropertyReader";
+	public static final String INTROSPECTION_EXCEPTION_TYPE_NAME = "com.ijioio.aes.core.IntrospectionException";
 
 	/**
 	 * Fully qualified name for entity reference type.
@@ -159,15 +149,15 @@ public class TypeUtil {
 	 */
 	public static final String SERIALIZATION_EXCEPTION_TYPE_NAME = "com.ijioio.aes.core.serialization.SerializationException";
 
-	/**
-	 * Fully qualified name for serialization writer.
-	 */
-	public static final String SERIALIZATION_WRITER_TYPE_NAME = "com.ijioio.aes.core.serialization.SerializationWriter";
-
-	/**
-	 * Fully qualified name for serialization reader.
-	 */
-	public static final String SERIALIZATION_READER_TYPE_NAME = "com.ijioio.aes.core.serialization.SerializationReader";
+//	/**
+//	 * Fully qualified name for serialization writer.
+//	 */
+//	public static final String SERIALIZATION_WRITER_TYPE_NAME = "com.ijioio.aes.core.serialization.SerializationWriter";
+//
+//	/**
+//	 * Fully qualified name for serialization reader.
+//	 */
+//	public static final String SERIALIZATION_READER_TYPE_NAME = "com.ijioio.aes.core.serialization.SerializationReader";
 
 	/**
 	 * Fully qualified name for persistence context.

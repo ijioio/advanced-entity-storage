@@ -6,7 +6,7 @@ import java.util.Collection;
  * Interface defining index of the entity. Entity index contains some entity
  * properties.
  */
-public interface EntityIndex<E extends Entity> extends Identity, Readable, Writable {
+public interface EntityIndex<E extends Entity> extends Identity, Introspectable {
 
 	public EntityReference<E> getSource();
 
