@@ -27,7 +27,6 @@ import com.ijioio.aes.annotation.processor.exception.ProcessorException;
 import com.ijioio.aes.annotation.processor.util.CodeGenTypeUtil;
 import com.ijioio.aes.annotation.processor.util.CodeGenTypeUtil.CodeGenTypeHandler;
 import com.ijioio.aes.annotation.processor.util.TextUtil;
-import com.ijioio.aes.annotation.processor.util.TypeUtil;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
@@ -38,6 +37,7 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.TypeVariableName;
 import com.squareup.javapoet.WildcardTypeName;
 
 public class EntityProcessor extends AbstractProcessor {
@@ -151,8 +151,13 @@ public class EntityProcessor extends AbstractProcessor {
 			}
 		}
 
-		methods.add(generateWrite(entity));
+		methods.add(generateGetProperties());
+		methods.add(generateRead2(entity));
+		methods.add(generateWrite2(entity));
 		methods.add(generateRead(entity));
+		methods.add(generateWrite(entity));
+
+		TypeSpec propertiesType = generateProperties2(entity);
 
 		ClassName className = ClassName.bestGuess(entity.getName());
 		ClassName parentClassName = ClassName.bestGuess(entity.getParent());
@@ -171,7 +176,7 @@ public class EntityProcessor extends AbstractProcessor {
 
 		TypeSpec type = TypeSpec.classBuilder(className.simpleName()).superclass(parentClassName)
 				.addSuperinterfaces(interfaceNames).addModifiers(modifiers.toArray(new Modifier[modifiers.size()]))
-				.addAnnotations(annotations).addFields(fields).addMethods(methods).build();
+				.addAnnotations(annotations).addType(propertiesType).addFields(fields).addMethods(methods).build();
 
 		JavaFile javaFile = JavaFile.builder(className.packageName(), type).build();
 
@@ -180,13 +185,9 @@ public class EntityProcessor extends AbstractProcessor {
 		}
 	}
 
-	private MethodSpec generateWrite(EntityMetadata entity) {
+	private MethodSpec generateRead2(EntityMetadata entity) {
 
 		CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
-
-		codeBlockBuilder.add("\n");
-		codeBlockBuilder.addStatement("$T<$T, $T> writers = new $T<>(super.getWriters(context, handler))", Map.class,
-				String.class, ClassName.bestGuess(TypeUtil.SERIALIZATION_WRITER_TYPE_NAME), LinkedHashMap.class);
 
 		Collection<EntityPropertyMetadata> properties = entity.getProperties().values();
 
@@ -194,34 +195,208 @@ public class EntityProcessor extends AbstractProcessor {
 			codeBlockBuilder.add("\n");
 		}
 
-		for (EntityPropertyMetadata property : properties) {
-			codeBlockBuilder.addStatement("writers.put($S, () -> handler.write(context, $S, $L))", property.getName(),
-					property.getName(), property.getName());
+		boolean unchecked = false;
+
+		if (properties.size() > 0) {
+
+			int count = 0;
+
+			for (EntityPropertyMetadata property : properties) {
+
+				CodeGenTypeHandler handler = CodeGenTypeUtil.getTypeHandler(property, entity.getTypes(), messager);
+
+				TypeName type = handler.getType();
+
+				if (count == 0) {
+					codeBlockBuilder.beginControlFlow("if ($T.$L.equals(property))", ClassName.bestGuess("Properties"),
+							property.getName());
+				} else {
+					codeBlockBuilder.nextControlFlow("else if ($T.$L.equals(property))",
+							ClassName.bestGuess("Properties"), property.getName());
+				}
+
+				if (type.isPrimitive()) {
+					codeBlockBuilder.addStatement("return ($T) ($T) $L", TypeVariableName.get("T"), type.box(),
+							property.getName());
+				} else {
+					codeBlockBuilder.addStatement("return ($T) $L", TypeVariableName.get("T"), property.getName());
+				}
+
+				if (count == properties.size() - 1) {
+
+					codeBlockBuilder.nextControlFlow("else");
+					codeBlockBuilder.addStatement("return super.read(property)");
+					codeBlockBuilder.endControlFlow();
+				}
+
+				unchecked = true;
+				count++;
+			}
+
+		} else {
+
+			codeBlockBuilder.addStatement("return super.read(property)");
 		}
 
-		codeBlockBuilder.add("\n");
-		codeBlockBuilder.addStatement("return writers");
-
 		List<AnnotationSpec> annotations = new ArrayList<>();
+
+		if (unchecked) {
+			annotations.add(AnnotationSpec.builder(ClassName.get(SuppressWarnings.class))
+					.addMember("value", "$S", "unchecked").build());
+		}
 
 		annotations.add(AnnotationSpec.builder(ClassName.get(Override.class)).build());
 
 		List<ParameterSpec> parameters = new ArrayList<>();
 
-		parameters.add(ParameterSpec.builder(ClassName.bestGuess(TypeUtil.SERIALIZATION_CONTEXT_TYPE_NAME), "context")
-				.build());
-		parameters.add(ParameterSpec.builder(ClassName.bestGuess(TypeUtil.SERIALIZATION_HANDLER_TYPE_NAME), "handler")
+		parameters.add(ParameterSpec
+				.builder(ParameterizedTypeName.get(CodeGenTypeUtil.PROPERTY_TYPE_NAME, TypeVariableName.get("T")),
+						"property")
 				.build());
 
 		CodeBlock codeBlock = codeBlockBuilder.build();
 
-		MethodSpec method = MethodSpec.methodBuilder("getWriters").addAnnotations(annotations)
-				.addModifiers(Modifier.PUBLIC)
-				.returns(ParameterizedTypeName.get(ClassName.get(Map.class), ClassName.get(String.class),
-						ClassName.bestGuess(TypeUtil.SERIALIZATION_WRITER_TYPE_NAME)))
-				.addParameters(parameters).addCode(codeBlock).build();
+		MethodSpec method = MethodSpec.methodBuilder("read").addAnnotations(annotations).addModifiers(Modifier.PUBLIC)
+				.addTypeVariable(TypeVariableName.get("T")).returns(TypeVariableName.get("T")).addParameters(parameters)
+				.addCode(codeBlock).addException(CodeGenTypeUtil.INTROSPECTION_EXCEPTION_TYPE_NAME).build();
 
 		return method;
+	}
+
+	private MethodSpec generateWrite2(EntityMetadata entity) {
+
+		CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
+
+		Collection<EntityPropertyMetadata> properties = entity.getProperties().values();
+
+		if (properties.size() > 0) {
+			codeBlockBuilder.add("\n");
+		}
+
+		boolean unchecked = false;
+
+		if (properties.size() > 0) {
+
+			int count = 0;
+
+			for (EntityPropertyMetadata property : properties) {
+
+				CodeGenTypeHandler handler = CodeGenTypeUtil.getTypeHandler(property, entity.getTypes(), messager);
+
+				TypeName type = handler.getType();
+
+				if (count == 0) {
+					codeBlockBuilder.beginControlFlow("if ($T.$L.equals(property))", ClassName.bestGuess("Properties"),
+							property.getName());
+				} else {
+					codeBlockBuilder.nextControlFlow("else if ($T.$L.equals(property))",
+							ClassName.bestGuess("Properties"), property.getName());
+				}
+
+				if (property.isFinal()) {
+					codeBlockBuilder.add("// do nothing\n");
+				} else {
+					codeBlockBuilder.addStatement("$L = ($T) value", property.getName(), type.box());
+				}
+
+				if (count == properties.size() - 1) {
+
+					codeBlockBuilder.nextControlFlow("else");
+					codeBlockBuilder.addStatement("super.write(property, value)");
+					codeBlockBuilder.endControlFlow();
+				}
+
+				if (type instanceof ParameterizedTypeName && !property.isFinal()) {
+					unchecked = true;
+				}
+
+				count++;
+			}
+
+		} else {
+
+			codeBlockBuilder.addStatement("super.write(property, value)");
+		}
+
+		List<AnnotationSpec> annotations = new ArrayList<>();
+
+		if (unchecked) {
+			annotations.add(AnnotationSpec.builder(ClassName.get(SuppressWarnings.class))
+					.addMember("value", "$S", "unchecked").build());
+		}
+
+		annotations.add(AnnotationSpec.builder(ClassName.get(Override.class)).build());
+
+		List<ParameterSpec> parameters = new ArrayList<>();
+
+		parameters.add(ParameterSpec
+				.builder(ParameterizedTypeName.get(CodeGenTypeUtil.PROPERTY_TYPE_NAME, TypeVariableName.get("T")),
+						"property")
+				.build());
+		parameters.add(ParameterSpec.builder(TypeVariableName.get("T"), "value").build());
+
+		CodeBlock codeBlock = codeBlockBuilder.build();
+
+		MethodSpec method = MethodSpec.methodBuilder("write").addAnnotations(annotations).addModifiers(Modifier.PUBLIC)
+				.addTypeVariable(TypeVariableName.get("T")).addParameters(parameters).addCode(codeBlock)
+				.addException(CodeGenTypeUtil.INTROSPECTION_EXCEPTION_TYPE_NAME).build();
+
+		return method;
+	}
+
+	private TypeSpec generateProperties2(EntityMetadata entity) {
+
+		List<FieldSpec> fields = new ArrayList<>();
+		List<MethodSpec> methods = new ArrayList<>();
+
+		CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
+
+		codeBlockBuilder.add("\n");
+
+		Collection<EntityPropertyMetadata> properties = entity.getProperties().values();
+
+		for (EntityPropertyMetadata property : properties) {
+
+			CodeGenTypeHandler handler = CodeGenTypeUtil.getTypeHandler(property, entity.getTypes(), messager);
+
+			TypeName type = handler.getType();
+
+			fields.add(FieldSpec
+					.builder(ParameterizedTypeName.get(CodeGenTypeUtil.PROPERTY_TYPE_NAME, type.box()),
+							property.getName())
+					.addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+					.initializer("$T.of($S, new $T() {})", CodeGenTypeUtil.PROPERTY_TYPE_NAME, property.getName(),
+							ParameterizedTypeName.get(CodeGenTypeUtil.TYPE_REFERENCE_TYPE_NAME, type.box()))
+					.build());
+
+			codeBlockBuilder.addStatement("values.add($L)", property.getName());
+		}
+
+		fields.add(FieldSpec
+				.builder(ParameterizedTypeName.get(ClassName.get(List.class),
+						ParameterizedTypeName.get(CodeGenTypeUtil.PROPERTY_TYPE_NAME,
+								WildcardTypeName.subtypeOf(TypeName.OBJECT))),
+						"values")
+				.addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+				.initializer("new $T<>()", ClassName.get(ArrayList.class)).build());
+
+		ClassName className = ClassName.bestGuess("Properties");
+
+		List<Modifier> modifiers = new ArrayList<>();
+
+		modifiers.add(Modifier.PUBLIC);
+		modifiers.add(Modifier.STATIC);
+		modifiers.add(Modifier.FINAL);
+
+		List<AnnotationSpec> annotations = new ArrayList<>();
+
+		CodeBlock codeBlock = codeBlockBuilder.build();
+
+		TypeSpec type = TypeSpec.classBuilder(className.simpleName())
+				.addModifiers(modifiers.toArray(new Modifier[modifiers.size()])).addAnnotations(annotations)
+				.addFields(fields).addStaticBlock(codeBlock).addMethods(methods).build();
+
+		return type;
 	}
 
 	private MethodSpec generateRead(EntityMetadata entity) {
@@ -230,7 +405,7 @@ public class EntityProcessor extends AbstractProcessor {
 
 		codeBlockBuilder.add("\n");
 		codeBlockBuilder.addStatement("$T<$T, $T> readers = new $T<>(super.getReaders(context, handler))", Map.class,
-				String.class, ClassName.bestGuess(TypeUtil.SERIALIZATION_READER_TYPE_NAME), LinkedHashMap.class);
+				String.class, CodeGenTypeUtil.SERIALIZATION_READER_TYPE_NAME, LinkedHashMap.class);
 
 		Collection<EntityPropertyMetadata> properties = entity.getProperties().values();
 
@@ -258,17 +433,57 @@ public class EntityProcessor extends AbstractProcessor {
 
 		List<ParameterSpec> parameters = new ArrayList<>();
 
-		parameters.add(ParameterSpec.builder(ClassName.bestGuess(TypeUtil.SERIALIZATION_CONTEXT_TYPE_NAME), "context")
-				.build());
-		parameters.add(ParameterSpec.builder(ClassName.bestGuess(TypeUtil.SERIALIZATION_HANDLER_TYPE_NAME), "handler")
-				.build());
+		parameters.add(ParameterSpec.builder(CodeGenTypeUtil.SERIALIZATION_CONTEXT_TYPE_NAME, "context").build());
+		parameters.add(ParameterSpec.builder(CodeGenTypeUtil.SERIALIZATION_HANDLER_TYPE_NAME, "handler").build());
 
 		CodeBlock codeBlock = codeBlockBuilder.build();
 
 		MethodSpec method = MethodSpec.methodBuilder("getReaders").addAnnotations(annotations)
 				.addModifiers(Modifier.PUBLIC)
 				.returns(ParameterizedTypeName.get(ClassName.get(Map.class), ClassName.get(String.class),
-						ClassName.bestGuess(TypeUtil.SERIALIZATION_READER_TYPE_NAME)))
+						CodeGenTypeUtil.SERIALIZATION_READER_TYPE_NAME))
+				.addParameters(parameters).addCode(codeBlock).build();
+
+		return method;
+	}
+
+	private MethodSpec generateWrite(EntityMetadata entity) {
+
+		CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
+
+		codeBlockBuilder.add("\n");
+		codeBlockBuilder.addStatement("$T<$T, $T> writers = new $T<>(super.getWriters(context, handler))", Map.class,
+				String.class, CodeGenTypeUtil.SERIALIZATION_WRITER_TYPE_NAME, LinkedHashMap.class);
+
+		Collection<EntityPropertyMetadata> properties = entity.getProperties().values();
+
+		if (properties.size() > 0) {
+			codeBlockBuilder.add("\n");
+		}
+
+		for (EntityPropertyMetadata property : properties) {
+			codeBlockBuilder.addStatement("writers.put($S, () -> handler.write(context, $S, $L))", property.getName(),
+					property.getName(), property.getName());
+		}
+
+		codeBlockBuilder.add("\n");
+		codeBlockBuilder.addStatement("return writers");
+
+		List<AnnotationSpec> annotations = new ArrayList<>();
+
+		annotations.add(AnnotationSpec.builder(ClassName.get(Override.class)).build());
+
+		List<ParameterSpec> parameters = new ArrayList<>();
+
+		parameters.add(ParameterSpec.builder(CodeGenTypeUtil.SERIALIZATION_CONTEXT_TYPE_NAME, "context").build());
+		parameters.add(ParameterSpec.builder(CodeGenTypeUtil.SERIALIZATION_HANDLER_TYPE_NAME, "handler").build());
+
+		CodeBlock codeBlock = codeBlockBuilder.build();
+
+		MethodSpec method = MethodSpec.methodBuilder("getWriters").addAnnotations(annotations)
+				.addModifiers(Modifier.PUBLIC)
+				.returns(ParameterizedTypeName.get(ClassName.get(Map.class), ClassName.get(String.class),
+						CodeGenTypeUtil.SERIALIZATION_WRITER_TYPE_NAME))
 				.addParameters(parameters).addCode(codeBlock).build();
 
 		return method;
@@ -311,14 +526,14 @@ public class EntityProcessor extends AbstractProcessor {
 			}
 		}
 
-		methods.add(generateGetWriters(entity, index));
-		methods.add(generateGetReaders(entity, index));
 		methods.add(generateGetProperties());
+		methods.add(generateRead(entity, index));
+		methods.add(generateWrite(entity, index));
 
 		TypeSpec propertiesType = generateProperties(entity, index);
 
 		ClassName className = ClassName.bestGuess(index.getName());
-		TypeName parentTypeName = ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.BASE_ENTITY_INDEX_TYPE_NAME),
+		TypeName parentTypeName = ParameterizedTypeName.get(CodeGenTypeUtil.BASE_ENTITY_INDEX_TYPE_NAME,
 				ClassName.bestGuess(entity.getName()));
 
 		List<Modifier> modifiers = new ArrayList<>();
@@ -339,113 +554,14 @@ public class EntityProcessor extends AbstractProcessor {
 		}
 	}
 
-	private MethodSpec generateGetWriters(EntityMetadata entity, EntityIndexMetadata index) {
-
-		CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
-
-		codeBlockBuilder.add("\n");
-		codeBlockBuilder.addStatement("$T<$T, $T> writers = new $T<>(super.getWriters())", Map.class,
-				ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME),
-						WildcardTypeName.subtypeOf(TypeName.OBJECT)),
-				ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.PROPERTY_WRITER_TYPE_NAME),
-						WildcardTypeName.subtypeOf(TypeName.OBJECT)),
-				LinkedHashMap.class);
-
-		Collection<EntityIndexPropertyMetadata> properties = index.getProperties().values();
-
-		if (properties.size() > 0) {
-			codeBlockBuilder.add("\n");
-		}
-
-		for (EntityIndexPropertyMetadata property : properties) {
-
-			CodeGenTypeHandler handler = CodeGenTypeUtil.getTypeHandler(property, entity.getTypes(), messager);
-
-			TypeName type = handler.getType();
-
-			if (property.isFinal()) {
-				codeBlockBuilder.addStatement("writers.put($T.$L, ($T value) -> {})", ClassName.bestGuess("Properties"),
-						property.getName(), type.box());
-			} else {
-				codeBlockBuilder.addStatement("writers.put($T.$L, ($T value) -> $L = value)",
-						ClassName.bestGuess("Properties"), property.getName(), type.box(), property.getName());
-			}
-		}
-
-		codeBlockBuilder.add("\n");
-		codeBlockBuilder.addStatement("return writers");
-
-		List<AnnotationSpec> annotations = new ArrayList<>();
-
-		annotations.add(AnnotationSpec.builder(ClassName.get(Override.class)).build());
-
-		CodeBlock codeBlock = codeBlockBuilder.build();
-
-		MethodSpec method = MethodSpec.methodBuilder("getWriters").addAnnotations(annotations)
-				.addModifiers(Modifier.PUBLIC)
-				.returns(ParameterizedTypeName.get(ClassName.get(Map.class),
-						ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME),
-								WildcardTypeName.subtypeOf(TypeName.OBJECT)),
-						ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.PROPERTY_WRITER_TYPE_NAME),
-								WildcardTypeName.subtypeOf(TypeName.OBJECT))))
-				.addCode(codeBlock).build();
-
-		return method;
-	}
-
-	private MethodSpec generateGetReaders(EntityMetadata entity, EntityIndexMetadata index) {
-
-		CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
-
-		codeBlockBuilder.add("\n");
-		codeBlockBuilder.addStatement("$T<$T, $T> readers = new $T<>(super.getReaders())", Map.class,
-				ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME),
-						WildcardTypeName.subtypeOf(TypeName.OBJECT)),
-				ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.PROPERTY_READER_TYPE_NAME),
-						WildcardTypeName.subtypeOf(TypeName.OBJECT)),
-				LinkedHashMap.class);
-
-		Collection<EntityIndexPropertyMetadata> properties = index.getProperties().values();
-
-		if (properties.size() > 0) {
-			codeBlockBuilder.add("\n");
-		}
-
-		for (EntityIndexPropertyMetadata property : properties) {
-
-			codeBlockBuilder.addStatement("readers.put($T.$L, () -> $L)", ClassName.bestGuess("Properties"),
-					property.getName(), property.getName());
-		}
-
-		codeBlockBuilder.add("\n");
-		codeBlockBuilder.addStatement("return readers");
-
-		List<AnnotationSpec> annotations = new ArrayList<>();
-
-		annotations.add(AnnotationSpec.builder(ClassName.get(Override.class)).build());
-
-		CodeBlock codeBlock = codeBlockBuilder.build();
-
-		MethodSpec method = MethodSpec.methodBuilder("getReaders").addAnnotations(annotations)
-				.addModifiers(Modifier.PUBLIC)
-				.returns(ParameterizedTypeName.get(ClassName.get(Map.class),
-						ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME),
-								WildcardTypeName.subtypeOf(TypeName.OBJECT)),
-						ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.PROPERTY_READER_TYPE_NAME),
-								WildcardTypeName.subtypeOf(TypeName.OBJECT))))
-				.addCode(codeBlock).build();
-
-		return method;
-	}
-
 	private MethodSpec generateGetProperties() {
 
 		CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
 
 		codeBlockBuilder.add("\n");
 		codeBlockBuilder.addStatement("$T properties = new $T<>(super.getProperties())",
-				ParameterizedTypeName.get(ClassName.get(Collection.class), ParameterizedTypeName.get(
-						ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME), WildcardTypeName.subtypeOf(TypeName.OBJECT))),
+				ParameterizedTypeName.get(ClassName.get(Collection.class), ParameterizedTypeName
+						.get(CodeGenTypeUtil.PROPERTY_TYPE_NAME, WildcardTypeName.subtypeOf(TypeName.OBJECT))),
 				ArrayList.class);
 		codeBlockBuilder.add("\n");
 		codeBlockBuilder.addStatement("properties.addAll($T.values)", ClassName.bestGuess("Properties"));
@@ -460,12 +576,168 @@ public class EntityProcessor extends AbstractProcessor {
 
 		MethodSpec method = MethodSpec.methodBuilder("getProperties").addAnnotations(annotations)
 				.addModifiers(Modifier.PUBLIC)
-				.returns(
-						ParameterizedTypeName
-								.get(ClassName.get(Collection.class),
-										ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME),
-												WildcardTypeName.subtypeOf(TypeName.OBJECT))))
+				.returns(ParameterizedTypeName.get(ClassName.get(Collection.class), ParameterizedTypeName
+						.get(CodeGenTypeUtil.PROPERTY_TYPE_NAME, WildcardTypeName.subtypeOf(TypeName.OBJECT))))
 				.addCode(codeBlock).build();
+
+		return method;
+	}
+
+	private MethodSpec generateRead(EntityMetadata entity, EntityIndexMetadata index) {
+
+		CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
+
+		Collection<EntityIndexPropertyMetadata> properties = index.getProperties().values();
+
+		if (properties.size() > 0) {
+			codeBlockBuilder.add("\n");
+		}
+
+		boolean unchecked = false;
+
+		if (properties.size() > 0) {
+
+			int count = 0;
+
+			for (EntityIndexPropertyMetadata property : properties) {
+
+				CodeGenTypeHandler handler = CodeGenTypeUtil.getTypeHandler(property, entity.getTypes(), messager);
+
+				TypeName type = handler.getType();
+
+				if (count == 0) {
+					codeBlockBuilder.beginControlFlow("if ($T.$L.equals(property))", ClassName.bestGuess("Properties"),
+							property.getName());
+				} else {
+					codeBlockBuilder.nextControlFlow("else if ($T.$L.equals(property))",
+							ClassName.bestGuess("Properties"), property.getName());
+				}
+
+				if (type.isPrimitive()) {
+					codeBlockBuilder.addStatement("return ($T) ($T) $L", TypeVariableName.get("T"), type.box(),
+							property.getName());
+				} else {
+					codeBlockBuilder.addStatement("return ($T) $L", TypeVariableName.get("T"), property.getName());
+				}
+
+				if (count == properties.size() - 1) {
+
+					codeBlockBuilder.nextControlFlow("else");
+					codeBlockBuilder.addStatement("return super.read(property)");
+					codeBlockBuilder.endControlFlow();
+				}
+
+				unchecked = true;
+				count++;
+			}
+
+		} else {
+
+			codeBlockBuilder.addStatement("return super.read(property)");
+		}
+
+		List<AnnotationSpec> annotations = new ArrayList<>();
+
+		if (unchecked) {
+			annotations.add(AnnotationSpec.builder(ClassName.get(SuppressWarnings.class))
+					.addMember("value", "$S", "unchecked").build());
+		}
+
+		annotations.add(AnnotationSpec.builder(ClassName.get(Override.class)).build());
+
+		List<ParameterSpec> parameters = new ArrayList<>();
+
+		parameters.add(ParameterSpec
+				.builder(ParameterizedTypeName.get(CodeGenTypeUtil.PROPERTY_TYPE_NAME, TypeVariableName.get("T")),
+						"property")
+				.build());
+
+		CodeBlock codeBlock = codeBlockBuilder.build();
+
+		MethodSpec method = MethodSpec.methodBuilder("read").addAnnotations(annotations).addModifiers(Modifier.PUBLIC)
+				.addTypeVariable(TypeVariableName.get("T")).returns(TypeVariableName.get("T")).addParameters(parameters)
+				.addCode(codeBlock).addException(CodeGenTypeUtil.INTROSPECTION_EXCEPTION_TYPE_NAME).build();
+
+		return method;
+	}
+
+	private MethodSpec generateWrite(EntityMetadata entity, EntityIndexMetadata index) {
+
+		CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
+
+		Collection<EntityIndexPropertyMetadata> properties = index.getProperties().values();
+
+		if (properties.size() > 0) {
+			codeBlockBuilder.add("\n");
+		}
+
+		boolean unchecked = false;
+
+		if (properties.size() > 0) {
+
+			int count = 0;
+
+			for (EntityIndexPropertyMetadata property : properties) {
+
+				CodeGenTypeHandler handler = CodeGenTypeUtil.getTypeHandler(property, entity.getTypes(), messager);
+
+				TypeName type = handler.getType();
+
+				if (count == 0) {
+					codeBlockBuilder.beginControlFlow("if ($T.$L.equals(property))", ClassName.bestGuess("Properties"),
+							property.getName());
+				} else {
+					codeBlockBuilder.nextControlFlow("else if ($T.$L.equals(property))",
+							ClassName.bestGuess("Properties"), property.getName());
+				}
+
+				if (property.isFinal()) {
+					codeBlockBuilder.add("// do nothing\n");
+				} else {
+					codeBlockBuilder.addStatement("$L = ($T) value", property.getName(), type.box());
+				}
+
+				if (count == properties.size() - 1) {
+
+					codeBlockBuilder.nextControlFlow("else");
+					codeBlockBuilder.addStatement("super.write(property, value)");
+					codeBlockBuilder.endControlFlow();
+				}
+
+				if (type instanceof ParameterizedTypeName && !property.isFinal()) {
+					unchecked = true;
+				}
+
+				count++;
+			}
+
+		} else {
+
+			codeBlockBuilder.addStatement("super.write(property, value)");
+		}
+
+		List<AnnotationSpec> annotations = new ArrayList<>();
+
+		if (unchecked) {
+			annotations.add(AnnotationSpec.builder(ClassName.get(SuppressWarnings.class))
+					.addMember("value", "$S", "unchecked").build());
+		}
+
+		annotations.add(AnnotationSpec.builder(ClassName.get(Override.class)).build());
+
+		List<ParameterSpec> parameters = new ArrayList<>();
+
+		parameters.add(ParameterSpec
+				.builder(ParameterizedTypeName.get(CodeGenTypeUtil.PROPERTY_TYPE_NAME, TypeVariableName.get("T")),
+						"property")
+				.build());
+		parameters.add(ParameterSpec.builder(TypeVariableName.get("T"), "value").build());
+
+		CodeBlock codeBlock = codeBlockBuilder.build();
+
+		MethodSpec method = MethodSpec.methodBuilder("write").addAnnotations(annotations).addModifiers(Modifier.PUBLIC)
+				.addTypeVariable(TypeVariableName.get("T")).addParameters(parameters).addCode(codeBlock)
+				.addException(CodeGenTypeUtil.INTROSPECTION_EXCEPTION_TYPE_NAME).build();
 
 		return method;
 	}
@@ -487,22 +759,20 @@ public class EntityProcessor extends AbstractProcessor {
 
 			TypeName type = handler.getType();
 
-			fields.add(
-					FieldSpec
-							.builder(ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME),
-									type.box()), property.getName())
-							.addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-							.initializer("$T.of($S, new $T() {})", ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME),
-									property.getName(), ParameterizedTypeName
-											.get(ClassName.bestGuess(TypeUtil.TYPE_REFERENCE_TYPE_NAME), type.box()))
-							.build());
+			fields.add(FieldSpec
+					.builder(ParameterizedTypeName.get(CodeGenTypeUtil.PROPERTY_TYPE_NAME, type.box()),
+							property.getName())
+					.addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+					.initializer("$T.of($S, new $T() {})", CodeGenTypeUtil.PROPERTY_TYPE_NAME, property.getName(),
+							ParameterizedTypeName.get(CodeGenTypeUtil.TYPE_REFERENCE_TYPE_NAME, type.box()))
+					.build());
 
 			codeBlockBuilder.addStatement("values.add($L)", property.getName());
 		}
 
 		fields.add(FieldSpec
 				.builder(ParameterizedTypeName.get(ClassName.get(List.class),
-						ParameterizedTypeName.get(ClassName.bestGuess(TypeUtil.PROPERTY_TYPE_NAME),
+						ParameterizedTypeName.get(CodeGenTypeUtil.PROPERTY_TYPE_NAME,
 								WildcardTypeName.subtypeOf(TypeName.OBJECT))),
 						"values")
 				.addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
