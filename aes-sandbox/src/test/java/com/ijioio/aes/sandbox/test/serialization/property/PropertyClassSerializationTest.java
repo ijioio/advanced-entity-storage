@@ -1,30 +1,24 @@
 package com.ijioio.aes.sandbox.test.serialization.property;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
-import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
-import com.ijioio.aes.core.serialization.xml.XmlUtil;
-import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
+import com.ijioio.aes.sandbox.test.serialization.property.BasePropertySerializationTest.Some;
 import com.ijioio.test.model.PropertyClassSerialization;
 
-public class PropertyClassSerializationTest extends BaseSerializationTest {
+public class PropertyClassSerializationTest
+		extends BasePropertySerializationTest<PropertyClassSerialization, Class<Some>> {
 
 	@Entity( //
 			name = PropertyClassSerializationPrototype.NAME, //
 			types = { //
-					@Type(name = "Class<String>", type = Type.CLASS, parameters = @Parameter(name = Type.STRING)) //
+					@Type(name = "Class<Some>", type = Type.CLASS, parameters = @Parameter(name = Some.NAME)) //
 			}, //
 			properties = { //
-					@EntityProperty(name = "valueClass", type = "Class<String>") //
+					@EntityProperty(name = "valueClass", type = "Class<Some>") //
 			} //
 	)
 	public static interface PropertyClassSerializationPrototype {
@@ -32,41 +26,34 @@ public class PropertyClassSerializationTest extends BaseSerializationTest {
 		public static final String NAME = "com.ijioio.test.model.PropertyClassSerialization";
 	}
 
-	private Path path;
-
-	private PropertyClassSerialization model;
-
-	@BeforeEach
-	public void before() throws Exception {
-
-		path = Paths.get(getClass().getClassLoader().getResource("property-class-serialization.xml").toURI());
-
-		model = new PropertyClassSerialization();
-
-		model.setId("property-class-serialization");
-		model.setValueClass(String.class);
+	@Override
+	protected String getXmlFileName() throws Exception {
+		return "property-class-serialization.xml";
 	}
 
-	@Test
-	public void testWrite() throws Exception {
-
-		XmlSerializationHandler handler = new XmlSerializationHandler();
-
-		String actual = XmlUtil.write(handler, model);
-		String expected = readString(path);
-
-		Assertions.assertEquals(expected, actual);
+	@Override
+	protected Class<PropertyClassSerialization> getEntityClass() {
+		return PropertyClassSerialization.class;
 	}
 
-	@Test
-	public void testRead() throws Exception {
+	@Override
+	protected PropertyClassSerialization createEntity() {
 
-		XmlSerializationHandler handler = new XmlSerializationHandler();
+		PropertyClassSerialization entity = new PropertyClassSerialization();
 
-		PropertyClassSerialization actual = XmlUtil.read(handler, PropertyClassSerialization.class, readString(path));
-		PropertyClassSerialization expected = model;
+		entity.setId("property-class-serialization");
+		entity.setValueClass(Some.class);
 
-		Assertions.assertEquals(expected.getId(), actual.getId());
-		Assertions.assertEquals(expected.getValueClass(), actual.getValueClass());
+		return entity;
+	}
+
+	@Override
+	protected Class<Some> getPropertyValue(PropertyClassSerialization entity) {
+		return entity.getValueClass();
+	}
+
+	@Override
+	protected void checkPropertyValue(Class<Some> expectedValue, Class<Some> actualValue) {
+		Assertions.assertEquals(expectedValue, actualValue);
 	}
 }

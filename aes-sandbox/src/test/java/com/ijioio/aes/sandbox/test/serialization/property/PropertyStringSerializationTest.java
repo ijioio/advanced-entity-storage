@@ -1,21 +1,14 @@
 package com.ijioio.aes.sandbox.test.serialization.property;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
-import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
-import com.ijioio.aes.core.serialization.xml.XmlUtil;
-import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
 import com.ijioio.test.model.PropertyStringSerialization;
 
-public class PropertyStringSerializationTest extends BaseSerializationTest {
+public class PropertyStringSerializationTest
+		extends BasePropertySerializationTest<PropertyStringSerialization, String> {
 
 	@Entity( //
 			name = PropertyStringSerializationPrototype.NAME, //
@@ -28,41 +21,34 @@ public class PropertyStringSerializationTest extends BaseSerializationTest {
 		public static final String NAME = "com.ijioio.test.model.PropertyStringSerialization";
 	}
 
-	private Path path;
-
-	private PropertyStringSerialization model;
-
-	@BeforeEach
-	public void before() throws Exception {
-
-		path = Paths.get(getClass().getClassLoader().getResource("property-string-serialization.xml").toURI());
-
-		model = new PropertyStringSerialization();
-
-		model.setId("property-string-serialization");
-		model.setValueString("value");
+	@Override
+	protected String getXmlFileName() throws Exception {
+		return "property-string-serialization.xml";
 	}
 
-	@Test
-	public void testWrite() throws Exception {
-
-		XmlSerializationHandler handler = new XmlSerializationHandler();
-
-		String actual = XmlUtil.write(handler, model);
-		String expected = readString(path);
-
-		Assertions.assertEquals(expected, actual);
+	@Override
+	protected Class<PropertyStringSerialization> getEntityClass() {
+		return PropertyStringSerialization.class;
 	}
 
-	@Test
-	public void testRead() throws Exception {
+	@Override
+	protected PropertyStringSerialization createEntity() {
 
-		XmlSerializationHandler handler = new XmlSerializationHandler();
+		PropertyStringSerialization entity = new PropertyStringSerialization();
 
-		PropertyStringSerialization actual = XmlUtil.read(handler, PropertyStringSerialization.class, readString(path));
-		PropertyStringSerialization expected = model;
+		entity.setId("property-string-serialization");
+		entity.setValueString("value");
 
-		Assertions.assertEquals(expected.getId(), actual.getId());
-		Assertions.assertEquals(expected.getValueString(), actual.getValueString());
+		return entity;
+	}
+
+	@Override
+	protected String getPropertyValue(PropertyStringSerialization entity) {
+		return entity.getValueString();
+	}
+
+	@Override
+	protected void checkPropertyValue(String expectedValue, String actualValue) {
+		Assertions.assertEquals(expectedValue, actualValue);
 	}
 }
