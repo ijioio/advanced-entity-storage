@@ -13,10 +13,76 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.XMLEvent;
 
+import com.ijioio.aes.core.Entity;
 import com.ijioio.aes.core.XSerializable;
 import com.ijioio.aes.core.serialization.SerializationException;
 
 public class XmlUtil {
+
+	public static String write2(XmlSerializationHandler handler, final Entity entity) throws SerializationException {
+
+		try {
+
+			try (StringWriter stringWriter = new StringWriter()) {
+
+				XMLPrettyPrintStreamWriter writer = XMLPrettyPrintStreamWriter
+						.of(XMLOutputFactory.newInstance().createXMLStreamWriter(stringWriter));
+
+				try {
+
+					XmlSerializationContext context = XmlSerializationContext.of(writer);
+
+					handler.write(context, entity);
+
+				} finally {
+					writer.close();
+				}
+
+				stringWriter.flush();
+
+				return stringWriter.toString();
+			}
+
+		} catch (Exception e) {
+			throw new SerializationException(String.format("object write failed", entity), e);
+		}
+	}
+
+	public static <E extends Entity> E read2(XmlSerializationHandler handler, final Class<E> type, final String content)
+			throws SerializationException {
+
+		try {
+
+			E object = type.newInstance();
+
+			try (StringReader stringReader = new StringReader(content)) {
+
+				XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(stringReader);
+
+				try {
+
+					XmlSerializationContext context = XmlSerializationContext.of(reader);
+
+//					while (reader.next() != XMLEvent.END_DOCUMENT) {
+//
+//						if (reader.getName().getLocalPart().equals("object")) {
+					handler.read(context, object);
+//						}
+//					}
+
+					return object;
+
+				} finally {
+					reader.close();
+				}
+			}
+
+		} catch (Exception e) {
+			throw new SerializationException("object read failed", e);
+		}
+	}
+
+// ================================================
 
 	public static String write(XmlSerializationHandler handler, final XSerializable object)
 			throws SerializationException {
