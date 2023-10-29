@@ -1,0 +1,4 @@
+<object class="com.ijioio.test.model.PropertyCharSerialization">
+    <id>property-char-serialization</id>
+    <valueChar>a</valueChar>
+</object>
