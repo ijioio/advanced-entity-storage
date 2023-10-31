@@ -4,8 +4,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -29,421 +27,25 @@ import com.ijioio.aes.core.serialization.SerializationHandler;
 import com.ijioio.aes.core.serialization.SerializationReader;
 import com.ijioio.aes.core.serialization.SerializationWriter;
 import com.ijioio.aes.core.serialization.xml.value.handler.XmlBooleanSerializationValueHandler;
+import com.ijioio.aes.core.serialization.xml.value.handler.XmlByteArraySerializationValueHandler;
 import com.ijioio.aes.core.serialization.xml.value.handler.XmlByteSerializationValueHandler;
 import com.ijioio.aes.core.serialization.xml.value.handler.XmlCharacterSerializationValueHandler;
 import com.ijioio.aes.core.serialization.xml.value.handler.XmlClassSerializationValueHandler;
 import com.ijioio.aes.core.serialization.xml.value.handler.XmlCollectionSerializationValueHandler;
+import com.ijioio.aes.core.serialization.xml.value.handler.XmlDoubleSerializationValueHandler;
 import com.ijioio.aes.core.serialization.xml.value.handler.XmlEnumSerializationValueHandler;
+import com.ijioio.aes.core.serialization.xml.value.handler.XmlFloatSerializationValueHandler;
 import com.ijioio.aes.core.serialization.xml.value.handler.XmlInrospectableSerializationValueHandler;
+import com.ijioio.aes.core.serialization.xml.value.handler.XmlInstantSerializationValueHandler;
+import com.ijioio.aes.core.serialization.xml.value.handler.XmlIntegerSerializationValueHandler;
+import com.ijioio.aes.core.serialization.xml.value.handler.XmlLocalDateSerializationValueHandler;
+import com.ijioio.aes.core.serialization.xml.value.handler.XmlLocalDateTimeSerializationValueHandler;
+import com.ijioio.aes.core.serialization.xml.value.handler.XmlLocalTimeSerializationValueHandler;
+import com.ijioio.aes.core.serialization.xml.value.handler.XmlLongSerializationValueHandler;
 import com.ijioio.aes.core.serialization.xml.value.handler.XmlShortSerializationValueHandler;
 import com.ijioio.aes.core.serialization.xml.value.handler.XmlStringSerializationValueHandler;
 
 public class XmlSerializationHandler implements SerializationHandler {
-
-	private static final XmlSerializationValueHandler<Integer> HANDLER_INTEGER = new XmlSerializationValueHandler<Integer>() {
-
-		@Override
-		public Class<Integer> getType() {
-			return Integer.class;
-		}
-
-		@Override
-		public void write(XmlSerializationContext context, XmlSerializationHandler handler, String name, Integer value)
-				throws SerializationException {
-
-			if (value == null) {
-				return;
-			}
-
-			XMLStreamWriter writer = context.getWriter();
-
-			try {
-
-				writer.writeStartElement(name);
-				handler.writeAttributes(writer, context.getAttributes());
-				writer.writeCharacters(String.valueOf(value.intValue()));
-				writer.writeEndElement();
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		}
-
-		@Override
-		public Integer read(XmlSerializationContext context, XmlSerializationHandler handler, Class<Integer> type,
-				Integer value) throws SerializationException {
-
-			XMLStreamReader reader = context.getReader();
-
-			try {
-
-				return Integer.valueOf(reader.getElementText());
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		};
-	};
-
-	private static final XmlSerializationValueHandler<Long> HANDLER_LONG = new XmlSerializationValueHandler<Long>() {
-
-		@Override
-		public Class<Long> getType() {
-			return Long.class;
-		}
-
-		@Override
-		public void write(XmlSerializationContext context, XmlSerializationHandler handler, String name, Long value)
-				throws SerializationException {
-
-			if (value == null) {
-				return;
-			}
-
-			XMLStreamWriter writer = context.getWriter();
-
-			try {
-
-				writer.writeStartElement(name);
-				handler.writeAttributes(writer, context.getAttributes());
-				writer.writeCharacters(String.valueOf(value.longValue()));
-				writer.writeEndElement();
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		}
-
-		@Override
-		public Long read(XmlSerializationContext context, XmlSerializationHandler handler, Class<Long> type, Long value)
-				throws SerializationException {
-
-			XMLStreamReader reader = context.getReader();
-
-			try {
-
-				return Long.valueOf(reader.getElementText());
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		};
-	};
-
-	private static final XmlSerializationValueHandler<Float> HANDLER_FLOAT = new XmlSerializationValueHandler<Float>() {
-
-		@Override
-		public Class<Float> getType() {
-			return Float.class;
-		}
-
-		@Override
-		public void write(XmlSerializationContext context, XmlSerializationHandler handler, String name, Float value)
-				throws SerializationException {
-
-			if (value == null) {
-				return;
-			}
-
-			XMLStreamWriter writer = context.getWriter();
-
-			try {
-
-				writer.writeStartElement(name);
-				handler.writeAttributes(writer, context.getAttributes());
-				writer.writeCharacters(String.valueOf(value.floatValue()));
-				writer.writeEndElement();
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		}
-
-		@Override
-		public Float read(XmlSerializationContext context, XmlSerializationHandler handler, Class<Float> type,
-				Float value) throws SerializationException {
-
-			XMLStreamReader reader = context.getReader();
-
-			try {
-
-				return Float.valueOf(reader.getElementText());
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		};
-	};
-
-	private static final XmlSerializationValueHandler<Double> HANDLER_DOUBLE = new XmlSerializationValueHandler<Double>() {
-
-		@Override
-		public Class<Double> getType() {
-			return Double.class;
-		}
-
-		@Override
-		public void write(XmlSerializationContext context, XmlSerializationHandler handler, String name, Double value)
-				throws SerializationException {
-
-			if (value == null) {
-				return;
-			}
-
-			XMLStreamWriter writer = context.getWriter();
-
-			try {
-
-				writer.writeStartElement(name);
-				handler.writeAttributes(writer, context.getAttributes());
-				writer.writeCharacters(String.valueOf(value.doubleValue()));
-				writer.writeEndElement();
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		}
-
-		@Override
-		public Double read(XmlSerializationContext context, XmlSerializationHandler handler, Class<Double> type,
-				Double value) throws SerializationException {
-
-			XMLStreamReader reader = context.getReader();
-
-			try {
-
-				return Double.valueOf(reader.getElementText());
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		};
-	};
-
-	private static final XmlSerializationValueHandler<byte[]> HANDLER_BYTE_ARRAY = new XmlSerializationValueHandler<byte[]>() {
-
-		@Override
-		public Class<byte[]> getType() {
-			return byte[].class;
-		}
-
-		@Override
-		public void write(XmlSerializationContext context, XmlSerializationHandler handler, String name, byte[] value)
-				throws SerializationException {
-
-			if (value == null) {
-				return;
-			}
-
-			XMLStreamWriter writer = context.getWriter();
-
-			try {
-
-				writer.writeStartElement(name);
-				handler.writeAttributes(writer, context.getAttributes());
-				writer.writeCharacters(Base64.getEncoder().encodeToString(value));
-				writer.writeEndElement();
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		}
-
-		@Override
-		public byte[] read(XmlSerializationContext context, XmlSerializationHandler handler, Class<byte[]> type,
-				byte[] value) throws SerializationException {
-
-			XMLStreamReader reader = context.getReader();
-
-			try {
-
-				return Base64.getDecoder().decode(reader.getElementText());
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		};
-	};
-
-	private static final XmlSerializationValueHandler<Instant> HANDLER_INSTANT = new XmlSerializationValueHandler<Instant>() {
-
-		@Override
-		public Class<Instant> getType() {
-			return Instant.class;
-		}
-
-		@Override
-		public void write(XmlSerializationContext context, XmlSerializationHandler handler, String name, Instant value)
-				throws SerializationException {
-
-			if (value == null) {
-				return;
-			}
-
-			XMLStreamWriter writer = context.getWriter();
-
-			try {
-
-				writer.writeStartElement(name);
-				handler.writeAttributes(writer, context.getAttributes());
-				writer.writeCharacters(DateTimeFormatter.ISO_INSTANT.format(value));
-				writer.writeEndElement();
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		}
-
-		@Override
-		public Instant read(XmlSerializationContext context, XmlSerializationHandler handler, Class<Instant> type,
-				Instant value) throws SerializationException {
-
-			XMLStreamReader reader = context.getReader();
-
-			try {
-
-				return Instant.parse(reader.getElementText());
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		};
-	};
-
-	private static final XmlSerializationValueHandler<LocalDate> HANDLER_LOCAL_DATE = new XmlSerializationValueHandler<LocalDate>() {
-
-		@Override
-		public Class<LocalDate> getType() {
-			return LocalDate.class;
-		}
-
-		@Override
-		public void write(XmlSerializationContext context, XmlSerializationHandler handler, String name,
-				LocalDate value) throws SerializationException {
-
-			if (value == null) {
-				return;
-			}
-
-			XMLStreamWriter writer = context.getWriter();
-
-			try {
-
-				writer.writeStartElement(name);
-				handler.writeAttributes(writer, context.getAttributes());
-				writer.writeCharacters(DateTimeFormatter.ISO_LOCAL_DATE.format(value));
-				writer.writeEndElement();
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		}
-
-		@Override
-		public LocalDate read(XmlSerializationContext context, XmlSerializationHandler handler, Class<LocalDate> type,
-				LocalDate value) throws SerializationException {
-
-			XMLStreamReader reader = context.getReader();
-
-			try {
-
-				return LocalDate.parse(reader.getElementText(), DateTimeFormatter.ISO_LOCAL_DATE);
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		};
-	};
-
-	private static final XmlSerializationValueHandler<LocalTime> HANDLER_LOCAL_TIME = new XmlSerializationValueHandler<LocalTime>() {
-
-		@Override
-		public Class<LocalTime> getType() {
-			return LocalTime.class;
-		}
-
-		@Override
-		public void write(XmlSerializationContext context, XmlSerializationHandler handler, String name,
-				LocalTime value) throws SerializationException {
-
-			if (value == null) {
-				return;
-			}
-
-			XMLStreamWriter writer = context.getWriter();
-
-			try {
-
-				writer.writeStartElement(name);
-				handler.writeAttributes(writer, context.getAttributes());
-				writer.writeCharacters(DateTimeFormatter.ISO_LOCAL_TIME.format(value));
-				writer.writeEndElement();
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		}
-
-		@Override
-		public LocalTime read(XmlSerializationContext context, XmlSerializationHandler handler, Class<LocalTime> type,
-				LocalTime value) throws SerializationException {
-
-			XMLStreamReader reader = context.getReader();
-
-			try {
-
-				return LocalTime.parse(reader.getElementText(), DateTimeFormatter.ISO_LOCAL_TIME);
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		};
-	};
-
-	private static final XmlSerializationValueHandler<LocalDateTime> HANDLER_LOCAL_DATE_TIME = new XmlSerializationValueHandler<LocalDateTime>() {
-
-		@Override
-		public Class<LocalDateTime> getType() {
-			return LocalDateTime.class;
-		}
-
-		@Override
-		public void write(XmlSerializationContext context, XmlSerializationHandler handler, String name,
-				LocalDateTime value) throws SerializationException {
-
-			if (value == null) {
-				return;
-			}
-
-			XMLStreamWriter writer = context.getWriter();
-
-			try {
-
-				writer.writeStartElement(name);
-				handler.writeAttributes(writer, context.getAttributes());
-				writer.writeCharacters(DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(value));
-				writer.writeEndElement();
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		}
-
-		@Override
-		public LocalDateTime read(XmlSerializationContext context, XmlSerializationHandler handler,
-				Class<LocalDateTime> type, LocalDateTime value) throws SerializationException {
-
-			XMLStreamReader reader = context.getReader();
-
-			try {
-
-				return LocalDateTime.parse(reader.getElementText(), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		};
-	};
 
 	@SuppressWarnings("rawtypes")
 	private static final XmlSerializationValueHandler<Map> HANDLER_MAP = new XmlSerializationValueHandler<Map>() {
@@ -589,16 +191,16 @@ public class XmlSerializationHandler implements SerializationHandler {
 		registerValueHandler(new XmlCharacterSerializationValueHandler());
 		registerValueHandler(new XmlByteSerializationValueHandler());
 		registerValueHandler(new XmlShortSerializationValueHandler());
-		registerValueHandler(HANDLER_INTEGER);
-		registerValueHandler(HANDLER_LONG);
-		registerValueHandler(HANDLER_FLOAT);
-		registerValueHandler(HANDLER_DOUBLE);
-		registerValueHandler(HANDLER_BYTE_ARRAY);
+		registerValueHandler(new XmlIntegerSerializationValueHandler());
+		registerValueHandler(new XmlLongSerializationValueHandler());
+		registerValueHandler(new XmlFloatSerializationValueHandler());
+		registerValueHandler(new XmlDoubleSerializationValueHandler());
+		registerValueHandler(new XmlByteArraySerializationValueHandler());
 		registerValueHandler(new XmlStringSerializationValueHandler());
-		registerValueHandler(HANDLER_INSTANT);
-		registerValueHandler(HANDLER_LOCAL_DATE);
-		registerValueHandler(HANDLER_LOCAL_TIME);
-		registerValueHandler(HANDLER_LOCAL_DATE_TIME);
+		registerValueHandler(new XmlInstantSerializationValueHandler());
+		registerValueHandler(new XmlLocalDateSerializationValueHandler());
+		registerValueHandler(new XmlLocalTimeSerializationValueHandler());
+		registerValueHandler(new XmlLocalDateTimeSerializationValueHandler());
 		registerValueHandler(new XmlEnumSerializationValueHandler());
 		registerValueHandler(new XmlClassSerializationValueHandler());
 		registerValueHandler(new XmlCollectionSerializationValueHandler());
