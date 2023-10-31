@@ -3,7 +3,6 @@ package com.ijioio.aes.core.serialization.xml.value.handler;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.stream.events.XMLEvent;
 
 import com.ijioio.aes.core.serialization.SerializationException;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationContext;
@@ -31,7 +30,7 @@ public class XmlClassSerializationValueHandler extends BaseXmlSerializationValue
 				writer.writeAttribute("class", value.getClass().getName());
 			}
 
-			handler.getValueHandler(String.class).write(context, handler, "name", value.getName(), false);
+			writer.writeCharacters(value.getName());
 			writer.writeEndElement();
 
 		} catch (XMLStreamException e) {
@@ -47,24 +46,9 @@ public class XmlClassSerializationValueHandler extends BaseXmlSerializationValue
 
 		try {
 
-			Class clazz = null;
+			String name = reader.getElementText();
 
-			while (reader.nextTag() != XMLEvent.END_ELEMENT) {
-
-				if (reader.getName().getLocalPart().equals("name")) {
-
-					String name = handler.getValueHandler(String.class).read(context, handler, String.class, null);
-
-					if (name != null) {
-						clazz = Class.forName(name);
-					}
-
-				} else {
-					skipElement(reader);
-				}
-			}
-
-			return clazz;
+			return name != null && name.length() > 0 ? Class.forName(name) : null;
 
 		} catch (ClassNotFoundException | XMLStreamException e) {
 			throw new SerializationException(e);
