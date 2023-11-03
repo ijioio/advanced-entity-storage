@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,97 +41,11 @@ import com.ijioio.aes.core.serialization.xml.value.handler.XmlLocalDateSerializa
 import com.ijioio.aes.core.serialization.xml.value.handler.XmlLocalDateTimeSerializationValueHandler;
 import com.ijioio.aes.core.serialization.xml.value.handler.XmlLocalTimeSerializationValueHandler;
 import com.ijioio.aes.core.serialization.xml.value.handler.XmlLongSerializationValueHandler;
+import com.ijioio.aes.core.serialization.xml.value.handler.XmlMapSerializationValueHandler;
 import com.ijioio.aes.core.serialization.xml.value.handler.XmlShortSerializationValueHandler;
 import com.ijioio.aes.core.serialization.xml.value.handler.XmlStringSerializationValueHandler;
 
 public class XmlSerializationHandler implements SerializationHandler {
-
-	@SuppressWarnings("rawtypes")
-	private static final XmlSerializationValueHandler<Map> HANDLER_MAP = new XmlSerializationValueHandler<Map>() {
-
-		@Override
-		public Class<Map> getType() {
-			return Map.class;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public void write(XmlSerializationContext context, XmlSerializationHandler handler, String name, Map values)
-				throws SerializationException {
-
-			if (values == null) {
-				return;
-			}
-
-			XMLStreamWriter writer = context.getWriter();
-
-			try {
-
-				writer.writeStartElement(name);
-				handler.writeAttributes(writer, context.getAttributes());
-
-				for (Entry<Object, Object> entry : ((Map<Object, Object>) values).entrySet()) {
-
-					writer.writeStartElement("entry");
-					handler.write(context, "key", entry.getKey());
-					handler.write(context, "value", entry.getValue());
-					writer.writeEndElement();
-				}
-
-				writer.writeEndElement();
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public Map read(XmlSerializationContext context, XmlSerializationHandler handler, Class<Map> type, Map values)
-				throws SerializationException {
-
-			XMLStreamReader reader = context.getReader();
-
-			try {
-
-				Map map = values != null ? values : new LinkedHashMap<>();
-
-				map.clear();
-
-				while (reader.nextTag() != XMLStreamConstants.END_ELEMENT) {
-
-					if (reader.getName().getLocalPart().equals("entry")) {
-
-						Object key = null;
-						Object value = null;
-
-						while (reader.nextTag() != XMLStreamConstants.END_ELEMENT) {
-
-							if (reader.getName().getLocalPart().equals("key")) {
-								key = handler.read(context, (Object) null);
-							} else if (reader.getName().getLocalPart().equals("value")) {
-								value = handler.read(context, (Object) null);
-							} else {
-								handler.skipElement(reader);
-							}
-						}
-
-						if (key != null && value != null) {
-							map.put(key, value);
-						}
-
-					} else {
-						handler.skipElement(reader);
-					}
-				}
-
-				return map;
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		};
-	};
 
 	private static final XmlSerializationValueHandler<XSerializable> HANDLER_XSERIALIZABLE = new XmlSerializationValueHandler<XSerializable>() {
 
@@ -204,7 +117,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 		registerValueHandler(new XmlEnumSerializationValueHandler());
 		registerValueHandler(new XmlClassSerializationValueHandler());
 		registerValueHandler(new XmlCollectionSerializationValueHandler());
-		registerValueHandler(HANDLER_MAP);
+		registerValueHandler(new XmlMapSerializationValueHandler());
 		registerValueHandler(HANDLER_XSERIALIZABLE);
 		registerValueHandler(new XmlInrospectableSerializationValueHandler());
 	}
