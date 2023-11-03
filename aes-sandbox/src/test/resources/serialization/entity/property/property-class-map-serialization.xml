@@ -1,0 +1,17 @@
+<object class="com.ijioio.test.model.PropertyClassMapSerialization">
+    <id>property-class-map-serialization</id>
+    <valueClassMap class="java.util.LinkedHashMap">
+        <entry>
+            <key class="java.lang.Class">com.ijioio.aes.sandbox.test.serialization.property.BasePropertySerializationTest$Some1</key>
+            <value class="java.lang.Class">com.ijioio.aes.sandbox.test.serialization.property.BasePropertySerializationTest$Some1</value>
+        </entry>
+        <entry>
+            <key class="java.lang.Class">com.ijioio.aes.sandbox.test.serialization.property.BasePropertySerializationTest$Some2</key>
+            <value class="java.lang.Class">com.ijioio.aes.sandbox.test.serialization.property.BasePropertySerializationTest$Some2</value>
+        </entry>
+        <entry>
+            <key class="java.lang.Class">com.ijioio.aes.sandbox.test.serialization.property.BasePropertySerializationTest$Some3</key>
+            <value class="java.lang.Class">com.ijioio.aes.sandbox.test.serialization.property.BasePropertySerializationTest$Some3</value>
+        </entry>
+    </valueClassMap>
+</object>
