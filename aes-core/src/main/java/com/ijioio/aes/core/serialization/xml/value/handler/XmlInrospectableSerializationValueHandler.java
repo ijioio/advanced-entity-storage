@@ -33,6 +33,10 @@ public class XmlInrospectableSerializationValueHandler extends BaseXmlSerializat
 
 		try {
 
+			if (writeIdentity(context, writer, name, value)) {
+				return;
+			}
+
 			writer.writeStartElement(name);
 			writer.writeAttribute("class", value.getClass().getName());
 
@@ -66,7 +70,13 @@ public class XmlInrospectableSerializationValueHandler extends BaseXmlSerializat
 
 		try {
 
-			Introspectable introspectable = value != null ? value : type.newInstance();
+			Introspectable introspectable = readIdentity(context, reader);
+
+			if (introspectable != null) {
+				return introspectable;
+			}
+
+			introspectable = value != null ? value : type.newInstance();
 
 			Map<String, Property<?>> properties = introspectable.getProperties().stream()
 					.collect(Collectors.toMap(item -> item.getName(), item -> item));
@@ -79,11 +89,7 @@ public class XmlInrospectableSerializationValueHandler extends BaseXmlSerializat
 
 				if (property != null) {
 
-					Map<String, String> attributes = readAttributes(reader);
-
-					String propertyTypeName = attributes.get("class");
-
-					// TODO: handle identity!
+					String propertyTypeName = reader.getAttributeValue(null, "class");
 
 					// TODO: take into account final field. i.e. use class of final field value!
 					Class<?> propertyType = propertyTypeName != null ? Class.forName(propertyTypeName)
@@ -100,6 +106,8 @@ public class XmlInrospectableSerializationValueHandler extends BaseXmlSerializat
 					skipElement(reader);
 				}
 			}
+
+			// TODO: handle properties that were not found to clean up fields!
 
 			return introspectable;
 

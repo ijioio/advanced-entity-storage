@@ -1,7 +1,6 @@
 package com.ijioio.aes.core.serialization.xml.value.handler;
 
 import java.util.Collection;
-import java.util.Map;
 
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -59,6 +58,8 @@ public class XmlCollectionSerializationValueHandler extends BaseXmlSerialization
 
 		try {
 
+			// TODO: handle cases when creation of original collection is not possible
+			// (i.e. Collections.singletonList, etc.)
 			Collection collection = values != null ? values : type.newInstance();
 
 			collection.clear();
@@ -67,12 +68,10 @@ public class XmlCollectionSerializationValueHandler extends BaseXmlSerialization
 
 				if (reader.getName().getLocalPart().equals("item")) {
 
-					Map<String, String> attributes = readAttributes(reader);
-
-					String elementTypeName = attributes.get("class");
+					String elementTypeName = reader.getAttributeValue(null, "class");
 
 					if (elementTypeName == null) {
-						throw new SerializationException("type is not defined");
+						throw new SerializationException("item type is not defined");
 					}
 
 					Class<?> elementType = Class.forName(elementTypeName);
