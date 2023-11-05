@@ -1,0 +1,4 @@
+<object class="com.ijioio.test.model.PropertyDoubleSerialization">
+    <id>property-double-serialization</id>
+    <valueDouble>1.0</valueDouble>
+</object>
