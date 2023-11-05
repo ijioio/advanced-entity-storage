@@ -1,0 +1,4 @@
+<object class="com.ijioio.test.model.PropertyShortSerialization">
+    <id>property-short-serialization</id>
+    <valueShort>1</valueShort>
+</object>
