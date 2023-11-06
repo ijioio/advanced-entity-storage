@@ -1,22 +1,16 @@
 package com.ijioio.aes.sandbox.test.serialization.property;
 
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
-import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
-import com.ijioio.aes.core.serialization.xml.XmlUtil;
-import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
 import com.ijioio.test.model.PropertyByteArraySerialization;
 
-public class PropertyByteArraySerializationTest extends BaseSerializationTest {
+public class PropertyByteArraySerializationTest
+		extends BasePropertySerializationTest<PropertyByteArraySerialization, byte[]> {
 
 	@Entity( //
 			name = PropertyByteArraySerializationPrototype.NAME, //
@@ -29,42 +23,34 @@ public class PropertyByteArraySerializationTest extends BaseSerializationTest {
 		public static final String NAME = "com.ijioio.test.model.PropertyByteArraySerialization";
 	}
 
-	private Path path;
-
-	private PropertyByteArraySerialization model;
-
-	@BeforeEach
-	public void before() throws Exception {
-
-		path = Paths.get(getClass().getClassLoader().getResource("property-byte-array-serialization.xml").toURI());
-
-		model = new PropertyByteArraySerialization();
-
-		model.setId("property-byte-array-serialization");
-		model.setValueByteArray("value".getBytes(StandardCharsets.UTF_8));
+	@Override
+	protected String getXmlFileName() throws Exception {
+		return "property-byte-array-serialization.xml";
 	}
 
-	@Test
-	public void testWrite() throws Exception {
-
-		XmlSerializationHandler handler = new XmlSerializationHandler();
-
-		String actual = XmlUtil.write(handler, model);
-		String expected = readString(path);
-
-		Assertions.assertEquals(expected, actual);
+	@Override
+	protected Class<PropertyByteArraySerialization> getEntityClass() {
+		return PropertyByteArraySerialization.class;
 	}
 
-	@Test
-	public void testRead() throws Exception {
+	@Override
+	protected PropertyByteArraySerialization createEntity() {
 
-		XmlSerializationHandler handler = new XmlSerializationHandler();
+		PropertyByteArraySerialization entity = new PropertyByteArraySerialization();
 
-		PropertyByteArraySerialization actual = XmlUtil.read(handler, PropertyByteArraySerialization.class,
-				readString(path));
-		PropertyByteArraySerialization expected = model;
+		entity.setId("property-byte-array-serialization");
+		entity.setValueByteArray("value".getBytes(StandardCharsets.UTF_8));
 
-		Assertions.assertEquals(expected.getId(), actual.getId());
-		Assertions.assertArrayEquals(expected.getValueByteArray(), actual.getValueByteArray());
+		return entity;
+	}
+
+	@Override
+	protected byte[] getPropertyValue(PropertyByteArraySerialization entity) {
+		return entity.getValueByteArray();
+	}
+
+	@Override
+	protected void checkPropertyValue(byte[] expectedValue, byte[] actualValue) {
+		Assertions.assertArrayEquals(expectedValue, actualValue);
 	}
 }
