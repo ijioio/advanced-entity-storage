@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Assertions;
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Type;
-import com.ijioio.test.model.PropertyByteSerialization;
 import com.ijioio.test.model.PropertyLongSerialization;
 
 public class PropertyLongSerializationTest extends BasePropertySerializationTest<PropertyLongSerialization, Long> {
@@ -22,8 +21,13 @@ public class PropertyLongSerializationTest extends BasePropertySerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName() throws Exception {
-		return "property-long-serialization.xml";
+	protected String getXmlFileName(PropertyType type) {
+
+		if (type == PropertyType.STANDARD) {
+			return "property-long-serialization.xml";
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
@@ -43,8 +47,18 @@ public class PropertyLongSerializationTest extends BasePropertySerializationTest
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return false;
+	}
+
+	@Override
 	protected Long getPropertyValue(PropertyLongSerialization entity) {
 		return entity.getValueLong();
+	}
+
+	@Override
+	protected void setPropertyValue(PropertyLongSerialization entity, Long value) {
+		entity.setValueLong(value);
 	}
 
 	@Override

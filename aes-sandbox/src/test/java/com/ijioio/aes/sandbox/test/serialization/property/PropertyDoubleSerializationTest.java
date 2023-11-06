@@ -22,8 +22,13 @@ public class PropertyDoubleSerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName() throws Exception {
-		return "property-double-serialization.xml";
+	protected String getXmlFileName(PropertyType type) {
+
+		if (type == PropertyType.STANDARD) {
+			return "property-double-serialization.xml";
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
@@ -43,8 +48,18 @@ public class PropertyDoubleSerializationTest
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return false;
+	}
+
+	@Override
 	protected Double getPropertyValue(PropertyDoubleSerialization entity) {
 		return entity.getValueDouble();
+	}
+
+	@Override
+	protected void setPropertyValue(PropertyDoubleSerialization entity, Double value) {
+		entity.setValueDouble(value);
 	}
 
 	@Override

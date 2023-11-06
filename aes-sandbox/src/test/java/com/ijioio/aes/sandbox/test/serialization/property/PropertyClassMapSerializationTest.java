@@ -13,7 +13,7 @@ import com.ijioio.aes.sandbox.test.serialization.property.BasePropertySerializat
 import com.ijioio.test.model.PropertyClassMapSerialization;
 
 public class PropertyClassMapSerializationTest extends
-		BasePropertySerializationTest<PropertyClassMapSerialization, Map<Class<? extends Some>, Class<? extends Some>>> {
+		BasePropertyMapSerializationTest<PropertyClassMapSerialization, Map<Class<? extends Some>, Class<? extends Some>>, Class<? extends Some>> {
 
 	@Entity( //
 			name = PropertyClassMapSerializationPrototype.NAME, //
@@ -32,8 +32,15 @@ public class PropertyClassMapSerializationTest extends
 	}
 
 	@Override
-	protected String getXmlFileName() throws Exception {
-		return "property-class-map-serialization.xml";
+	protected String getXmlFileName(PropertyType type) {
+
+		if (type == PropertyType.STANDARD) {
+			return "property-class-map-serialization.xml";
+		} else if (type == PropertyType.NULL) {
+			return "property-class-map-null-serialization.xml";
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
@@ -60,8 +67,19 @@ public class PropertyClassMapSerializationTest extends
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
+	}
+
+	@Override
 	protected Map<Class<? extends Some>, Class<? extends Some>> getPropertyValue(PropertyClassMapSerialization entity) {
 		return entity.getValueClassMap();
+	}
+
+	@Override
+	protected void setPropertyValue(PropertyClassMapSerialization entity,
+			Map<Class<? extends Some>, Class<? extends Some>> value) {
+		entity.setValueClassMap(value);
 	}
 
 	@Override

@@ -12,8 +12,8 @@ import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.sandbox.test.serialization.property.BasePropertySerializationTest.Some;
 import com.ijioio.test.model.PropertyClassListSerialization;
 
-public class PropertyClassListSerializationTest
-		extends BasePropertySerializationTest<PropertyClassListSerialization, List<Class<? extends Some>>> {
+public class PropertyClassListSerializationTest extends
+		BasePropertyCollectionSerializationTest<PropertyClassListSerialization, List<Class<? extends Some>>, Class<? extends Some>> {
 
 	@Entity( //
 			name = PropertyClassListSerializationPrototype.NAME, //
@@ -31,8 +31,15 @@ public class PropertyClassListSerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName() throws Exception {
-		return "property-class-list-serialization.xml";
+	protected String getXmlFileName(PropertyType type) {
+
+		if (type == PropertyType.STANDARD) {
+			return "property-class-list-serialization.xml";
+		} else if (type == PropertyType.NULL) {
+			return "property-class-list-null-serialization.xml";
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
@@ -59,8 +66,18 @@ public class PropertyClassListSerializationTest
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
+	}
+
+	@Override
 	protected List<Class<? extends Some>> getPropertyValue(PropertyClassListSerialization entity) {
 		return entity.getValueClassList();
+	}
+
+	@Override
+	protected void setPropertyValue(PropertyClassListSerialization entity, List<Class<? extends Some>> value) {
+		entity.setValueClassList(value);
 	}
 
 	@Override

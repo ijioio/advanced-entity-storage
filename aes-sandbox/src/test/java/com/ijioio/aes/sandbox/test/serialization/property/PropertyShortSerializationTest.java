@@ -21,8 +21,13 @@ public class PropertyShortSerializationTest extends BasePropertySerializationTes
 	}
 
 	@Override
-	protected String getXmlFileName() throws Exception {
-		return "property-short-serialization.xml";
+	protected String getXmlFileName(PropertyType type) {
+
+		if (type == PropertyType.STANDARD) {
+			return "property-short-serialization.xml";
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
@@ -42,8 +47,18 @@ public class PropertyShortSerializationTest extends BasePropertySerializationTes
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return false;
+	}
+
+	@Override
 	protected Short getPropertyValue(PropertyShortSerialization entity) {
 		return entity.getValueShort();
+	}
+
+	@Override
+	protected void setPropertyValue(PropertyShortSerialization entity, Short value) {
+		entity.setValueShort(value);
 	}
 
 	@Override

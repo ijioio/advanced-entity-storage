@@ -24,8 +24,15 @@ public class PropertyLocalTimeSerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName() throws Exception {
-		return "property-local-time-serialization.xml";
+	protected String getXmlFileName(PropertyType type) {
+
+		if (type == PropertyType.STANDARD) {
+			return "property-local-time-serialization.xml";
+		} else if (type == PropertyType.NULL) {
+			return "property-local-time-null-serialization.xml";
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
@@ -45,8 +52,18 @@ public class PropertyLocalTimeSerializationTest
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
+	}
+
+	@Override
 	protected LocalTime getPropertyValue(PropertyLocalTimeSerialization entity) {
 		return entity.getValueLocalTime();
+	}
+
+	@Override
+	protected void setPropertyValue(PropertyLocalTimeSerialization entity, LocalTime value) {
+		entity.setValueLocalTime(value);
 	}
 
 	@Override

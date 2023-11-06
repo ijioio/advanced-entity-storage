@@ -21,8 +21,13 @@ public class PropertyByteSerializationTest extends BasePropertySerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName() throws Exception {
-		return "property-byte-serialization.xml";
+	protected String getXmlFileName(PropertyType type) {
+
+		if (type == PropertyType.STANDARD) {
+			return "property-byte-serialization.xml";
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
@@ -42,8 +47,18 @@ public class PropertyByteSerializationTest extends BasePropertySerializationTest
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return false;
+	}
+
+	@Override
 	protected Byte getPropertyValue(PropertyByteSerialization entity) {
 		return entity.getValueByte();
+	}
+
+	@Override
+	protected void setPropertyValue(PropertyByteSerialization entity, Byte value) {
+		entity.setValueByte(value);
 	}
 
 	@Override

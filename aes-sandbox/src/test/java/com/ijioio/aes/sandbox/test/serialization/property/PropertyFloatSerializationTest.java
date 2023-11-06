@@ -21,8 +21,13 @@ public class PropertyFloatSerializationTest extends BasePropertySerializationTes
 	}
 
 	@Override
-	protected String getXmlFileName() throws Exception {
-		return "property-float-serialization.xml";
+	protected String getXmlFileName(PropertyType type) {
+
+		if (type == PropertyType.STANDARD) {
+			return "property-float-serialization.xml";
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
@@ -42,8 +47,18 @@ public class PropertyFloatSerializationTest extends BasePropertySerializationTes
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return false;
+	}
+
+	@Override
 	protected Float getPropertyValue(PropertyFloatSerialization entity) {
 		return entity.getValueFloat();
+	}
+
+	@Override
+	protected void setPropertyValue(PropertyFloatSerialization entity, Float value) {
+		entity.setValueFloat(value);
 	}
 
 	@Override

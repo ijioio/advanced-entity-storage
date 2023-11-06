@@ -13,7 +13,7 @@ import com.ijioio.aes.annotation.Type;
 import com.ijioio.test.model.PropertyEnumListSerialization;
 
 public class PropertyEnumListSerializationTest
-		extends BasePropertySerializationTest<PropertyEnumListSerialization, List<Month>> {
+		extends BasePropertyCollectionSerializationTest<PropertyEnumListSerialization, List<Month>, Month> {
 
 	@Entity( //
 			name = PropertyEnumListSerializationPrototype.NAME, //
@@ -30,8 +30,15 @@ public class PropertyEnumListSerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName() throws Exception {
-		return "property-enum-list-serialization.xml";
+	protected String getXmlFileName(PropertyType type) {
+
+		if (type == PropertyType.STANDARD) {
+			return "property-enum-list-serialization.xml";
+		} else if (type == PropertyType.NULL) {
+			return "property-enum-list-null-serialization.xml";
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
@@ -58,8 +65,18 @@ public class PropertyEnumListSerializationTest
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
+	}
+
+	@Override
 	protected List<Month> getPropertyValue(PropertyEnumListSerialization entity) {
 		return entity.getValueEnumList();
+	}
+
+	@Override
+	protected void setPropertyValue(PropertyEnumListSerialization entity, List<Month> value) {
+		entity.setValueEnumList(value);
 	}
 
 	@Override

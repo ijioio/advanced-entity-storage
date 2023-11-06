@@ -12,7 +12,7 @@ import com.ijioio.aes.annotation.Type;
 import com.ijioio.test.model.PropertyStringMapSerialization;
 
 public class PropertyStringMapSerializationTest
-		extends BasePropertySerializationTest<PropertyStringMapSerialization, Map<String, String>> {
+		extends BasePropertyMapSerializationTest<PropertyStringMapSerialization, Map<String, String>, String> {
 
 	@Entity( //
 			name = PropertyStringMapSerializationPrototype.NAME, //
@@ -30,8 +30,15 @@ public class PropertyStringMapSerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName() throws Exception {
-		return "property-string-map-serialization.xml";
+	protected String getXmlFileName(PropertyType type) {
+
+		if (type == PropertyType.STANDARD) {
+			return "property-string-map-serialization.xml";
+		} else if (type == PropertyType.NULL) {
+			return "property-string-map-null-serialization.xml";
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
@@ -58,8 +65,18 @@ public class PropertyStringMapSerializationTest
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
+	}
+
+	@Override
 	protected Map<String, String> getPropertyValue(PropertyStringMapSerialization entity) {
 		return entity.getValueStringMap();
+	}
+
+	@Override
+	protected void setPropertyValue(PropertyStringMapSerialization entity, Map<String, String> value) {
+		entity.setValueStringMap(value);
 	}
 
 	@Override

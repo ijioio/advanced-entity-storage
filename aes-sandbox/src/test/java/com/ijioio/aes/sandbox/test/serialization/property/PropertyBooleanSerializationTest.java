@@ -22,8 +22,13 @@ public class PropertyBooleanSerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName() throws Exception {
-		return "property-boolean-serialization.xml";
+	protected String getXmlFileName(PropertyType type) {
+
+		if (type == PropertyType.STANDARD) {
+			return "property-boolean-serialization.xml";
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
@@ -43,8 +48,18 @@ public class PropertyBooleanSerializationTest
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return false;
+	}
+
+	@Override
 	protected Boolean getPropertyValue(PropertyBooleanSerialization entity) {
 		return entity.isValueBoolean();
+	}
+
+	@Override
+	protected void setPropertyValue(PropertyBooleanSerialization entity, Boolean value) {
+		entity.setValueBoolean(value);
 	}
 
 	@Override

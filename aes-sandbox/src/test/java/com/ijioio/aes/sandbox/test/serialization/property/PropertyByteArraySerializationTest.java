@@ -24,8 +24,15 @@ public class PropertyByteArraySerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName() throws Exception {
-		return "property-byte-array-serialization.xml";
+	protected String getXmlFileName(PropertyType type) {
+
+		if (type == PropertyType.STANDARD) {
+			return "property-byte-array-serialization.xml";
+		} else if (type == PropertyType.NULL) {
+			return "property-byte-array-null-serialization.xml";
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
@@ -45,8 +52,18 @@ public class PropertyByteArraySerializationTest
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
+	}
+
+	@Override
 	protected byte[] getPropertyValue(PropertyByteArraySerialization entity) {
 		return entity.getValueByteArray();
+	}
+
+	@Override
+	protected void setPropertyValue(PropertyByteArraySerialization entity, byte[] value) {
+		entity.setValueByteArray(value);
 	}
 
 	@Override

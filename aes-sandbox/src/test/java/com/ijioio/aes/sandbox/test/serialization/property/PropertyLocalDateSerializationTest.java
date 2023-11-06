@@ -25,8 +25,15 @@ public class PropertyLocalDateSerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName() throws Exception {
-		return "property-local-date-serialization.xml";
+	protected String getXmlFileName(PropertyType type) {
+
+		if (type == PropertyType.STANDARD) {
+			return "property-local-date-serialization.xml";
+		} else if (type == PropertyType.NULL) {
+			return "property-local-date-null-serialization.xml";
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
@@ -46,8 +53,18 @@ public class PropertyLocalDateSerializationTest
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
+	}
+
+	@Override
 	protected LocalDate getPropertyValue(PropertyLocalDateSerialization entity) {
 		return entity.getValueLocalDate();
+	}
+
+	@Override
+	protected void setPropertyValue(PropertyLocalDateSerialization entity, LocalDate value) {
+		entity.setValueLocalDate(value);
 	}
 
 	@Override

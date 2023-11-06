@@ -22,8 +22,15 @@ public class PropertyEnumSerializationTest extends BasePropertySerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName() throws Exception {
-		return "property-enum-serialization.xml";
+	protected String getXmlFileName(PropertyType type) {
+
+		if (type == PropertyType.STANDARD) {
+			return "property-enum-serialization.xml";
+		} else if (type == PropertyType.NULL) {
+			return "property-enum-null-serialization.xml";
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
@@ -43,8 +50,18 @@ public class PropertyEnumSerializationTest extends BasePropertySerializationTest
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
+	}
+
+	@Override
 	protected Month getPropertyValue(PropertyEnumSerialization entity) {
 		return entity.getValueEnum();
+	}
+
+	@Override
+	protected void setPropertyValue(PropertyEnumSerialization entity, Month value) {
+		entity.setValueEnum(value);
 	}
 
 	@Override

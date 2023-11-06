@@ -27,8 +27,15 @@ public class PropertyInstantSerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName() throws Exception {
-		return "property-instant-serialization.xml";
+	protected String getXmlFileName(PropertyType type) {
+
+		if (type == PropertyType.STANDARD) {
+			return "property-instant-serialization.xml";
+		} else if (type == PropertyType.NULL) {
+			return "property-instant-null-serialization.xml";
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
@@ -49,8 +56,18 @@ public class PropertyInstantSerializationTest
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
+	}
+
+	@Override
 	protected Instant getPropertyValue(PropertyInstantSerialization entity) {
 		return entity.getValueInstant();
+	}
+
+	@Override
+	protected void setPropertyValue(PropertyInstantSerialization entity, Instant value) {
+		entity.setValueInstant(value);
 	}
 
 	@Override

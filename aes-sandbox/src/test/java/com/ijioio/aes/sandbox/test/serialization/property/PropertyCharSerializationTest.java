@@ -21,8 +21,13 @@ public class PropertyCharSerializationTest extends BasePropertySerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName() throws Exception {
-		return "property-char-serialization.xml";
+	protected String getXmlFileName(PropertyType type) {
+
+		if (type == PropertyType.STANDARD) {
+			return "property-char-serialization.xml";
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
@@ -42,8 +47,18 @@ public class PropertyCharSerializationTest extends BasePropertySerializationTest
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return false;
+	}
+
+	@Override
 	protected Character getPropertyValue(PropertyCharSerialization entity) {
 		return entity.getValueChar();
+	}
+
+	@Override
+	protected void setPropertyValue(PropertyCharSerialization entity, Character value) {
+		entity.setValueChar(value);
 	}
 
 	@Override

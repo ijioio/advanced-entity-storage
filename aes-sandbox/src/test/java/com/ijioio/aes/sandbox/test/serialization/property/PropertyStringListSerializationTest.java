@@ -12,7 +12,7 @@ import com.ijioio.aes.annotation.Type;
 import com.ijioio.test.model.PropertyStringListSerialization;
 
 public class PropertyStringListSerializationTest
-		extends BasePropertySerializationTest<PropertyStringListSerialization, List<String>> {
+		extends BasePropertyCollectionSerializationTest<PropertyStringListSerialization, List<String>, String> {
 
 	@Entity( //
 			name = PropertyStringListSerializationPrototype.NAME, //
@@ -29,8 +29,15 @@ public class PropertyStringListSerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName() throws Exception {
-		return "property-string-list-serialization.xml";
+	protected String getXmlFileName(PropertyType type) {
+
+		if (type == PropertyType.STANDARD) {
+			return "property-string-list-serialization.xml";
+		} else if (type == PropertyType.NULL) {
+			return "property-string-list-null-serialization.xml";
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
@@ -57,8 +64,18 @@ public class PropertyStringListSerializationTest
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
+	}
+
+	@Override
 	protected List<String> getPropertyValue(PropertyStringListSerialization entity) {
 		return entity.getValueStringList();
+	}
+
+	@Override
+	protected void setPropertyValue(PropertyStringListSerialization entity, List<String> value) {
+		entity.setValueStringList(value);
 	}
 
 	@Override

@@ -27,8 +27,15 @@ public class PropertyClassSerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName() throws Exception {
-		return "property-class-serialization.xml";
+	protected String getXmlFileName(PropertyType type) {
+
+		if (type == PropertyType.STANDARD) {
+			return "property-class-serialization.xml";
+		} else if (type == PropertyType.NULL) {
+			return "property-class-null-serialization.xml";
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 
 	@Override
@@ -48,8 +55,18 @@ public class PropertyClassSerializationTest
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
+	}
+
+	@Override
 	protected Class<Some> getPropertyValue(PropertyClassSerialization entity) {
 		return entity.getValueClass();
+	}
+
+	@Override
+	protected void setPropertyValue(PropertyClassSerialization entity, Class<Some> value) {
+		entity.setValueClass(value);
 	}
 
 	@Override
