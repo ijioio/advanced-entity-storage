@@ -48,6 +48,11 @@ public class PropertyEnumMapSerializationTest
 	}
 
 	@Override
+	protected String getEntriesNullXmlFileName() {
+		return "property-enum-map-entries-null-serialization.xml";
+	}
+
+	@Override
 	protected Class<PropertyEnumMapSerialization> getEntityClass() {
 		return PropertyEnumMapSerialization.class;
 	}
@@ -73,6 +78,18 @@ public class PropertyEnumMapSerializationTest
 	@Override
 	protected Map<Month, Month> createEmptyPropertyValue() {
 		return new LinkedHashMap<>();
+	}
+
+	@Override
+	protected Map<Month, Month> createAllNullPropertyValue() {
+
+		Map<Month, Month> value = new LinkedHashMap<>();
+
+		for (int j = 0; j < VALUE_MAX_COUNT; j++) {
+			value.put(null, null);
+		}
+
+		return value;
 	}
 
 	@Override

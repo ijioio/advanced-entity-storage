@@ -47,6 +47,11 @@ public class PropertyStringMapSerializationTest
 	}
 
 	@Override
+	protected String getEntriesNullXmlFileName() {
+		return "property-string-map-entries-null-serialization.xml";
+	}
+
+	@Override
 	protected Class<PropertyStringMapSerialization> getEntityClass() {
 		return PropertyStringMapSerialization.class;
 	}
@@ -72,6 +77,18 @@ public class PropertyStringMapSerializationTest
 	@Override
 	protected Map<String, String> createEmptyPropertyValue() {
 		return new LinkedHashMap<>();
+	}
+
+	@Override
+	protected Map<String, String> createAllNullPropertyValue() {
+
+		Map<String, String> value = new LinkedHashMap<>();
+
+		for (int j = 0; j < VALUE_MAX_COUNT; j++) {
+			value.put(null, null);
+		}
+
+		return value;
 	}
 
 	@Override

@@ -1,0 +1,9 @@
+<object class="com.ijioio.test.model.PropertyClassMapSerialization">
+    <id>property-class-map-serialization</id>
+    <valueClassMap class="java.util.LinkedHashMap">
+        <entry>
+            <key class="java.lang.Void"/>
+            <value class="java.lang.Void"/>
+        </entry>
+    </valueClassMap>
+</object>
