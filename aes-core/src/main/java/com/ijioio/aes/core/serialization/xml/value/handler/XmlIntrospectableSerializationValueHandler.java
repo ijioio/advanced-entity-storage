@@ -17,7 +17,7 @@ import com.ijioio.aes.core.serialization.xml.XmlSerializationContext;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationValueHandler;
 
-public class XmlInrospectableSerializationValueHandler extends BaseXmlSerializationValueHandler<Introspectable> {
+public class XmlIntrospectableSerializationValueHandler extends BaseXmlSerializationValueHandler<Introspectable> {
 
 	@Override
 	public Class<Introspectable> getType() {

@@ -34,7 +34,7 @@ import com.ijioio.aes.core.serialization.xml.value.handler.XmlCollectionSerializ
 import com.ijioio.aes.core.serialization.xml.value.handler.XmlDoubleSerializationValueHandler;
 import com.ijioio.aes.core.serialization.xml.value.handler.XmlEnumSerializationValueHandler;
 import com.ijioio.aes.core.serialization.xml.value.handler.XmlFloatSerializationValueHandler;
-import com.ijioio.aes.core.serialization.xml.value.handler.XmlInrospectableSerializationValueHandler;
+import com.ijioio.aes.core.serialization.xml.value.handler.XmlIntrospectableSerializationValueHandler;
 import com.ijioio.aes.core.serialization.xml.value.handler.XmlInstantSerializationValueHandler;
 import com.ijioio.aes.core.serialization.xml.value.handler.XmlIntegerSerializationValueHandler;
 import com.ijioio.aes.core.serialization.xml.value.handler.XmlLocalDateSerializationValueHandler;
@@ -44,6 +44,7 @@ import com.ijioio.aes.core.serialization.xml.value.handler.XmlLongSerializationV
 import com.ijioio.aes.core.serialization.xml.value.handler.XmlMapSerializationValueHandler;
 import com.ijioio.aes.core.serialization.xml.value.handler.XmlShortSerializationValueHandler;
 import com.ijioio.aes.core.serialization.xml.value.handler.XmlStringSerializationValueHandler;
+import com.ijioio.aes.core.serialization.xml.value.handler.XmlVoidSerializationValueHandler;
 
 public class XmlSerializationHandler implements SerializationHandler {
 
@@ -119,7 +120,8 @@ public class XmlSerializationHandler implements SerializationHandler {
 		registerValueHandler(new XmlCollectionSerializationValueHandler());
 		registerValueHandler(new XmlMapSerializationValueHandler());
 		registerValueHandler(HANDLER_XSERIALIZABLE);
-		registerValueHandler(new XmlInrospectableSerializationValueHandler());
+		registerValueHandler(new XmlIntrospectableSerializationValueHandler());
+		registerValueHandler(new XmlVoidSerializationValueHandler());
 	}
 
 	public <T> void registerValueHandler(XmlSerializationValueHandler<T> handler) {
