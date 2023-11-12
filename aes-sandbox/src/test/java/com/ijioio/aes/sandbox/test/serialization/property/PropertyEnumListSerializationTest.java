@@ -42,6 +42,11 @@ public class PropertyEnumListSerializationTest
 	}
 
 	@Override
+	protected String getElementsEmptyXmlFileName() {
+		return "property-enum-list-elements-empty-serialization.xml";
+	}
+
+	@Override
 	protected Class<PropertyEnumListSerialization> getEntityClass() {
 		return PropertyEnumListSerialization.class;
 	}
@@ -62,6 +67,11 @@ public class PropertyEnumListSerializationTest
 		entity.setValueEnumList(value);
 
 		return entity;
+	}
+
+	@Override
+	protected List<Month> createEmptyPropertyValue() {
+		return new ArrayList<>();
 	}
 
 	@Override

@@ -43,6 +43,11 @@ public class PropertyClassListSerializationTest extends
 	}
 
 	@Override
+	protected String getElementsEmptyXmlFileName() {
+		return "property-class-list-elements-empty-serialization.xml";
+	}
+
+	@Override
 	protected Class<PropertyClassListSerialization> getEntityClass() {
 		return PropertyClassListSerialization.class;
 	}
@@ -63,6 +68,11 @@ public class PropertyClassListSerializationTest extends
 		entity.setValueClassList(value);
 
 		return entity;
+	}
+
+	@Override
+	protected List<Class<? extends Some>> createEmptyPropertyValue() {
+		return new ArrayList<>();
 	}
 
 	@Override

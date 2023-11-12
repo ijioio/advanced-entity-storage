@@ -1,10 +1,18 @@
 package com.ijioio.aes.sandbox.test.serialization.property;
 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import com.ijioio.aes.core.Entity;
+import com.ijioio.aes.core.serialization.xml.XmlUtil;
 
 public abstract class BasePropertyCollectionSerializationTest<E extends Entity, V extends Collection<I>, I>
 		extends BasePropertySerializationTest<E, V> {
@@ -38,23 +46,22 @@ public abstract class BasePropertyCollectionSerializationTest<E extends Entity, 
 
 	protected final int VALUE_MAX_COUNT = 3;
 
-//	@Test
-//	public void testWriteElementsEmpty() throws Exception {
-//
-//		Path path = Paths.get(getClass().getClassLoader()
-//				.getResource(String.format("serialization/entity/property/%s", getXmlFileName(ElementType.EMPTY)))
-//				.toURI());
-//
-//		setPropertyValue(entity, createEmptyPropertyValue());
-//
-//		String actualXml = XmlUtil.write2(handler, entity);
-//		String expectedXml = readString(path);
-//
-//		Files.write(Paths.get("c:/deleteme/entity.xml"), actualXml.getBytes(StandardCharsets.UTF_8));
-//
-//		Assertions.assertEquals(expectedXml, actualXml);
-//	}
-//
+	@Test
+	public void testWriteElementsEmpty() throws Exception {
+
+		Path path = Paths.get(getClass().getClassLoader()
+				.getResource(String.format("serialization/entity/property/%s", getElementsEmptyXmlFileName())).toURI());
+
+		setPropertyValue(entity, createEmptyPropertyValue());
+
+		String actualXml = XmlUtil.write2(handler, entity);
+		String expectedXml = readString(path);
+
+		Files.write(Paths.get("c:/deleteme/entity.xml"), actualXml.getBytes(StandardCharsets.UTF_8));
+
+		Assertions.assertEquals(expectedXml, actualXml);
+	}
+
 //	@Test
 //	public void testWriteElementsNull() throws Exception {
 //
@@ -71,22 +78,21 @@ public abstract class BasePropertyCollectionSerializationTest<E extends Entity, 
 //
 //		Assertions.assertEquals(expectedXml, actualXml);
 //	}
-//
-//	@Test
-//	public void testReadElementsEmpty() throws Exception {
-//
-//		Path path = Paths.get(getClass().getClassLoader()
-//				.getResource(String.format("serialization/entity/property/%s", getXmlFileName(ElementType.EMPTY)))
-//				.toURI());
-//
-//		setPropertyValue(entity, createEmptyPropertyValue());
-//
-//		E actualEntity = XmlUtil.read2(handler, getEntityClass(), readString(path));
-//		E expectedEntity = entity;
-//
-//		check(expectedEntity, actualEntity);
-//	}
-//
+
+	@Test
+	public void testReadElementsEmpty() throws Exception {
+
+		Path path = Paths.get(getClass().getClassLoader()
+				.getResource(String.format("serialization/entity/property/%s", getElementsEmptyXmlFileName())).toURI());
+
+		setPropertyValue(entity, createEmptyPropertyValue());
+
+		E actualEntity = XmlUtil.read2(handler, getEntityClass(), readString(path));
+		E expectedEntity = entity;
+
+		check(expectedEntity, actualEntity);
+	}
+
 //	@Test
 //	public void testReadElementsNull() throws Exception {
 //
@@ -101,11 +107,13 @@ public abstract class BasePropertyCollectionSerializationTest<E extends Entity, 
 //
 //		check(expectedEntity, actualEntity);
 //	}
-//
+
 //	protected abstract String getXmlFileName(ElementType type);
-//
-//	protected abstract V createEmptyPropertyValue();
-//
+
+	protected abstract String getElementsEmptyXmlFileName();
+
+	protected abstract V createEmptyPropertyValue();
+
 //	protected abstract V createAllNullPropertyValue();
 //
 //	public static enum ElementType {
