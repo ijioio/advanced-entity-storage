@@ -96,7 +96,7 @@ public class XmlIntrospectableSerializationValueHandler extends BaseXmlSerializa
 							: property.getType().getRawType();
 
 					// TODO: take into account final field, i.e. use null for non final field!
-					Object propertyValue = value.read(property);
+					Object propertyValue = value != null ? value.read(property) : null;
 
 					introspectable.write((Property) property,
 							((XmlSerializationValueHandler) handler.getValueHandler(propertyType)).read(context,
