@@ -62,21 +62,21 @@ public abstract class BasePropertyMapSerializationTest<E extends Entity, V exten
 		Assertions.assertEquals(expectedXml, actualXml);
 	}
 
-//	@Test
-//	public void testWriteEntriesNull() throws Exception {
-//
-//		Path path = Paths.get(getClass().getClassLoader()
-//				.getResource(String.format("serialization/entity/property/%s", getElementsNullXmlFileName())).toURI());
-//
-//		setPropertyValue(entity, createAllNullPropertyValue());
-//
-//		String actualXml = XmlUtil.write2(handler, entity);
-//		String expectedXml = readString(path);
-//
-//		Files.write(Paths.get("c:/deleteme/entity.xml"), actualXml.getBytes(StandardCharsets.UTF_8));
-//
-//		Assertions.assertEquals(expectedXml, actualXml);
-//	}
+	@Test
+	public void testWriteEntriesNull() throws Exception {
+
+		Path path = Paths.get(getClass().getClassLoader()
+				.getResource(String.format("serialization/entity/property/%s", getEntriesNullXmlFileName())).toURI());
+
+		setPropertyValue(entity, createAllNullPropertyValue());
+
+		String actualXml = XmlUtil.write2(handler, entity);
+		String expectedXml = readString(path);
+
+		Files.write(Paths.get("c:/deleteme/entity.xml"), actualXml.getBytes(StandardCharsets.UTF_8));
+
+		Assertions.assertEquals(expectedXml, actualXml);
+	}
 
 	@Test
 	public void testReadEntriesEmpty() throws Exception {
@@ -92,25 +92,25 @@ public abstract class BasePropertyMapSerializationTest<E extends Entity, V exten
 		check(expectedEntity, actualEntity);
 	}
 
-//	@Test
-//	public void testReadEntriesNull() throws Exception {
-//
-//		Path path = Paths.get(getClass().getClassLoader()
-//				.getResource(String.format("serialization/entity/property/%s", getElementsNullXmlFileName())).toURI());
-//
-//		setPropertyValue(entity, createAllNullPropertyValue());
-//
-//		E actualEntity = XmlUtil.read2(handler, getEntityClass(), readString(path));
-//		E expectedEntity = entity;
-//
-//		check(expectedEntity, actualEntity);
-//	}
+	@Test
+	public void testReadEntriesNull() throws Exception {
+
+		Path path = Paths.get(getClass().getClassLoader()
+				.getResource(String.format("serialization/entity/property/%s", getEntriesNullXmlFileName())).toURI());
+
+		setPropertyValue(entity, createAllNullPropertyValue());
+
+		E actualEntity = XmlUtil.read2(handler, getEntityClass(), readString(path));
+		E expectedEntity = entity;
+
+		check(expectedEntity, actualEntity);
+	}
 
 	protected abstract String getEntriesEmptyXmlFileName();
 
-//	protected abstract String getEntriesNullXmlFileName();
+	protected abstract String getEntriesNullXmlFileName();
 
 	protected abstract V createEmptyPropertyValue();
 
-//	protected abstract V createAllNullPropertyValue();
+	protected abstract V createAllNullPropertyValue();
 }
