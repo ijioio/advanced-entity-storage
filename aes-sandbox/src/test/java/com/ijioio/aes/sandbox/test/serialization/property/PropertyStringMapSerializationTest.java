@@ -42,6 +42,11 @@ public class PropertyStringMapSerializationTest
 	}
 
 	@Override
+	protected String getEntriesEmptyXmlFileName() {
+		return "property-string-map-entries-empty-serialization.xml";
+	}
+
+	@Override
 	protected Class<PropertyStringMapSerialization> getEntityClass() {
 		return PropertyStringMapSerialization.class;
 	}
@@ -62,6 +67,11 @@ public class PropertyStringMapSerializationTest
 		entity.setValueStringMap(value);
 
 		return entity;
+	}
+
+	@Override
+	protected Map<String, String> createEmptyPropertyValue() {
+		return new LinkedHashMap<>();
 	}
 
 	@Override

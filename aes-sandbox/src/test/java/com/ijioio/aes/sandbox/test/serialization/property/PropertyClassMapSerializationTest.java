@@ -44,6 +44,11 @@ public class PropertyClassMapSerializationTest extends
 	}
 
 	@Override
+	protected String getEntriesEmptyXmlFileName() {
+		return "property-class-map-entries-empty-serialization.xml";
+	}
+
+	@Override
 	protected Class<PropertyClassMapSerialization> getEntityClass() {
 		return PropertyClassMapSerialization.class;
 	}
@@ -64,6 +69,11 @@ public class PropertyClassMapSerializationTest extends
 		entity.setValueClassMap(value);
 
 		return entity;
+	}
+
+	@Override
+	protected Map<Class<? extends Some>, Class<? extends Some>> createEmptyPropertyValue() {
+		return new LinkedHashMap<>();
 	}
 
 	@Override

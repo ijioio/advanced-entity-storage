@@ -43,6 +43,11 @@ public class PropertyEnumMapSerializationTest
 	}
 
 	@Override
+	protected String getEntriesEmptyXmlFileName() {
+		return "property-enum-map-entries-empty-serialization.xml";
+	}
+
+	@Override
 	protected Class<PropertyEnumMapSerialization> getEntityClass() {
 		return PropertyEnumMapSerialization.class;
 	}
@@ -63,6 +68,11 @@ public class PropertyEnumMapSerializationTest
 		entity.setValueEnumMap(value);
 
 		return entity;
+	}
+
+	@Override
+	protected Map<Month, Month> createEmptyPropertyValue() {
+		return new LinkedHashMap<>();
 	}
 
 	@Override
