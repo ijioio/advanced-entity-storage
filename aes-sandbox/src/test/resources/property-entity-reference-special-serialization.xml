@@ -1,7 +1,0 @@
-<object class="com.ijioio.test.model.PropertyEntityReferenceSpecialSerialization">
-    <id>property-entity-reference-special-serialization</id>
-    <valueEntityReference class="com.ijioio.aes.core.EntityReference">
-        <id>some</id>
-        <type class="java.lang.Class">com.ijioio.aes.sandbox.test.serialization.property.PropertyEntityReferenceSpecialSerializationTest$Some</type>
-    </valueEntityReference>
-</object>
