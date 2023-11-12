@@ -1,23 +1,38 @@
 package com.ijioio.aes.core;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import com.ijioio.aes.core.serialization.SerializationContext;
-import com.ijioio.aes.core.serialization.SerializationHandler;
-import com.ijioio.aes.core.serialization.SerializationReader;
-import com.ijioio.aes.core.serialization.SerializationWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Convenient class for holding reference data for the entity.
  */
-public final class EntityReference<E extends Entity> extends BaseEntity {
+public final class EntityReference<E extends Entity> implements Introspectable {
+
+	public static class Properties {
+
+		public static final Property<String> id = Property.of("id", new TypeReference<String>() {
+		});
+
+		public static final Property<Class<? extends Entity>> type = Property.of("type",
+				new TypeReference<Class<? extends Entity>>() {
+				});
+
+		private static final List<Property<?>> values = new ArrayList<>();
+
+		static {
+
+			values.add(id);
+			values.add(type);
+		}
+	}
 
 	/**
 	 * Creates entity reference for entity with indicated {@code id} and
 	 * {@code type}.
 	 *
-	 * @param id of the entity
+	 * @param id   of the entity
 	 * @param type of the entity
 	 * @return entity reference for the entity
 	 */
@@ -31,7 +46,17 @@ public final class EntityReference<E extends Entity> extends BaseEntity {
 		return entityReference;
 	}
 
+	private String id;
+
 	private Class<E> type;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public Class<E> getType() {
 		return type;
@@ -42,15 +67,39 @@ public final class EntityReference<E extends Entity> extends BaseEntity {
 	}
 
 	@Override
+	public Collection<Property<?>> getProperties() {
+		return Properties.values;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T read(Property<T> property) throws IntrospectionException {
+
+		if (Properties.id.equals(property)) {
+			return (T) getId();
+		} else if (Properties.type.equals(property)) {
+			return (T) getType();
+		} else {
+			throw new IntrospectionException(String.format("property %s is not supported", property));
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> void write(Property<T> property, T value) throws IntrospectionException {
+
+		if (Properties.id.equals(property)) {
+			setId((String) value);
+		} else if (Properties.type.equals(property)) {
+			setType((Class<E>) value);
+		} else {
+			throw new IntrospectionException(String.format("property %s is not supported", property));
+		}
+	}
+
+	@Override
 	public int hashCode() {
-
-		final int prime = 31;
-
-		int result = super.hashCode();
-
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
-
-		return result;
+		return Objects.hash(id, type);
 	}
 
 	@Override
@@ -60,7 +109,7 @@ public final class EntityReference<E extends Entity> extends BaseEntity {
 			return true;
 		}
 
-		if (!super.equals(obj)) {
+		if (obj == null) {
 			return false;
 		}
 
@@ -70,41 +119,11 @@ public final class EntityReference<E extends Entity> extends BaseEntity {
 
 		EntityReference<?> other = (EntityReference<?>) obj;
 
-		if (type == null) {
-
-			if (other.type != null) {
-				return false;
-			}
-
-		} else if (!type.equals(other.type)) {
-			return false;
-		}
-
-		return true;
-	}
-
-	@Override
-	public Map<String, SerializationWriter> getWriters(SerializationContext context, SerializationHandler handler) {
-
-		Map<String, SerializationWriter> writers = new LinkedHashMap<>(super.getWriters(context, handler));
-
-		writers.put("type", () -> handler.write(context, "type", type));
-
-		return writers;
-	}
-
-	@Override
-	public Map<String, SerializationReader> getReaders(SerializationContext context, SerializationHandler handler) {
-
-		Map<String, SerializationReader> readers = new LinkedHashMap<>(super.getReaders(context, handler));
-
-		readers.put("type", () -> type = handler.read(context, type));
-
-		return readers;
+		return Objects.equals(id, other.id) && Objects.equals(type, other.type);
 	}
 
 	@Override
 	public String toString() {
-		return "EntityReference [id=" + getId() + ", type=" + type + "]";
+		return "EntityReference [id=" + id + ", type=" + type + "]";
 	}
 }
