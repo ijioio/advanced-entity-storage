@@ -38,7 +38,8 @@ public class XmlCollectionSerializationValueHandler extends BaseXmlSerialization
 					((XmlSerializationValueHandler) handler.getValueHandler(value.getClass())).write(context, handler,
 							"item", value, true);
 				} else {
-					// TODO: handle null?
+					((XmlSerializationValueHandler) handler.getValueHandler(Void.class)).write(context, handler, "item",
+							null, true);
 				}
 			}
 
