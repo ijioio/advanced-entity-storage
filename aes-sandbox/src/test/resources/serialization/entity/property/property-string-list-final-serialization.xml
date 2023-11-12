@@ -1,0 +1,8 @@
+<object class="com.ijioio.test.model.PropertyStringListFinalSerialization">
+    <id>property-string-list-final-serialization</id>
+    <valueStringList class="java.util.ArrayList">
+        <item class="java.lang.String">value1</item>
+        <item class="java.lang.String">value2</item>
+        <item class="java.lang.String">value3</item>
+    </valueStringList>
+</object>
