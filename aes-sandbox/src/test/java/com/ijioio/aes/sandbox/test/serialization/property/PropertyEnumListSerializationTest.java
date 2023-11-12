@@ -47,6 +47,11 @@ public class PropertyEnumListSerializationTest
 	}
 
 	@Override
+	protected String getElementsNullXmlFileName() {
+		return "property-enum-list-elements-null-serialization.xml";
+	}
+
+	@Override
 	protected Class<PropertyEnumListSerialization> getEntityClass() {
 		return PropertyEnumListSerialization.class;
 	}
@@ -72,6 +77,18 @@ public class PropertyEnumListSerializationTest
 	@Override
 	protected List<Month> createEmptyPropertyValue() {
 		return new ArrayList<>();
+	}
+
+	@Override
+	protected List<Month> createAllNullPropertyValue() {
+
+		List<Month> value = new ArrayList<>();
+
+		for (int j = 0; j < VALUE_MAX_COUNT; j++) {
+			value.add(null);
+		}
+
+		return value;
 	}
 
 	@Override

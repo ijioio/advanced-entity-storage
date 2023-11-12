@@ -46,6 +46,11 @@ public class PropertyStringListSerializationTest
 	}
 
 	@Override
+	protected String getElementsNullXmlFileName() {
+		return "property-string-list-elements-null-serialization.xml";
+	}
+
+	@Override
 	protected Class<PropertyStringListSerialization> getEntityClass() {
 		return PropertyStringListSerialization.class;
 	}
@@ -71,6 +76,18 @@ public class PropertyStringListSerializationTest
 	@Override
 	protected List<String> createEmptyPropertyValue() {
 		return new ArrayList<>();
+	}
+
+	@Override
+	protected List<String> createAllNullPropertyValue() {
+
+		List<String> value = new ArrayList<>();
+
+		for (int j = 0; j < VALUE_MAX_COUNT; j++) {
+			value.add(null);
+		}
+
+		return value;
 	}
 
 	@Override
