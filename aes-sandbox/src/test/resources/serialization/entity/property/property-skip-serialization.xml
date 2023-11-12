@@ -52,6 +52,15 @@
                 <skip>skip</skip>
             </skip>
         </skip>
+        <item class="java.lang.String">value3</item>
+        <skip>skip</skip>
+        <skip>
+            <skip>skip</skip>
+            <skip>skip</skip>
+            <skip>
+                <skip>skip</skip>
+            </skip>
+        </skip>
     </valueStringList>
     <skip>skip</skip>
     <skip>
@@ -80,6 +89,15 @@
             </skip>
         </skip>
         <item class="java.lang.String">value2</item>
+        <skip>skip</skip>
+        <skip>
+            <skip>skip</skip>
+            <skip>skip</skip>
+            <skip>
+                <skip>skip</skip>
+            </skip>
+        </skip>
+        <item class="java.lang.String">value3</item>
         <skip>skip</skip>
         <skip>
             <skip>skip</skip>
@@ -161,6 +179,42 @@
                 </skip>
             </skip>
             <value class="java.lang.String">value2</value>
+            <skip>skip</skip>
+            <skip>
+                <skip>skip</skip>
+                <skip>skip</skip>
+                <skip>
+                    <skip>skip</skip>
+                </skip>
+            </skip>
+        </entry>
+        <skip>skip</skip>
+        <skip>
+            <skip>skip</skip>
+            <skip>skip</skip>
+            <skip>
+                <skip>skip</skip>
+            </skip>
+        </skip>
+        <entry>
+            <skip>skip</skip>
+            <skip>
+                <skip>skip</skip>
+                <skip>skip</skip>
+                <skip>
+                    <skip>skip</skip>
+                </skip>
+            </skip>
+            <key class="java.lang.String">key3</key>
+            <skip>skip</skip>
+            <skip>
+                <skip>skip</skip>
+                <skip>skip</skip>
+                <skip>
+                    <skip>skip</skip>
+                </skip>
+            </skip>
+            <value class="java.lang.String">value3</value>
             <skip>skip</skip>
             <skip>
                 <skip>skip</skip>
