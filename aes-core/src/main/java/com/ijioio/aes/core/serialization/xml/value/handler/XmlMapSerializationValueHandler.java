@@ -44,14 +44,16 @@ public class XmlMapSerializationValueHandler extends BaseXmlSerializationValueHa
 					((XmlSerializationValueHandler) handler.getValueHandler(key.getClass())).write(context, handler,
 							"key", key, true);
 				} else {
-					// TODO: handle null?
+					((XmlSerializationValueHandler) handler.getValueHandler(Void.class)).write(context, handler, "key",
+							null, true);
 				}
 
 				if (value != null) {
 					((XmlSerializationValueHandler) handler.getValueHandler(value.getClass())).write(context, handler,
 							"value", value, true);
 				} else {
-					// TODO: handle null?
+					((XmlSerializationValueHandler) handler.getValueHandler(Void.class)).write(context, handler,
+							"value", null, true);
 				}
 
 				writer.writeEndElement();
@@ -86,8 +88,6 @@ public class XmlMapSerializationValueHandler extends BaseXmlSerializationValueHa
 					Object key = null;
 					Object value = null;
 
-					boolean found = false;
-
 					while (reader.nextTag() != XMLStreamConstants.END_ELEMENT) {
 
 						if (reader.getName().getLocalPart().equals("key")) {
@@ -103,8 +103,6 @@ public class XmlMapSerializationValueHandler extends BaseXmlSerializationValueHa
 							key = ((XmlSerializationValueHandler) handler.getValueHandler(keyType)).read(context,
 									handler, keyType, null);
 
-							found = true;
-
 						} else if (reader.getName().getLocalPart().equals("value")) {
 
 							String valueTypeName = reader.getAttributeValue(null, "class");
@@ -118,16 +116,12 @@ public class XmlMapSerializationValueHandler extends BaseXmlSerializationValueHa
 							value = ((XmlSerializationValueHandler) handler.getValueHandler(valueType)).read(context,
 									handler, valueType, null);
 
-							found = true;
-
 						} else {
 							handler.skipElement(reader);
 						}
 					}
 
-					if (found) {
-						map.put(key, value);
-					}
+					map.put(key, value);
 
 				} else {
 					skipElement(reader);
