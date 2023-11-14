@@ -1,6 +1,0 @@
-<object class="com.ijioio.test.model.PropertyXSerializableSerialization">
-    <id>property-xserializable-serialization</id>
-    <valueXSerializableObject class="com.ijioio.aes.sandbox.test.serialization.property.PropertyXSerializableSerializationTest$XSerializableObject">
-        <valueString>value</valueString>
-    </valueXSerializableObject>
-</object>
