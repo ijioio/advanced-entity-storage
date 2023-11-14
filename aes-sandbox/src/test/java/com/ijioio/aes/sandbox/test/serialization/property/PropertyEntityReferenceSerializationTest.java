@@ -1,5 +1,7 @@
 package com.ijioio.aes.sandbox.test.serialization.property;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.Assertions;
 
 import com.ijioio.aes.annotation.Entity;
@@ -72,6 +74,16 @@ public class PropertyEntityReferenceSerializationTest
 
 	@Override
 	protected void checkPropertyValue(EntityReference<Some> expectedValue, EntityReference<Some> actualValue) {
-		Assertions.assertEquals(expectedValue, actualValue);
+
+		Assertions.assertEquals(getEntityReferenceId(expectedValue), getEntityReferenceId(actualValue));
+		Assertions.assertEquals(getEntityReferenceType(expectedValue), getEntityReferenceType(actualValue));
+	}
+
+	private String getEntityReferenceId(EntityReference<Some> value) {
+		return Optional.ofNullable(value).map(item -> item.getId()).orElse(null);
+	}
+
+	private Class<Some> getEntityReferenceType(EntityReference<Some> value) {
+		return Optional.ofNullable(value).map(item -> item.getType()).orElse(null);
 	}
 }
