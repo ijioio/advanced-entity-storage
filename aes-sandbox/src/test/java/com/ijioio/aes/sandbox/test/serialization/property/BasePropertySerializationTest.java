@@ -4,6 +4,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +16,10 @@ import org.junit.jupiter.api.condition.EnabledIf;
 
 import com.ijioio.aes.core.BaseEntity;
 import com.ijioio.aes.core.Entity;
+import com.ijioio.aes.core.Introspectable;
+import com.ijioio.aes.core.IntrospectionException;
+import com.ijioio.aes.core.Property;
+import com.ijioio.aes.core.TypeReference;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
 import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
@@ -21,6 +29,82 @@ public abstract class BasePropertySerializationTest<E extends Entity, V> extends
 	public static class Some extends BaseEntity {
 
 		public static final String NAME = "com.ijioio.aes.sandbox.test.serialization.property.BasePropertySerializationTest.Some";
+	}
+
+	public static class SomeIntrospectable implements Introspectable {
+
+		public static class Properties {
+
+			public static final Property<String> value = Property.of("value", new TypeReference<String>() {
+			});
+
+			private static final List<Property<?>> values = new ArrayList<>();
+
+			static {
+				values.add(value);
+			}
+		}
+
+		private String value;
+
+		public String getValue() {
+			return value;
+		}
+
+		public void setValue(String value) {
+			this.value = value;
+		}
+
+		@Override
+		public Collection<Property<?>> getProperties() {
+			return Properties.values;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T> T read(Property<T> property) throws IntrospectionException {
+
+			if (Properties.value.equals(property)) {
+				return (T) this.value;
+			} else {
+				throw new IntrospectionException(String.format("property %s is not supported", property));
+			}
+		}
+
+		@Override
+		public <T> void write(Property<T> property, T value) throws IntrospectionException {
+
+			if (Properties.value.equals(property)) {
+				this.value = (String) value;
+			} else {
+				throw new IntrospectionException(String.format("property %s is not supported", property));
+			}
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(value);
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+
+			if (this == obj) {
+				return true;
+			}
+
+			if (obj == null) {
+				return false;
+			}
+
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+
+			SomeIntrospectable other = (SomeIntrospectable) obj;
+
+			return Objects.equals(value, other.value);
+		}
 	}
 
 	protected XmlSerializationHandler handler;
