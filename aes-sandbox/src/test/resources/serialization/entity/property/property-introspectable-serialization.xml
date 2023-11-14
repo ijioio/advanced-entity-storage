@@ -1,0 +1,6 @@
+<object class="com.ijioio.test.model.PropertyIntrospectableSerialization">
+    <id>property-introspectable-serialization</id>
+    <valueIntrospectable class="com.ijioio.aes.sandbox.test.serialization.property.BasePropertySerializationTest$SomeIntrospectable">
+        <value>value</value>
+    </valueIntrospectable>
+</object>
