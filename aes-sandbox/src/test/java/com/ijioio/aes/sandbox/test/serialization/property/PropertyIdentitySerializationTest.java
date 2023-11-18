@@ -26,9 +26,9 @@ import com.ijioio.test.model.PropertyIdentitySerialization;
 
 public class PropertyIdentitySerializationTest extends BaseSerializationTest {
 
-	public static class SomeIdentity extends BaseIdentity implements Introspectable {
+	public static class TestIdentity extends BaseIdentity implements Introspectable {
 
-		public static final String NAME = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.SomeIdentity";
+		public static final String NAME = "com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest.TestIdentity";
 
 		public static class Properties {
 
@@ -82,9 +82,9 @@ public class PropertyIdentitySerializationTest extends BaseSerializationTest {
 	@Entity( //
 			name = PropertyIdentitySerializationPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueIdentity1", type = SomeIdentity.NAME), //
-					@EntityProperty(name = "valueIdentity2", type = SomeIdentity.NAME), //
-					@EntityProperty(name = "valueIdentity3", type = SomeIdentity.NAME) //
+					@EntityProperty(name = "valueIdentity1", type = TestIdentity.NAME), //
+					@EntityProperty(name = "valueIdentity2", type = TestIdentity.NAME), //
+					@EntityProperty(name = "valueIdentity3", type = TestIdentity.NAME) //
 			} //
 	)
 	public static interface PropertyIdentitySerializationPrototype {
@@ -144,7 +144,7 @@ public class PropertyIdentitySerializationTest extends BaseSerializationTest {
 
 		entity.setId("property-identity-serialization");
 
-		SomeIdentity value = new SomeIdentity();
+		TestIdentity value = new TestIdentity();
 
 		value.setId("some-identity");
 		value.setValue("value");
