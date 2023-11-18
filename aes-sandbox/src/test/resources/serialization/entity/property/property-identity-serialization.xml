@@ -1,0 +1,8 @@
+<object id="property-identity-serialization" class="com.ijioio.test.model.PropertyIdentitySerialization">
+    <id>property-identity-serialization</id>
+    <valueIdentity1 id="some-identity" class="com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest$SomeIdentity">
+        <value>value</value>
+    </valueIdentity1>
+    <valueIdentity2 id="some-identity" class="com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest$SomeIdentity"/>
+    <valueIdentity3 id="some-identity" class="com.ijioio.aes.sandbox.test.serialization.property.PropertyIdentitySerializationTest$SomeIdentity"/>
+</object>
