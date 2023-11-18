@@ -17,15 +17,15 @@ import com.ijioio.aes.core.serialization.xml.XmlUtil;
 public abstract class BasePropertyMapSerializationTest<E extends Entity, V extends Map<I, I>, I>
 		extends BasePropertySerializationTest<E, V> {
 
-	public static class Some1 extends Some {
+	public static class TestEntity1 extends Some {
 		// Empty
 	}
 
-	public static class Some2 extends Some {
+	public static class TestEntity2 extends Some {
 		// Empty
 	}
 
-	public static class Some3 extends Some {
+	public static class TestEntity3 extends Some {
 		// Empty
 	}
 
@@ -39,9 +39,9 @@ public abstract class BasePropertyMapSerializationTest<E extends Entity, V exten
 		characters.add(Character.valueOf('b'));
 		characters.add(Character.valueOf('c'));
 
-		types.add(Some1.class);
-		types.add(Some2.class);
-		types.add(Some3.class);
+		types.add(TestEntity1.class);
+		types.add(TestEntity2.class);
+		types.add(TestEntity3.class);
 	}
 
 	protected final int VALUE_MAX_COUNT = 3;

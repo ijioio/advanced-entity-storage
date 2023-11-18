@@ -2,16 +2,16 @@
     <id>property-class-map-serialization</id>
     <valueClassMap class="java.util.LinkedHashMap">
         <entry>
-            <key class="java.lang.Class">com.ijioio.aes.sandbox.test.serialization.property.BasePropertyMapSerializationTest$Some1</key>
-            <value class="java.lang.Class">com.ijioio.aes.sandbox.test.serialization.property.BasePropertyMapSerializationTest$Some1</value>
+            <key class="java.lang.Class">com.ijioio.aes.sandbox.test.serialization.property.BasePropertyMapSerializationTest$TestEntity1</key>
+            <value class="java.lang.Class">com.ijioio.aes.sandbox.test.serialization.property.BasePropertyMapSerializationTest$TestEntity1</value>
         </entry>
         <entry>
-            <key class="java.lang.Class">com.ijioio.aes.sandbox.test.serialization.property.BasePropertyMapSerializationTest$Some2</key>
-            <value class="java.lang.Class">com.ijioio.aes.sandbox.test.serialization.property.BasePropertyMapSerializationTest$Some2</value>
+            <key class="java.lang.Class">com.ijioio.aes.sandbox.test.serialization.property.BasePropertyMapSerializationTest$TestEntity2</key>
+            <value class="java.lang.Class">com.ijioio.aes.sandbox.test.serialization.property.BasePropertyMapSerializationTest$TestEntity2</value>
         </entry>
         <entry>
-            <key class="java.lang.Class">com.ijioio.aes.sandbox.test.serialization.property.BasePropertyMapSerializationTest$Some3</key>
-            <value class="java.lang.Class">com.ijioio.aes.sandbox.test.serialization.property.BasePropertyMapSerializationTest$Some3</value>
+            <key class="java.lang.Class">com.ijioio.aes.sandbox.test.serialization.property.BasePropertyMapSerializationTest$TestEntity3</key>
+            <value class="java.lang.Class">com.ijioio.aes.sandbox.test.serialization.property.BasePropertyMapSerializationTest$TestEntity3</value>
         </entry>
     </valueClassMap>
 </object>
