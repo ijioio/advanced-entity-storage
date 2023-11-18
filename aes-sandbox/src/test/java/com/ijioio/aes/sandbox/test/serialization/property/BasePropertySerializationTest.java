@@ -7,7 +7,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +30,9 @@ public abstract class BasePropertySerializationTest<E extends Entity, V> extends
 		public static final String NAME = "com.ijioio.aes.sandbox.test.serialization.property.BasePropertySerializationTest.Some";
 	}
 
-	public static class SomeIntrospectable implements Introspectable {
+	public static class TestIntrospectable implements Introspectable {
+
+		public static final String NAME = "com.ijioio.aes.sandbox.test.serialization.property.BasePropertySerializationTest.TestIntrospectable";
 
 		public static class Properties {
 
@@ -79,31 +80,6 @@ public abstract class BasePropertySerializationTest<E extends Entity, V> extends
 			} else {
 				throw new IntrospectionException(String.format("property %s is not supported", property));
 			}
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(value);
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-
-			if (this == obj) {
-				return true;
-			}
-
-			if (obj == null) {
-				return false;
-			}
-
-			if (getClass() != obj.getClass()) {
-				return false;
-			}
-
-			SomeIntrospectable other = (SomeIntrospectable) obj;
-
-			return Objects.equals(value, other.value);
 		}
 	}
 
