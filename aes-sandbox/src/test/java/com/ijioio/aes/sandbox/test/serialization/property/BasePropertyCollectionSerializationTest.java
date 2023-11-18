@@ -17,21 +17,21 @@ import com.ijioio.aes.core.serialization.xml.XmlUtil;
 public abstract class BasePropertyCollectionSerializationTest<E extends Entity, V extends Collection<I>, I>
 		extends BasePropertySerializationTest<E, V> {
 
-	public static class TestEntity1 extends Some {
+	public static class TestEntity1 extends TestEntity {
 		// Empty
 	}
 
-	public static class TestEntity2 extends Some {
+	public static class TestEntity2 extends TestEntity {
 		// Empty
 	}
 
-	public static class TestEntity3 extends Some {
+	public static class TestEntity3 extends TestEntity {
 		// Empty
 	}
 
 	protected static List<Character> characters = new ArrayList<>();
 
-	protected static List<Class<? extends Some>> types = new ArrayList<>();
+	protected static List<Class<? extends TestEntity>> types = new ArrayList<>();
 
 	static {
 

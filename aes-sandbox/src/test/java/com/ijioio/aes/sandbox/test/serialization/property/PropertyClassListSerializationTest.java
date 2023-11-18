@@ -9,16 +9,16 @@ import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
-import com.ijioio.aes.sandbox.test.serialization.property.BasePropertySerializationTest.Some;
+import com.ijioio.aes.sandbox.test.serialization.property.BasePropertySerializationTest.TestEntity;
 import com.ijioio.test.model.PropertyClassListSerialization;
 
 public class PropertyClassListSerializationTest extends
-		BasePropertyCollectionSerializationTest<PropertyClassListSerialization, List<Class<? extends Some>>, Class<? extends Some>> {
+		BasePropertyCollectionSerializationTest<PropertyClassListSerialization, List<Class<? extends TestEntity>>, Class<? extends TestEntity>> {
 
 	@Entity( //
 			name = PropertyClassListSerializationPrototype.NAME, //
 			types = { //
-					@Type(name = "Class<? extends Some>", type = Type.CLASS, parameters = @Parameter(name = Some.NAME, wildcard = true)), //
+					@Type(name = "Class<? extends Some>", type = Type.CLASS, parameters = @Parameter(name = TestEntity.NAME, wildcard = true)), //
 					@Type(name = "List<Class<? extends Some>>", type = Type.LIST, parameters = @Parameter(name = "Class<? extends Some>")) //
 			}, //
 			properties = { //
@@ -62,7 +62,7 @@ public class PropertyClassListSerializationTest extends
 
 		entity.setId("property-class-list-serialization");
 
-		List<Class<? extends Some>> value = new ArrayList<>();
+		List<Class<? extends TestEntity>> value = new ArrayList<>();
 
 		for (int i = 0; i < VALUE_MAX_COUNT; i++) {
 			value.add(types.get(i));
@@ -74,14 +74,14 @@ public class PropertyClassListSerializationTest extends
 	}
 
 	@Override
-	protected List<Class<? extends Some>> createEmptyPropertyValue() {
+	protected List<Class<? extends TestEntity>> createEmptyPropertyValue() {
 		return new ArrayList<>();
 	}
 
 	@Override
-	protected List<Class<? extends Some>> createAllNullPropertyValue() {
+	protected List<Class<? extends TestEntity>> createAllNullPropertyValue() {
 
-		List<Class<? extends Some>> value = new ArrayList<>();
+		List<Class<? extends TestEntity>> value = new ArrayList<>();
 
 		for (int j = 0; j < VALUE_MAX_COUNT; j++) {
 			value.add(null);
@@ -96,18 +96,18 @@ public class PropertyClassListSerializationTest extends
 	}
 
 	@Override
-	protected List<Class<? extends Some>> getPropertyValue(PropertyClassListSerialization entity) {
+	protected List<Class<? extends TestEntity>> getPropertyValue(PropertyClassListSerialization entity) {
 		return entity.getValueClassList();
 	}
 
 	@Override
-	protected void setPropertyValue(PropertyClassListSerialization entity, List<Class<? extends Some>> value) {
+	protected void setPropertyValue(PropertyClassListSerialization entity, List<Class<? extends TestEntity>> value) {
 		entity.setValueClassList(value);
 	}
 
 	@Override
-	protected void checkPropertyValue(List<Class<? extends Some>> expectedValue,
-			List<Class<? extends Some>> actualValue) {
+	protected void checkPropertyValue(List<Class<? extends TestEntity>> expectedValue,
+			List<Class<? extends TestEntity>> actualValue) {
 		Assertions.assertEquals(expectedValue, actualValue);
 	}
 }

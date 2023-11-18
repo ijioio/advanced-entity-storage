@@ -25,9 +25,9 @@ import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
 
 public abstract class BasePropertySerializationTest<E extends Entity, V> extends BaseSerializationTest {
 
-	public static class Some extends BaseEntity {
+	public static class TestEntity extends BaseEntity {
 
-		public static final String NAME = "com.ijioio.aes.sandbox.test.serialization.property.BasePropertySerializationTest.Some";
+		public static final String NAME = "com.ijioio.aes.sandbox.test.serialization.property.BasePropertySerializationTest.TestEntity";
 	}
 
 	public static class TestIntrospectable implements Introspectable {

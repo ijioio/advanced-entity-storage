@@ -9,16 +9,16 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.EntityReference;
-import com.ijioio.aes.sandbox.test.serialization.property.BasePropertySerializationTest.Some;
+import com.ijioio.aes.sandbox.test.serialization.property.BasePropertySerializationTest.TestEntity;
 import com.ijioio.test.model.PropertyEntityReferenceSerialization;
 
 public class PropertyEntityReferenceSerializationTest
-		extends BasePropertySerializationTest<PropertyEntityReferenceSerialization, EntityReference<Some>> {
+		extends BasePropertySerializationTest<PropertyEntityReferenceSerialization, EntityReference<TestEntity>> {
 
 	@Entity( //
 			name = PropertyEntityReferenceSerializationPrototype.NAME, //
 			types = { //
-					@Type(name = "EntityReference<Some>", type = Type.ENTITY_REFERENCE, parameters = @Parameter(name = Some.NAME)) //
+					@Type(name = "EntityReference<Some>", type = Type.ENTITY_REFERENCE, parameters = @Parameter(name = TestEntity.NAME)) //
 			}, //
 			properties = { //
 					@EntityProperty(name = "valueEntityReference", type = "EntityReference<Some>") //
@@ -50,7 +50,7 @@ public class PropertyEntityReferenceSerializationTest
 		PropertyEntityReferenceSerialization entity = new PropertyEntityReferenceSerialization();
 
 		entity.setId("property-entity-reference-serialization");
-		entity.setValueEntityReference(EntityReference.of("some", Some.class));
+		entity.setValueEntityReference(EntityReference.of("some", TestEntity.class));
 
 		return entity;
 	}
@@ -61,27 +61,27 @@ public class PropertyEntityReferenceSerializationTest
 	}
 
 	@Override
-	protected EntityReference<Some> getPropertyValue(PropertyEntityReferenceSerialization entity) {
+	protected EntityReference<TestEntity> getPropertyValue(PropertyEntityReferenceSerialization entity) {
 		return entity.getValueEntityReference();
 	}
 
 	@Override
-	protected void setPropertyValue(PropertyEntityReferenceSerialization entity, EntityReference<Some> value) {
+	protected void setPropertyValue(PropertyEntityReferenceSerialization entity, EntityReference<TestEntity> value) {
 		entity.setValueEntityReference(value);
 	}
 
 	@Override
-	protected void checkPropertyValue(EntityReference<Some> expectedValue, EntityReference<Some> actualValue) {
+	protected void checkPropertyValue(EntityReference<TestEntity> expectedValue, EntityReference<TestEntity> actualValue) {
 
 		Assertions.assertEquals(getEntityReferenceId(expectedValue), getEntityReferenceId(actualValue));
 		Assertions.assertEquals(getEntityReferenceType(expectedValue), getEntityReferenceType(actualValue));
 	}
 
-	private String getEntityReferenceId(EntityReference<Some> value) {
+	private String getEntityReferenceId(EntityReference<TestEntity> value) {
 		return Optional.ofNullable(value).map(item -> item.getId()).orElse(null);
 	}
 
-	private Class<Some> getEntityReferenceType(EntityReference<Some> value) {
+	private Class<TestEntity> getEntityReferenceType(EntityReference<TestEntity> value) {
 		return Optional.ofNullable(value).map(item -> item.getType()).orElse(null);
 	}
 }

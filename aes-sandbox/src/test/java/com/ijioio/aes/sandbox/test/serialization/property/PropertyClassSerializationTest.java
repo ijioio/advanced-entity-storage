@@ -6,16 +6,16 @@ import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
-import com.ijioio.aes.sandbox.test.serialization.property.BasePropertySerializationTest.Some;
+import com.ijioio.aes.sandbox.test.serialization.property.BasePropertySerializationTest.TestEntity;
 import com.ijioio.test.model.PropertyClassSerialization;
 
 public class PropertyClassSerializationTest
-		extends BasePropertySerializationTest<PropertyClassSerialization, Class<Some>> {
+		extends BasePropertySerializationTest<PropertyClassSerialization, Class<TestEntity>> {
 
 	@Entity( //
 			name = PropertyClassSerializationPrototype.NAME, //
 			types = { //
-					@Type(name = "Class<Some>", type = Type.CLASS, parameters = @Parameter(name = Some.NAME)) //
+					@Type(name = "Class<Some>", type = Type.CLASS, parameters = @Parameter(name = TestEntity.NAME)) //
 			}, //
 			properties = { //
 					@EntityProperty(name = "valueClass", type = "Class<Some>") //
@@ -47,7 +47,7 @@ public class PropertyClassSerializationTest
 		PropertyClassSerialization entity = new PropertyClassSerialization();
 
 		entity.setId("property-class-serialization");
-		entity.setValueClass(Some.class);
+		entity.setValueClass(TestEntity.class);
 
 		return entity;
 	}
@@ -58,17 +58,17 @@ public class PropertyClassSerializationTest
 	}
 
 	@Override
-	protected Class<Some> getPropertyValue(PropertyClassSerialization entity) {
+	protected Class<TestEntity> getPropertyValue(PropertyClassSerialization entity) {
 		return entity.getValueClass();
 	}
 
 	@Override
-	protected void setPropertyValue(PropertyClassSerialization entity, Class<Some> value) {
+	protected void setPropertyValue(PropertyClassSerialization entity, Class<TestEntity> value) {
 		entity.setValueClass(value);
 	}
 
 	@Override
-	protected void checkPropertyValue(Class<Some> expectedValue, Class<Some> actualValue) {
+	protected void checkPropertyValue(Class<TestEntity> expectedValue, Class<TestEntity> actualValue) {
 		Assertions.assertEquals(expectedValue, actualValue);
 	}
 }
