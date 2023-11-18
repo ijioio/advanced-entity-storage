@@ -21,13 +21,13 @@ public class PropertyLongSerializationTest extends BasePropertySerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName(PropertyType type) {
+	protected String getXmlFileName() {
+		return "property-long-serialization.xml";
+	}
 
-		if (type == PropertyType.STANDARD) {
-			return "property-long-serialization.xml";
-		} else {
-			throw new UnsupportedOperationException();
-		}
+	@Override
+	protected String getNullXmlFileName() {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

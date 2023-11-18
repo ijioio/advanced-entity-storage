@@ -21,13 +21,13 @@ public class PropertyShortSerializationTest extends BasePropertySerializationTes
 	}
 
 	@Override
-	protected String getXmlFileName(PropertyType type) {
+	protected String getXmlFileName() {
+		return "property-short-serialization.xml";
+	}
 
-		if (type == PropertyType.STANDARD) {
-			return "property-short-serialization.xml";
-		} else {
-			throw new UnsupportedOperationException();
-		}
+	@Override
+	protected String getNullXmlFileName() {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

@@ -31,13 +31,13 @@ public class PropertyStringMapFinalSerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName(PropertyType type) {
+	protected String getXmlFileName() {
+		return "property-string-map-final-serialization.xml";
+	}
 
-		if (type == PropertyType.STANDARD) {
-			return "property-string-map-final-serialization.xml";
-		} else {
-			throw new UnsupportedOperationException();
-		}
+	@Override
+	protected String getNullXmlFileName() {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

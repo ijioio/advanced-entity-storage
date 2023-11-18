@@ -24,15 +24,13 @@ public class PropertyByteArraySerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName(PropertyType type) {
+	protected String getXmlFileName() {
+		return "property-byte-array-serialization.xml";
+	}
 
-		if (type == PropertyType.STANDARD) {
-			return "property-byte-array-serialization.xml";
-		} else if (type == PropertyType.NULL) {
-			return "property-byte-array-null-serialization.xml";
-		} else {
-			throw new UnsupportedOperationException();
-		}
+	@Override
+	protected String getNullXmlFileName() {
+		return "property-byte-array-null-serialization.xml";
 	}
 
 	@Override

@@ -30,15 +30,13 @@ public class PropertyStringMapSerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName(PropertyType type) {
+	protected String getXmlFileName() {
+		return "property-string-map-serialization.xml";
+	}
 
-		if (type == PropertyType.STANDARD) {
-			return "property-string-map-serialization.xml";
-		} else if (type == PropertyType.NULL) {
-			return "property-string-map-null-serialization.xml";
-		} else {
-			throw new UnsupportedOperationException();
-		}
+	@Override
+	protected String getNullXmlFileName() {
+		return "property-string-map-null-serialization.xml";
 	}
 
 	@Override

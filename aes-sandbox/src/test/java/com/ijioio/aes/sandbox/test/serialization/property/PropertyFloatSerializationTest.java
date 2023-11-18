@@ -21,13 +21,13 @@ public class PropertyFloatSerializationTest extends BasePropertySerializationTes
 	}
 
 	@Override
-	protected String getXmlFileName(PropertyType type) {
+	protected String getXmlFileName() {
+		return "property-float-serialization.xml";
+	}
 
-		if (type == PropertyType.STANDARD) {
-			return "property-float-serialization.xml";
-		} else {
-			throw new UnsupportedOperationException();
-		}
+	@Override
+	protected String getNullXmlFileName() {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

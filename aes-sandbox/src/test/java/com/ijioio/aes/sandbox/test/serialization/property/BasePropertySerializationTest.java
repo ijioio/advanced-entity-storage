@@ -99,8 +99,7 @@ public abstract class BasePropertySerializationTest<E extends Entity, V> extends
 	public void testWrite() throws Exception {
 
 		Path path = Paths.get(getClass().getClassLoader()
-				.getResource(String.format("serialization/entity/property/%s", getXmlFileName(PropertyType.STANDARD)))
-				.toURI());
+				.getResource(String.format("serialization/entity/property/%s", getXmlFileName())).toURI());
 
 		String actualXml = XmlUtil.write2(handler, entity);
 		String expectedXml = readString(path);
@@ -115,8 +114,7 @@ public abstract class BasePropertySerializationTest<E extends Entity, V> extends
 	public void testWriteNull() throws Exception {
 
 		Path path = Paths.get(getClass().getClassLoader()
-				.getResource(String.format("serialization/entity/property/%s", getXmlFileName(PropertyType.NULL)))
-				.toURI());
+				.getResource(String.format("serialization/entity/property/%s", getNullXmlFileName())).toURI());
 
 		setPropertyValue(entity, null);
 
@@ -132,8 +130,7 @@ public abstract class BasePropertySerializationTest<E extends Entity, V> extends
 	public void testRead() throws Exception {
 
 		Path path = Paths.get(getClass().getClassLoader()
-				.getResource(String.format("serialization/entity/property/%s", getXmlFileName(PropertyType.STANDARD)))
-				.toURI());
+				.getResource(String.format("serialization/entity/property/%s", getXmlFileName())).toURI());
 
 		E actualEntity = XmlUtil.read2(handler, getEntityClass(), readString(path));
 		E expectedEntity = entity;
@@ -146,8 +143,7 @@ public abstract class BasePropertySerializationTest<E extends Entity, V> extends
 	public void testReadNull() throws Exception {
 
 		Path path = Paths.get(getClass().getClassLoader()
-				.getResource(String.format("serialization/entity/property/%s", getXmlFileName(PropertyType.NULL)))
-				.toURI());
+				.getResource(String.format("serialization/entity/property/%s", getNullXmlFileName())).toURI());
 
 		setPropertyValue(entity, null);
 
@@ -164,7 +160,9 @@ public abstract class BasePropertySerializationTest<E extends Entity, V> extends
 		checkPropertyValue(getPropertyValue(expectedEntity), getPropertyValue(actualEntity));
 	}
 
-	protected abstract String getXmlFileName(PropertyType type);
+	protected abstract String getXmlFileName();
+
+	protected abstract String getNullXmlFileName();
 
 	protected abstract Class<E> getEntityClass();
 
@@ -177,9 +175,4 @@ public abstract class BasePropertySerializationTest<E extends Entity, V> extends
 	protected abstract void setPropertyValue(E entity, V value);
 
 	protected abstract void checkPropertyValue(V expectedValue, V actualValue);
-
-	public static enum PropertyType {
-
-		STANDARD, NULL;
-	}
 }

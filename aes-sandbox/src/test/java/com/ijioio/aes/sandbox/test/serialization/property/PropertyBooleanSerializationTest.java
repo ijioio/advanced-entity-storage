@@ -22,13 +22,13 @@ public class PropertyBooleanSerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName(PropertyType type) {
+	protected String getXmlFileName() {
+		return "property-boolean-serialization.xml";
+	}
 
-		if (type == PropertyType.STANDARD) {
-			return "property-boolean-serialization.xml";
-		} else {
-			throw new UnsupportedOperationException();
-		}
+	@Override
+	protected String getNullXmlFileName() {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

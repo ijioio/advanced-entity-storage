@@ -22,15 +22,13 @@ public class PropertyEnumSerializationTest extends BasePropertySerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName(PropertyType type) {
+	protected String getXmlFileName() {
+		return "property-enum-serialization.xml";
+	}
 
-		if (type == PropertyType.STANDARD) {
-			return "property-enum-serialization.xml";
-		} else if (type == PropertyType.NULL) {
-			return "property-enum-null-serialization.xml";
-		} else {
-			throw new UnsupportedOperationException();
-		}
+	@Override
+	protected String getNullXmlFileName() {
+		return "property-enum-null-serialization.xml";
 	}
 
 	@Override

@@ -30,15 +30,13 @@ public class PropertyEntityReferenceSerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName(PropertyType type) {
+	protected String getXmlFileName() {
+		return "property-entity-reference-serialization.xml";
+	}
 
-		if (type == PropertyType.STANDARD) {
-			return "property-entity-reference-serialization.xml";
-		} else if (type == PropertyType.NULL) {
-			return "property-entity-reference-null-serialization.xml";
-		} else {
-			throw new UnsupportedOperationException();
-		}
+	@Override
+	protected String getNullXmlFileName() {
+		return "property-entity-reference-null-serialization.xml";
 	}
 
 	@Override

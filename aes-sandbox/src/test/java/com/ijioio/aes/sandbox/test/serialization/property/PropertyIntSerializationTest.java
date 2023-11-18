@@ -21,13 +21,13 @@ public class PropertyIntSerializationTest extends BasePropertySerializationTest<
 	}
 
 	@Override
-	protected String getXmlFileName(PropertyType type) {
+	protected String getXmlFileName() {
+		return "property-int-serialization.xml";
+	}
 
-		if (type == PropertyType.STANDARD) {
-			return "property-int-serialization.xml";
-		} else {
-			throw new UnsupportedOperationException();
-		}
+	@Override
+	protected String getNullXmlFileName() {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

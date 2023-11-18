@@ -25,15 +25,13 @@ public class PropertyLocalDateSerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName(PropertyType type) {
+	protected String getXmlFileName() {
+		return "property-local-date-serialization.xml";
+	}
 
-		if (type == PropertyType.STANDARD) {
-			return "property-local-date-serialization.xml";
-		} else if (type == PropertyType.NULL) {
-			return "property-local-date-null-serialization.xml";
-		} else {
-			throw new UnsupportedOperationException();
-		}
+	@Override
+	protected String getNullXmlFileName() {
+		return "property-local-date-null-serialization.xml";
 	}
 
 	@Override

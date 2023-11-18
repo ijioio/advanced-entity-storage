@@ -22,15 +22,13 @@ public class PropertyStringSerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName(PropertyType type) {
+	protected String getXmlFileName() {
+		return "property-string-serialization.xml";
+	}
 
-		if (type == PropertyType.STANDARD) {
-			return "property-string-serialization.xml";
-		} else if (type == PropertyType.NULL) {
-			return "property-string-null-serialization.xml";
-		} else {
-			throw new UnsupportedOperationException();
-		}
+	@Override
+	protected String getNullXmlFileName() {
+		return "property-string-null-serialization.xml";
 	}
 
 	@Override

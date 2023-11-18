@@ -24,15 +24,13 @@ public class PropertyIntrospectableSerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName(PropertyType type) {
+	protected String getXmlFileName() {
+		return "property-introspectable-serialization.xml";
+	}
 
-		if (type == PropertyType.STANDARD) {
-			return "property-introspectable-serialization.xml";
-		} else if (type == PropertyType.NULL) {
-			return "property-introspectable-null-serialization.xml";
-		} else {
-			throw new UnsupportedOperationException();
-		}
+	@Override
+	protected String getNullXmlFileName() {
+		return "property-introspectable-null-serialization.xml";
 	}
 
 	@Override

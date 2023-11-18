@@ -31,15 +31,13 @@ public class PropertyClassListSerializationTest extends
 	}
 
 	@Override
-	protected String getXmlFileName(PropertyType type) {
+	protected String getXmlFileName() {
+		return "property-class-list-serialization.xml";
+	}
 
-		if (type == PropertyType.STANDARD) {
-			return "property-class-list-serialization.xml";
-		} else if (type == PropertyType.NULL) {
-			return "property-class-list-null-serialization.xml";
-		} else {
-			throw new UnsupportedOperationException();
-		}
+	@Override
+	protected String getNullXmlFileName() {
+		return "property-class-list-null-serialization.xml";
 	}
 
 	@Override

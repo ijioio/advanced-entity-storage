@@ -27,15 +27,13 @@ public class PropertyInstantSerializationTest
 	}
 
 	@Override
-	protected String getXmlFileName(PropertyType type) {
+	protected String getXmlFileName() {
+		return "property-instant-serialization.xml";
+	}
 
-		if (type == PropertyType.STANDARD) {
-			return "property-instant-serialization.xml";
-		} else if (type == PropertyType.NULL) {
-			return "property-instant-null-serialization.xml";
-		} else {
-			throw new UnsupportedOperationException();
-		}
+	@Override
+	protected String getNullXmlFileName() {
+		return "property-instant-null-serialization.xml";
 	}
 
 	@Override
