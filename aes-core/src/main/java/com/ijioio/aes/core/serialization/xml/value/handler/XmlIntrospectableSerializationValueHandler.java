@@ -9,6 +9,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.XMLEvent;
 
+import com.ijioio.aes.core.Identity;
 import com.ijioio.aes.core.Introspectable;
 import com.ijioio.aes.core.IntrospectionException;
 import com.ijioio.aes.core.Property;
@@ -33,11 +34,29 @@ public class XmlIntrospectableSerializationValueHandler extends BaseXmlSerializa
 
 		try {
 
-			if (writeIdentity(context, writer, name, value)) {
-				return;
+			Identity identity = value instanceof Identity ? (Identity) value : null;
+
+			if (identity != null) {
+
+				if (context.getIdentities().containsKey(identity.getId())) {
+
+					writer.writeEmptyElement(name);
+					writer.writeAttribute("id", identity.getId());
+					writer.writeAttribute("class", value.getClass().getName());
+
+					return;
+
+				} else {
+					context.getIdentities().put(identity.getId(), identity);
+				}
 			}
 
 			writer.writeStartElement(name);
+
+			if (identity != null) {
+				writer.writeAttribute("id", identity.getId());
+			}
+
 			writer.writeAttribute("class", value.getClass().getName());
 
 			Collection<Property<?>> properties = value.getProperties();
@@ -70,13 +89,25 @@ public class XmlIntrospectableSerializationValueHandler extends BaseXmlSerializa
 
 		try {
 
-			Introspectable introspectable = readIdentity(context, reader);
+			String id = reader.getAttributeValue(null, "id");
 
-			if (introspectable != null) {
-				return introspectable;
+			if (id != null) {
+
+				Identity identity = context.getIdentities().get(id);
+
+				if (identity != null) {
+
+					skipElement(reader);
+
+					return (Introspectable) identity;
+				}
 			}
 
-			introspectable = value != null ? value : type.newInstance();
+			Introspectable introspectable = value != null ? value : type.newInstance();
+
+			if (id != null) {
+				context.getIdentities().put(id, (Identity) introspectable);
+			}
 
 			Map<String, Property<?>> properties = introspectable.getProperties().stream()
 					.collect(Collectors.toMap(item -> item.getName(), item -> item));
