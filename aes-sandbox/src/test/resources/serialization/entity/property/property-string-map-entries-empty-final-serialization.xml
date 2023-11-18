@@ -1,4 +1,4 @@
-<object class="com.ijioio.test.model.PropertyStringMapFinalSerialization">
+<object id="property-string-map-final-serialization" class="com.ijioio.test.model.PropertyStringMapFinalSerialization">
     <id>property-string-map-final-serialization</id>
     <valueStringMap class="java.util.LinkedHashMap"></valueStringMap>
 </object>

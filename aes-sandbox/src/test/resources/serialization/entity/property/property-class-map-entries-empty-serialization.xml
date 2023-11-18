@@ -1,4 +1,4 @@
-<object class="com.ijioio.test.model.PropertyClassMapSerialization">
+<object id="property-class-map-serialization" class="com.ijioio.test.model.PropertyClassMapSerialization">
     <id>property-class-map-serialization</id>
     <valueClassMap class="java.util.LinkedHashMap"></valueClassMap>
 </object>

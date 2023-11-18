@@ -1,4 +1,4 @@
-<object class="com.ijioio.test.model.PropertyClassSerialization">
+<object id="property-class-serialization" class="com.ijioio.test.model.PropertyClassSerialization">
     <id>property-class-serialization</id>
     <valueClass>com.ijioio.aes.sandbox.test.serialization.property.BasePropertySerializationTest$Some</valueClass>
 </object>

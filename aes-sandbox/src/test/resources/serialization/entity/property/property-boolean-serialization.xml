@@ -1,4 +1,4 @@
-<object class="com.ijioio.test.model.PropertyBooleanSerialization">
+<object id="property-boolean-serialization" class="com.ijioio.test.model.PropertyBooleanSerialization">
     <id>property-boolean-serialization</id>
     <valueBoolean>true</valueBoolean>
 </object>

@@ -1,4 +1,4 @@
-<object class="com.ijioio.test.model.SkipSerialization">
+<object id="property-skip-serialization" class="com.ijioio.test.model.SkipSerialization">
     <skip>skip</skip>
     <skip>
         <skip>skip</skip>

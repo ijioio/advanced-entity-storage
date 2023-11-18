@@ -1,4 +1,4 @@
-<object class="com.ijioio.test.model.PropertyEntityReferenceSerialization">
+<object id="property-entity-reference-serialization" class="com.ijioio.test.model.PropertyEntityReferenceSerialization">
     <id>property-entity-reference-serialization</id>
     <valueEntityReference class="com.ijioio.aes.core.EntityReference">
         <id>some</id>

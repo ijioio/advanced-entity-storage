@@ -1,4 +1,4 @@
-<object class="com.ijioio.test.model.PropertyByteSerialization">
+<object id="property-byte-serialization" class="com.ijioio.test.model.PropertyByteSerialization">
     <id>property-byte-serialization</id>
     <valueByte>1</valueByte>
 </object>

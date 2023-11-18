@@ -1,4 +1,4 @@
-<object class="com.ijioio.test.model.PropertyEnumListSerialization">
+<object id="property-enum-list-serialization" class="com.ijioio.test.model.PropertyEnumListSerialization">
     <id>property-enum-list-serialization</id>
     <valueEnumList class="java.util.ArrayList">
         <item class="java.time.Month">JANUARY</item>

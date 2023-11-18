@@ -1,4 +1,4 @@
-<object class="com.ijioio.test.model.PropertyEnumSerialization">
+<object id="property-enum-serialization" class="com.ijioio.test.model.PropertyEnumSerialization">
     <id>property-enum-serialization</id>
     <valueEnum>JANUARY</valueEnum>
 </object>

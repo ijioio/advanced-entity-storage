@@ -1,4 +1,4 @@
-<object class="com.ijioio.test.model.PropertyStringListSerialization">
+<object id="property-string-list-serialization" class="com.ijioio.test.model.PropertyStringListSerialization">
     <id>property-string-list-serialization</id>
     <valueStringList class="java.util.ArrayList"></valueStringList>
 </object>

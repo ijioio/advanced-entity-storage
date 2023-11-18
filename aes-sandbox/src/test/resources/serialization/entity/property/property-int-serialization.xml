@@ -1,4 +1,4 @@
-<object class="com.ijioio.test.model.PropertyIntSerialization">
+<object id="property-int-serialization" class="com.ijioio.test.model.PropertyIntSerialization">
     <id>property-int-serialization</id>
     <valueInt>1</valueInt>
 </object>
