@@ -1,19 +1,21 @@
 package com.ijioio.aes.sandbox.test.serialization.property;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.Assertions;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
-import com.ijioio.aes.sandbox.test.serialization.property.BasePropertySerializationTest.SomeIntrospectable;
+import com.ijioio.aes.sandbox.test.serialization.property.BasePropertySerializationTest.TestIntrospectable;
 import com.ijioio.test.model.PropertyIntrospectableSerialization;
 
 public class PropertyIntrospectableSerializationTest
-		extends BasePropertySerializationTest<PropertyIntrospectableSerialization, SomeIntrospectable> {
+		extends BasePropertySerializationTest<PropertyIntrospectableSerialization, TestIntrospectable> {
 
 	@Entity( //
 			name = PropertyIntrospectableSerializationPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueIntrospectable", type = "com.ijioio.aes.sandbox.test.serialization.property.BasePropertySerializationTest.SomeIntrospectable") //
+					@EntityProperty(name = "valueIntrospectable", type = TestIntrospectable.NAME) //
 			} //
 	)
 	public static interface PropertyIntrospectableSerializationPrototype {
@@ -45,7 +47,7 @@ public class PropertyIntrospectableSerializationTest
 
 		entity.setId("property-introspectable-serialization");
 
-		SomeIntrospectable value = new SomeIntrospectable();
+		TestIntrospectable value = new TestIntrospectable();
 
 		value.setValue("value");
 
@@ -60,17 +62,21 @@ public class PropertyIntrospectableSerializationTest
 	}
 
 	@Override
-	protected SomeIntrospectable getPropertyValue(PropertyIntrospectableSerialization entity) {
+	protected TestIntrospectable getPropertyValue(PropertyIntrospectableSerialization entity) {
 		return entity.getValueIntrospectable();
 	}
 
 	@Override
-	protected void setPropertyValue(PropertyIntrospectableSerialization entity, SomeIntrospectable value) {
+	protected void setPropertyValue(PropertyIntrospectableSerialization entity, TestIntrospectable value) {
 		entity.setValueIntrospectable(value);
 	}
 
 	@Override
-	protected void checkPropertyValue(SomeIntrospectable expectedValue, SomeIntrospectable actualValue) {
-		Assertions.assertEquals(expectedValue, actualValue);
+	protected void checkPropertyValue(TestIntrospectable expectedValue, TestIntrospectable actualValue) {
+		Assertions.assertEquals(getIntrospectableValue(expectedValue), getIntrospectableValue(actualValue));
+	}
+
+	private String getIntrospectableValue(TestIntrospectable value) {
+		return Optional.ofNullable(value).map(item -> item.getValue()).orElse(null);
 	}
 }
