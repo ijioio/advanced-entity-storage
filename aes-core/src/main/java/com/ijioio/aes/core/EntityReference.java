@@ -76,9 +76,9 @@ public final class EntityReference<E extends Entity> implements Introspectable {
 	public <T> T read(Property<T> property) throws IntrospectionException {
 
 		if (Properties.id.equals(property)) {
-			return (T) getId();
+			return (T) id;
 		} else if (Properties.type.equals(property)) {
-			return (T) getType();
+			return (T) type;
 		} else {
 			throw new IntrospectionException(String.format("property %s is not supported", property));
 		}
@@ -89,9 +89,9 @@ public final class EntityReference<E extends Entity> implements Introspectable {
 	public <T> void write(Property<T> property, T value) throws IntrospectionException {
 
 		if (Properties.id.equals(property)) {
-			setId((String) value);
+			id = (String) value;
 		} else if (Properties.type.equals(property)) {
-			setType((Class<E>) value);
+			type = (Class<E>) value;
 		} else {
 			throw new IntrospectionException(String.format("property %s is not supported", property));
 		}
