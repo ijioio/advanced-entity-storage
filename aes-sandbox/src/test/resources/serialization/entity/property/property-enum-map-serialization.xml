@@ -1,0 +1,17 @@
+<object id="property-enum-map-serialization" class="com.ijioio.test.model.PropertyEnumMapSerialization">
+    <id>property-enum-map-serialization</id>
+    <valueEnumMap class="java.util.LinkedHashMap">
+        <entry>
+            <key class="java.time.Month">JANUARY</key>
+            <value class="java.time.Month">JANUARY</value>
+        </entry>
+        <entry>
+            <key class="java.time.Month">FEBRUARY</key>
+            <value class="java.time.Month">FEBRUARY</value>
+        </entry>
+        <entry>
+            <key class="java.time.Month">MARCH</key>
+            <value class="java.time.Month">MARCH</value>
+        </entry>
+    </valueEnumMap>
+</object>

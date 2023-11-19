@@ -1,0 +1,4 @@
+<object id="property-long-serialization" class="com.ijioio.test.model.PropertyLongSerialization">
+    <id>property-long-serialization</id>
+    <valueLong>1</valueLong>
+</object>

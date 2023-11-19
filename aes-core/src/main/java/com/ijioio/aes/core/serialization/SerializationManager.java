@@ -1,10 +1,10 @@
 package com.ijioio.aes.core.serialization;
 
-import com.ijioio.aes.core.XSerializable;
+import com.ijioio.aes.core.Entity;
 
 public interface SerializationManager {
 
-	public <X extends XSerializable> X read(Class<X> type, byte[] data) throws SerializationException;
+	public <E extends Entity> E read(Class<E> type, byte[] data) throws SerializationException;
 
-	public <X extends XSerializable> byte[] write(X object) throws SerializationException;
+	public <E extends Entity> byte[] write(E object) throws SerializationException;
 }

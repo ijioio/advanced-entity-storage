@@ -1,5 +1,6 @@
 package com.ijioio.aes.core.serialization.xml;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
@@ -11,15 +12,13 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.stream.events.XMLEvent;
 
-import com.ijioio.aes.core.XSerializable;
+import com.ijioio.aes.core.Entity;
 import com.ijioio.aes.core.serialization.SerializationException;
 
 public class XmlUtil {
 
-	public static String write(XmlSerializationHandler handler, final XSerializable object)
-			throws SerializationException {
+	public static String write(XmlSerializationHandler handler, final Entity entity) throws SerializationException {
 
 		try {
 
@@ -29,14 +28,7 @@ public class XmlUtil {
 						.of(XMLOutputFactory.newInstance().createXMLStreamWriter(stringWriter));
 
 				try {
-
-					XmlSerializationContext context = XmlSerializationContext.of(writer);
-
-					writer.writeStartElement("object");
-					writer.writeAttribute("class", object.getClass().getName());
-					object.write(context, handler);
-					writer.writeEndElement();
-
+					handler.write(XmlSerializationContext.of(writer), entity);
 				} finally {
 					writer.close();
 				}
@@ -46,43 +38,36 @@ public class XmlUtil {
 				return stringWriter.toString();
 			}
 
-		} catch (Exception e) {
-			throw new SerializationException(String.format("object write failed", object), e);
+		} catch (IOException | XMLStreamException e) {
+			throw new SerializationException(String.format("object write failed", entity), e);
 		}
 	}
 
-	public static void write(XmlSerializationHandler handler, final XSerializable object, final OutputStream os)
+	public static void write(XmlSerializationHandler handler, final Entity entity, final OutputStream os)
 			throws SerializationException {
 
 		try {
 
-			XMLStreamWriter writer = XMLPrettyPrintStreamWriter
+			XMLPrettyPrintStreamWriter writer = XMLPrettyPrintStreamWriter
 					.of(XMLOutputFactory.newInstance().createXMLStreamWriter(os));
 
 			try {
-
-				XmlSerializationContext context = XmlSerializationContext.of(writer);
-
-				writer.writeStartElement("object");
-				writer.writeAttribute("class", object.getClass().getName());
-				object.write(context, handler);
-				writer.writeEndElement();
-
+				handler.write(XmlSerializationContext.of(writer), entity);
 			} finally {
 				writer.close();
 			}
 
-		} catch (Exception e) {
-			throw new SerializationException(String.format("object write failed", object), e);
+		} catch (XMLStreamException e) {
+			throw new SerializationException(String.format("object write failed", entity), e);
 		}
 	}
 
-	public static <T extends XSerializable> T read(XmlSerializationHandler handler, final Class<T> type,
-			final String content) throws SerializationException {
+	public static <E extends Entity> E read(XmlSerializationHandler handler, final Class<E> type, final String content)
+			throws SerializationException {
 
 		try {
 
-			T object = type.newInstance();
+			E object = type.newInstance();
 
 			try (StringReader stringReader = new StringReader(content)) {
 
@@ -90,14 +75,7 @@ public class XmlUtil {
 
 				try {
 
-					XmlSerializationContext context = XmlSerializationContext.of(reader);
-
-					while (reader.next() != XMLEvent.END_DOCUMENT) {
-
-						if (reader.getName().getLocalPart().equals("object")) {
-							object.read(context, handler);
-						}
-					}
+					handler.read(XmlSerializationContext.of(reader), object);
 
 					return object;
 
@@ -106,30 +84,23 @@ public class XmlUtil {
 				}
 			}
 
-		} catch (Exception e) {
+		} catch (InstantiationException | IllegalAccessException | XMLStreamException e) {
 			throw new SerializationException("object read failed", e);
 		}
 	}
 
-	public static <T extends XSerializable> T read(XmlSerializationHandler handler, final Class<T> type,
-			final InputStream is) throws SerializationException {
+	public static <E extends Entity> E read(XmlSerializationHandler handler, final Class<E> type, final InputStream is)
+			throws SerializationException {
 
 		try {
 
-			T object = type.newInstance();
+			E object = type.newInstance();
 
 			XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(is);
 
 			try {
 
-				XmlSerializationContext context = XmlSerializationContext.of(reader);
-
-				while (reader.next() != XMLEvent.END_DOCUMENT) {
-
-					if (reader.getName().getLocalPart().equals("object")) {
-						object.read(context, handler);
-					}
-				}
+				handler.read(XmlSerializationContext.of(reader), object);
 
 				return object;
 
@@ -137,7 +108,7 @@ public class XmlUtil {
 				reader.close();
 			}
 
-		} catch (Exception e) {
+		} catch (InstantiationException | IllegalAccessException | XMLStreamException e) {
 			throw new SerializationException("object read failed", e);
 		}
 	}

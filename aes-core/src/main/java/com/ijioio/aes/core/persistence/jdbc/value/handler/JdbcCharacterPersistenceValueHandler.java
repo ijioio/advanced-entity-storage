@@ -95,8 +95,8 @@ public class JdbcCharacterPersistenceValueHandler extends BaseJdbcPersistenceVal
 				Collection<Character> collection = getCollection(type, values);
 
 				collection.clear();
-				collection.addAll(Arrays.stream((Object[]) array.getArray())
-						.map(item -> item != null ? ((String) item).charAt(0) : null).collect(Collectors.toList()));
+				collection.addAll(Arrays.stream((Object[]) array.getArray()).map(item -> (String) item)
+						.map(item -> item.length() > 0 ? item.charAt(0) : null).collect(Collectors.toList()));
 
 				return collection;
 

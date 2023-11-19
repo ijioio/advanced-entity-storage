@@ -1,0 +1,12 @@
+<object id="property-priority-serialization" class="com.ijioio.test.model.PropertyPrioritySerialization">
+    <id>property-priority-serialization</id>
+    <valueIntrospectableList class="com.ijioio.aes.sandbox.test.serialization.property.PropertyPrioritySerializationTest$TestIntrospectableList">
+        <value>list</value>
+    </valueIntrospectableList>
+    <valueIntrospectableSet class="com.ijioio.aes.sandbox.test.serialization.property.PropertyPrioritySerializationTest$TestIntrospectableSet">
+        <value>set</value>
+    </valueIntrospectableSet>
+    <valueIntrospectableMap class="com.ijioio.aes.sandbox.test.serialization.property.PropertyPrioritySerializationTest$TestIntrospectableMap">
+        <value>map</value>
+    </valueIntrospectableMap>
+</object>

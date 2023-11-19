@@ -1,0 +1,8 @@
+<object id="property-class-list-serialization" class="com.ijioio.test.model.PropertyClassListSerialization">
+    <id>property-class-list-serialization</id>
+    <valueClassList class="java.util.ArrayList">
+        <item class="java.lang.Class">com.ijioio.aes.sandbox.test.serialization.property.BasePropertyCollectionSerializationTest$TestEntity1</item>
+        <item class="java.lang.Class">com.ijioio.aes.sandbox.test.serialization.property.BasePropertyCollectionSerializationTest$TestEntity2</item>
+        <item class="java.lang.Class">com.ijioio.aes.sandbox.test.serialization.property.BasePropertyCollectionSerializationTest$TestEntity3</item>
+    </valueClassList>
+</object>

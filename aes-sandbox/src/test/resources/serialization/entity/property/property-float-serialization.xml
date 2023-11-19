@@ -1,0 +1,4 @@
+<object id="property-float-serialization" class="com.ijioio.test.model.PropertyFloatSerialization">
+    <id>property-float-serialization</id>
+    <valueFloat>1.0</valueFloat>
+</object>

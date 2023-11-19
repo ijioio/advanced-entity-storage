@@ -1,15 +1,14 @@
 package com.ijioio.aes.sandbox.test.serialization.property;
 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
+import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,11 +16,10 @@ import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
-import com.ijioio.aes.core.XSerializable;
-import com.ijioio.aes.core.serialization.SerializationContext;
-import com.ijioio.aes.core.serialization.SerializationException;
-import com.ijioio.aes.core.serialization.SerializationHandler;
-import com.ijioio.aes.core.serialization.xml.XmlSerializationContext;
+import com.ijioio.aes.core.Introspectable;
+import com.ijioio.aes.core.IntrospectionException;
+import com.ijioio.aes.core.Property;
+import com.ijioio.aes.core.TypeReference;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlUtil;
 import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
@@ -29,155 +27,167 @@ import com.ijioio.test.model.PropertyPrioritySerialization;
 
 public class PropertyPrioritySerializationTest extends BaseSerializationTest {
 
-	public static class XSerializableList extends ArrayList<String> implements XSerializable {
+	public static class TestIntrospectableList extends ArrayList<String> implements Introspectable {
 
-		private static final long serialVersionUID = 829086422127798594L;
+		private static final long serialVersionUID = 7303271295828257769L;
+
+		public static final String NAME = "com.ijioio.aes.sandbox.test.serialization.property.PropertyPrioritySerializationTest.TestIntrospectableList";
+
+		public static class Properties {
+
+			public static final Property<String> value = Property.of("value", new TypeReference<String>() {
+			});
+
+			private static final List<Property<?>> values = new ArrayList<>();
+
+			static {
+				values.add(value);
+			}
+		}
+
+		private String value;
+
+		public String getValue() {
+			return value;
+		}
+
+		public void setValue(String value) {
+			this.value = value;
+		}
 
 		@Override
-		public void write(SerializationContext context, SerializationHandler handler) throws SerializationException {
+		public Collection<Property<?>> getProperties() {
+			return Properties.values;
+		}
 
-			XMLStreamWriter writer = ((XmlSerializationContext) context).getWriter();
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T> T read(Property<T> property) throws IntrospectionException {
 
-			try {
-
-				for (String value : this) {
-
-					writer.writeStartElement("customItem");
-					writer.writeCharacters(value);
-					writer.writeEndElement();
-				}
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
+			if (Properties.value.equals(property)) {
+				return (T) this.value;
+			} else {
+				throw new IntrospectionException(String.format("property %s is not supported", property));
 			}
 		}
 
 		@Override
-		public void read(SerializationContext context, SerializationHandler handler) throws SerializationException {
+		public <T> void write(Property<T> property, T value) throws IntrospectionException {
 
-			XMLStreamReader reader = ((XmlSerializationContext) context).getReader();
-
-			try {
-
-				this.clear();
-
-				while (reader.nextTag() != XMLStreamConstants.END_ELEMENT) {
-
-					if (reader.getName().getLocalPart().equals("customItem")) {
-						this.add(reader.getElementText());
-					}
-				}
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		}
-	}
-
-	public static class XSerializableSet extends LinkedHashSet<String> implements XSerializable {
-
-		private static final long serialVersionUID = 4675527390057694654L;
-
-		@Override
-		public void write(SerializationContext context, SerializationHandler handler) throws SerializationException {
-
-			XMLStreamWriter writer = ((XmlSerializationContext) context).getWriter();
-
-			try {
-
-				for (String value : this) {
-
-					writer.writeStartElement("customItem");
-					writer.writeCharacters(value);
-					writer.writeEndElement();
-				}
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
-			}
-		}
-
-		@Override
-		public void read(SerializationContext context, SerializationHandler handler) throws SerializationException {
-
-			XMLStreamReader reader = ((XmlSerializationContext) context).getReader();
-
-			try {
-
-				this.clear();
-
-				while (reader.nextTag() != XMLStreamConstants.END_ELEMENT) {
-
-					if (reader.getName().getLocalPart().equals("customItem")) {
-						this.add(reader.getElementText());
-					}
-				}
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
+			if (Properties.value.equals(property)) {
+				this.value = (String) value;
+			} else {
+				throw new IntrospectionException(String.format("property %s is not supported", property));
 			}
 		}
 	}
 
-	public static class XSerializableMap extends HashMap<String, String> implements XSerializable {
+	public static class TestIntrospectableSet extends LinkedHashSet<String> implements Introspectable {
 
-		private static final long serialVersionUID = 1104595344886510054L;
+		private static final long serialVersionUID = -6619434629245965240L;
+
+		public static final String NAME = "com.ijioio.aes.sandbox.test.serialization.property.PropertyPrioritySerializationTest.TestIntrospectableSet";
+
+		public static class Properties {
+
+			public static final Property<String> value = Property.of("value", new TypeReference<String>() {
+			});
+
+			private static final List<Property<?>> values = new ArrayList<>();
+
+			static {
+				values.add(value);
+			}
+		}
+
+		private String value;
+
+		public String getValue() {
+			return value;
+		}
+
+		public void setValue(String value) {
+			this.value = value;
+		}
 
 		@Override
-		public void write(SerializationContext context, SerializationHandler handler) throws SerializationException {
+		public Collection<Property<?>> getProperties() {
+			return Properties.values;
+		}
 
-			XMLStreamWriter writer = ((XmlSerializationContext) context).getWriter();
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T> T read(Property<T> property) throws IntrospectionException {
 
-			try {
-
-				for (Entry<String, String> entry : this.entrySet()) {
-
-					writer.writeStartElement("customEntry");
-					writer.writeStartElement("customKey");
-					writer.writeCharacters(entry.getKey());
-					writer.writeEndElement();
-					writer.writeStartElement("customValue");
-					writer.writeCharacters(entry.getValue());
-					writer.writeEndElement();
-					writer.writeEndElement();
-				}
-
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
+			if (Properties.value.equals(property)) {
+				return (T) this.value;
+			} else {
+				throw new IntrospectionException(String.format("property %s is not supported", property));
 			}
 		}
 
 		@Override
-		public void read(SerializationContext context, SerializationHandler handler) throws SerializationException {
+		public <T> void write(Property<T> property, T value) throws IntrospectionException {
 
-			XMLStreamReader reader = ((XmlSerializationContext) context).getReader();
+			if (Properties.value.equals(property)) {
+				this.value = (String) value;
+			} else {
+				throw new IntrospectionException(String.format("property %s is not supported", property));
+			}
+		}
+	}
 
-			try {
+	public static class TestIntrospectableMap extends LinkedHashMap<String, String> implements Introspectable {
 
-				this.clear();
+		private static final long serialVersionUID = 3470892087423705009L;
 
-				while (reader.nextTag() != XMLStreamConstants.END_ELEMENT) {
+		public static final String NAME = "com.ijioio.aes.sandbox.test.serialization.property.PropertyPrioritySerializationTest.TestIntrospectableMap";
 
-					if (reader.getName().getLocalPart().equals("customEntry")) {
+		public static class Properties {
 
-						String key = null;
-						String value = null;
+			public static final Property<String> value = Property.of("value", new TypeReference<String>() {
+			});
 
-						while (reader.nextTag() != XMLStreamConstants.END_ELEMENT) {
+			private static final List<Property<?>> values = new ArrayList<>();
 
-							if (reader.getName().getLocalPart().equals("customKey")) {
-								key = reader.getElementText();
-							} else if (reader.getName().getLocalPart().equals("customValue")) {
-								value = reader.getElementText();
-							}
-						}
+			static {
+				values.add(value);
+			}
+		}
 
-						this.put(key, value);
-					}
-				}
+		private String value;
 
-			} catch (XMLStreamException e) {
-				throw new SerializationException(e);
+		public String getValue() {
+			return value;
+		}
+
+		public void setValue(String value) {
+			this.value = value;
+		}
+
+		@Override
+		public Collection<Property<?>> getProperties() {
+			return Properties.values;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T> T read(Property<T> property) throws IntrospectionException {
+
+			if (Properties.value.equals(property)) {
+				return (T) this.value;
+			} else {
+				throw new IntrospectionException(String.format("property %s is not supported", property));
+			}
+		}
+
+		@Override
+		public <T> void write(Property<T> property, T value) throws IntrospectionException {
+
+			if (Properties.value.equals(property)) {
+				this.value = (String) value;
+			} else {
+				throw new IntrospectionException(String.format("property %s is not supported", property));
 			}
 		}
 	}
@@ -185,9 +195,9 @@ public class PropertyPrioritySerializationTest extends BaseSerializationTest {
 	@Entity( //
 			name = PropertyPrioritySerializationPrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueXSerializableList", type = "com.ijioio.aes.sandbox.test.serialization.property.PropertyPrioritySerializationTest.XSerializableList"), //
-					@EntityProperty(name = "valueXSerializableSet", type = "com.ijioio.aes.sandbox.test.serialization.property.PropertyPrioritySerializationTest.XSerializableSet"), //
-					@EntityProperty(name = "valueXSerializableMap", type = "com.ijioio.aes.sandbox.test.serialization.property.PropertyPrioritySerializationTest.XSerializableMap") //
+					@EntityProperty(name = "valueIntrospectableList", type = TestIntrospectableList.NAME), //
+					@EntityProperty(name = "valueIntrospectableSet", type = TestIntrospectableSet.NAME), //
+					@EntityProperty(name = "valueIntrospectableMap", type = TestIntrospectableMap.NAME) //
 			} //
 	)
 	public static interface PropertyPrioritySerializationPrototype {
@@ -195,64 +205,86 @@ public class PropertyPrioritySerializationTest extends BaseSerializationTest {
 		public static final String NAME = "com.ijioio.test.model.PropertyPrioritySerialization";
 	}
 
-	private Path path;
+	protected XmlSerializationHandler handler;
 
-	private PropertyPrioritySerialization model;
+	private PropertyPrioritySerialization entity;
 
 	@BeforeEach
 	public void before() throws Exception {
 
-		path = Paths.get(getClass().getClassLoader().getResource("property-priority-serialization.xml").toURI());
+		handler = new XmlSerializationHandler();
 
-		XSerializableList xSerializableList = new XSerializableList();
-
-		xSerializableList.add("value1");
-		xSerializableList.add("value2");
-		xSerializableList.add("value3");
-
-		XSerializableSet xSerializableSet = new XSerializableSet();
-
-		xSerializableSet.add("value1");
-		xSerializableSet.add("value2");
-		xSerializableSet.add("value3");
-
-		XSerializableMap xSerializableMap = new XSerializableMap();
-
-		xSerializableMap.put("key1", "value1");
-		xSerializableMap.put("key2", "value2");
-		xSerializableMap.put("key3", "value3");
-
-		model = new PropertyPrioritySerialization();
-
-		model.setId("property-priority-serialization");
-		model.setValueXSerializableList(xSerializableList);
-		model.setValueXSerializableSet(xSerializableSet);
-		model.setValueXSerializableMap(xSerializableMap);
+		entity = createEntity();
 	}
 
 	@Test
 	public void testWrite() throws Exception {
 
-		XmlSerializationHandler handler = new XmlSerializationHandler();
+		Path path = Paths.get(getClass().getClassLoader()
+				.getResource(String.format("serialization/entity/property/%s", getXmlFileName())).toURI());
 
-		String actual = XmlUtil.write(handler, model);
-		String expected = readString(path);
+		String actualXml = XmlUtil.write(handler, entity);
+		String expectedXml = readString(path);
 
-		Assertions.assertEquals(expected, actual);
+		Files.write(Paths.get("c:/deleteme/entity.xml"), actualXml.getBytes(StandardCharsets.UTF_8));
+
+		Assertions.assertEquals(expectedXml, actualXml);
 	}
 
 	@Test
 	public void testRead() throws Exception {
 
-		XmlSerializationHandler handler = new XmlSerializationHandler();
+		Path path = Paths.get(getClass().getClassLoader()
+				.getResource(String.format("serialization/entity/property/%s", getXmlFileName())).toURI());
 
-		PropertyPrioritySerialization actual = XmlUtil.read(handler, PropertyPrioritySerialization.class,
-				readString(path));
-		PropertyPrioritySerialization expected = model;
+		PropertyPrioritySerialization actualEntity = XmlUtil.read(handler, getEntityClass(), readString(path));
+		PropertyPrioritySerialization expectedEntity = entity;
 
-		Assertions.assertEquals(expected.getId(), actual.getId());
-		Assertions.assertEquals(expected.getValueXSerializableList(), actual.getValueXSerializableList());
-		Assertions.assertEquals(expected.getValueXSerializableSet(), actual.getValueXSerializableSet());
-		Assertions.assertEquals(expected.getValueXSerializableMap(), actual.getValueXSerializableMap());
+		check(expectedEntity, actualEntity);
+	}
+
+	private String getXmlFileName() {
+		return "property-priority-serialization.xml";
+	}
+
+	private Class<PropertyPrioritySerialization> getEntityClass() {
+		return PropertyPrioritySerialization.class;
+	}
+
+	private PropertyPrioritySerialization createEntity() {
+
+		PropertyPrioritySerialization entity = new PropertyPrioritySerialization();
+
+		entity.setId("property-priority-serialization");
+
+		TestIntrospectableList valueList = new TestIntrospectableList();
+
+		valueList.setValue("list");
+
+		entity.setValueIntrospectableList(valueList);
+
+		TestIntrospectableSet valueSet = new TestIntrospectableSet();
+
+		valueSet.setValue("set");
+
+		entity.setValueIntrospectableSet(valueSet);
+
+		TestIntrospectableMap valueMap = new TestIntrospectableMap();
+
+		valueMap.setValue("map");
+
+		entity.setValueIntrospectableMap(valueMap);
+
+		return entity;
+	}
+
+	private void check(PropertyPrioritySerialization expectedEntity, PropertyPrioritySerialization actualEntity) {
+
+		Assertions.assertEquals(expectedEntity.getValueIntrospectableList().getValue(),
+				actualEntity.getValueIntrospectableList().getValue());
+		Assertions.assertEquals(expectedEntity.getValueIntrospectableSet().getValue(),
+				actualEntity.getValueIntrospectableSet().getValue());
+		Assertions.assertEquals(expectedEntity.getValueIntrospectableMap().getValue(),
+				actualEntity.getValueIntrospectableMap().getValue());
 	}
 }

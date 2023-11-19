@@ -1,0 +1,8 @@
+<object id="property-class-list-serialization" class="com.ijioio.test.model.PropertyClassListSerialization">
+    <id>property-class-list-serialization</id>
+    <valueClassList class="java.util.ArrayList">
+        <item class="java.lang.Void"/>
+        <item class="java.lang.Void"/>
+        <item class="java.lang.Void"/>
+    </valueClassList>
+</object>

@@ -1,21 +1,14 @@
 package com.ijioio.aes.sandbox.test.serialization.property;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Month;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
-import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
-import com.ijioio.aes.core.serialization.xml.XmlUtil;
-import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
 import com.ijioio.test.model.PropertyEnumSerialization;
 
-public class PropertyEnumSerializationTest extends BaseSerializationTest {
+public class PropertyEnumSerializationTest extends BasePropertySerializationTest<PropertyEnumSerialization, Month> {
 
 	@Entity( //
 			name = PropertyEnumSerializationPrototype.NAME, //
@@ -28,41 +21,49 @@ public class PropertyEnumSerializationTest extends BaseSerializationTest {
 		public static final String NAME = "com.ijioio.test.model.PropertyEnumSerialization";
 	}
 
-	private Path path;
-
-	private PropertyEnumSerialization model;
-
-	@BeforeEach
-	public void before() throws Exception {
-
-		path = Paths.get(getClass().getClassLoader().getResource("property-enum-serialization.xml").toURI());
-
-		model = new PropertyEnumSerialization();
-
-		model.setId("property-enum-serialization");
-		model.setValueEnum(Month.JANUARY);
+	@Override
+	protected String getXmlFileName() {
+		return "property-enum-serialization.xml";
 	}
 
-	@Test
-	public void testWrite() throws Exception {
-
-		XmlSerializationHandler handler = new XmlSerializationHandler();
-
-		String actual = XmlUtil.write(handler, model);
-		String expected = readString(path);
-
-		Assertions.assertEquals(expected, actual);
+	@Override
+	protected String getNullXmlFileName() {
+		return "property-enum-null-serialization.xml";
 	}
 
-	@Test
-	public void testRead() throws Exception {
+	@Override
+	protected Class<PropertyEnumSerialization> getEntityClass() {
+		return PropertyEnumSerialization.class;
+	}
 
-		XmlSerializationHandler handler = new XmlSerializationHandler();
+	@Override
+	protected PropertyEnumSerialization createEntity() {
 
-		PropertyEnumSerialization actual = XmlUtil.read(handler, PropertyEnumSerialization.class, readString(path));
-		PropertyEnumSerialization expected = model;
+		PropertyEnumSerialization entity = new PropertyEnumSerialization();
 
-		Assertions.assertEquals(expected.getId(), actual.getId());
-		Assertions.assertEquals(expected.getValueEnum(), actual.getValueEnum());
+		entity.setId("property-enum-serialization");
+		entity.setValueEnum(Month.JANUARY);
+
+		return entity;
+	}
+
+	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
+	}
+
+	@Override
+	protected Month getPropertyValue(PropertyEnumSerialization entity) {
+		return entity.getValueEnum();
+	}
+
+	@Override
+	protected void setPropertyValue(PropertyEnumSerialization entity, Month value) {
+		entity.setValueEnum(value);
+	}
+
+	@Override
+	protected void checkPropertyValue(Month expectedValue, Month actualValue) {
+		Assertions.assertEquals(expectedValue, actualValue);
 	}
 }
