@@ -23,8 +23,6 @@ public class XmlSerializationContext implements SerializationContext {
 
 	private final XMLStreamReader reader;
 
-	private final Map<String, String> attributes = new HashMap<>();
-
 	private final Map<String, Identity> identities = new HashMap<>();
 
 	private XmlSerializationContext(XMLStreamWriter writer, XMLStreamReader reader) {
@@ -39,10 +37,6 @@ public class XmlSerializationContext implements SerializationContext {
 
 	public XMLStreamReader getReader() {
 		return reader;
-	}
-
-	public Map<String, String> getAttributes() {
-		return attributes;
 	}
 
 	public Map<String, Identity> getIdentities() {
