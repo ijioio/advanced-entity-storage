@@ -117,7 +117,7 @@ public class XmlMapSerializationValueHandler extends BaseXmlSerializationValueHa
 									handler, valueType, null);
 
 						} else {
-							handler.skipElement(reader);
+							skipElement(reader);
 						}
 					}
 
