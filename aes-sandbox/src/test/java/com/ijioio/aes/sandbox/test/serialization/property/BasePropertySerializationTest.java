@@ -101,7 +101,7 @@ public abstract class BasePropertySerializationTest<E extends Entity, V> extends
 		Path path = Paths.get(getClass().getClassLoader()
 				.getResource(String.format("serialization/entity/property/%s", getXmlFileName())).toURI());
 
-		String actualXml = XmlUtil.write2(handler, entity);
+		String actualXml = XmlUtil.write(handler, entity);
 		String expectedXml = readString(path);
 
 		Files.write(Paths.get("c:/deleteme/entity.xml"), actualXml.getBytes(StandardCharsets.UTF_8));
@@ -118,7 +118,7 @@ public abstract class BasePropertySerializationTest<E extends Entity, V> extends
 
 		setPropertyValue(entity, null);
 
-		String actualXml = XmlUtil.write2(handler, entity);
+		String actualXml = XmlUtil.write(handler, entity);
 		String expectedXml = readString(path);
 
 		Files.write(Paths.get("c:/deleteme/entity.xml"), actualXml.getBytes(StandardCharsets.UTF_8));
@@ -132,7 +132,7 @@ public abstract class BasePropertySerializationTest<E extends Entity, V> extends
 		Path path = Paths.get(getClass().getClassLoader()
 				.getResource(String.format("serialization/entity/property/%s", getXmlFileName())).toURI());
 
-		E actualEntity = XmlUtil.read2(handler, getEntityClass(), readString(path));
+		E actualEntity = XmlUtil.read(handler, getEntityClass(), readString(path));
 		E expectedEntity = entity;
 
 		check(expectedEntity, actualEntity);
@@ -147,7 +147,7 @@ public abstract class BasePropertySerializationTest<E extends Entity, V> extends
 
 		setPropertyValue(entity, null);
 
-		E actualEntity = XmlUtil.read2(handler, getEntityClass(), readString(path));
+		E actualEntity = XmlUtil.read(handler, getEntityClass(), readString(path));
 		E expectedEntity = entity;
 
 		check(expectedEntity, actualEntity);

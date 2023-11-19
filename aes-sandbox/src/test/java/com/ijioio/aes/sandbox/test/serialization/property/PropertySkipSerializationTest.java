@@ -64,7 +64,7 @@ public class PropertySkipSerializationTest extends BaseSerializationTest {
 		Path path = Paths.get(getClass().getClassLoader()
 				.getResource(String.format("serialization/entity/property/%s", getXmlFileName())).toURI());
 
-		PropertySkipSerialization actualEntity = XmlUtil.read2(handler, getEntityClass(), readString(path));
+		PropertySkipSerialization actualEntity = XmlUtil.read(handler, getEntityClass(), readString(path));
 		PropertySkipSerialization expectedEntity = entity;
 
 		check(expectedEntity, actualEntity);

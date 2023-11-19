@@ -223,7 +223,7 @@ public class PropertyPrioritySerializationTest extends BaseSerializationTest {
 		Path path = Paths.get(getClass().getClassLoader()
 				.getResource(String.format("serialization/entity/property/%s", getXmlFileName())).toURI());
 
-		String actualXml = XmlUtil.write2(handler, entity);
+		String actualXml = XmlUtil.write(handler, entity);
 		String expectedXml = readString(path);
 
 		Files.write(Paths.get("c:/deleteme/entity.xml"), actualXml.getBytes(StandardCharsets.UTF_8));
@@ -237,7 +237,7 @@ public class PropertyPrioritySerializationTest extends BaseSerializationTest {
 		Path path = Paths.get(getClass().getClassLoader()
 				.getResource(String.format("serialization/entity/property/%s", getXmlFileName())).toURI());
 
-		PropertyPrioritySerialization actualEntity = XmlUtil.read2(handler, getEntityClass(), readString(path));
+		PropertyPrioritySerialization actualEntity = XmlUtil.read(handler, getEntityClass(), readString(path));
 		PropertyPrioritySerialization expectedEntity = entity;
 
 		check(expectedEntity, actualEntity);
