@@ -5,9 +5,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -152,8 +150,6 @@ public class EntityProcessor extends AbstractProcessor {
 		}
 
 		methods.add(generateGetProperties());
-		methods.add(generateRead2(entity));
-		methods.add(generateWrite2(entity));
 		methods.add(generateRead(entity));
 		methods.add(generateWrite(entity));
 
@@ -185,7 +181,7 @@ public class EntityProcessor extends AbstractProcessor {
 		}
 	}
 
-	private MethodSpec generateRead2(EntityMetadata entity) {
+	private MethodSpec generateRead(EntityMetadata entity) {
 
 		CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
 
@@ -263,7 +259,7 @@ public class EntityProcessor extends AbstractProcessor {
 		return method;
 	}
 
-	private MethodSpec generateWrite2(EntityMetadata entity) {
+	private MethodSpec generateWrite(EntityMetadata entity) {
 
 		CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
 
@@ -397,96 +393,6 @@ public class EntityProcessor extends AbstractProcessor {
 				.addFields(fields).addStaticBlock(codeBlock).addMethods(methods).build();
 
 		return type;
-	}
-
-	private MethodSpec generateRead(EntityMetadata entity) {
-
-		CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
-
-		codeBlockBuilder.add("\n");
-		codeBlockBuilder.addStatement("$T<$T, $T> readers = new $T<>(super.getReaders(context, handler))", Map.class,
-				String.class, CodeGenTypeUtil.SERIALIZATION_READER_TYPE_NAME, LinkedHashMap.class);
-
-		Collection<EntityPropertyMetadata> properties = entity.getProperties().values();
-
-		if (properties.size() > 0) {
-			codeBlockBuilder.add("\n");
-		}
-
-		for (EntityPropertyMetadata property : properties) {
-
-			if (property.isFinal()) {
-				codeBlockBuilder.addStatement("readers.put($S, () -> handler.read(context, $L))", property.getName(),
-						property.getName());
-			} else {
-				codeBlockBuilder.addStatement("readers.put($S, () -> $L = handler.read(context, $L))",
-						property.getName(), property.getName(), property.getName());
-			}
-		}
-
-		codeBlockBuilder.add("\n");
-		codeBlockBuilder.addStatement("return readers");
-
-		List<AnnotationSpec> annotations = new ArrayList<>();
-
-		annotations.add(AnnotationSpec.builder(ClassName.get(Override.class)).build());
-
-		List<ParameterSpec> parameters = new ArrayList<>();
-
-		parameters.add(ParameterSpec.builder(CodeGenTypeUtil.SERIALIZATION_CONTEXT_TYPE_NAME, "context").build());
-		parameters.add(ParameterSpec.builder(CodeGenTypeUtil.SERIALIZATION_HANDLER_TYPE_NAME, "handler").build());
-
-		CodeBlock codeBlock = codeBlockBuilder.build();
-
-		MethodSpec method = MethodSpec.methodBuilder("getReaders").addAnnotations(annotations)
-				.addModifiers(Modifier.PUBLIC)
-				.returns(ParameterizedTypeName.get(ClassName.get(Map.class), ClassName.get(String.class),
-						CodeGenTypeUtil.SERIALIZATION_READER_TYPE_NAME))
-				.addParameters(parameters).addCode(codeBlock).build();
-
-		return method;
-	}
-
-	private MethodSpec generateWrite(EntityMetadata entity) {
-
-		CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
-
-		codeBlockBuilder.add("\n");
-		codeBlockBuilder.addStatement("$T<$T, $T> writers = new $T<>(super.getWriters(context, handler))", Map.class,
-				String.class, CodeGenTypeUtil.SERIALIZATION_WRITER_TYPE_NAME, LinkedHashMap.class);
-
-		Collection<EntityPropertyMetadata> properties = entity.getProperties().values();
-
-		if (properties.size() > 0) {
-			codeBlockBuilder.add("\n");
-		}
-
-		for (EntityPropertyMetadata property : properties) {
-			codeBlockBuilder.addStatement("writers.put($S, () -> handler.write(context, $S, $L))", property.getName(),
-					property.getName(), property.getName());
-		}
-
-		codeBlockBuilder.add("\n");
-		codeBlockBuilder.addStatement("return writers");
-
-		List<AnnotationSpec> annotations = new ArrayList<>();
-
-		annotations.add(AnnotationSpec.builder(ClassName.get(Override.class)).build());
-
-		List<ParameterSpec> parameters = new ArrayList<>();
-
-		parameters.add(ParameterSpec.builder(CodeGenTypeUtil.SERIALIZATION_CONTEXT_TYPE_NAME, "context").build());
-		parameters.add(ParameterSpec.builder(CodeGenTypeUtil.SERIALIZATION_HANDLER_TYPE_NAME, "handler").build());
-
-		CodeBlock codeBlock = codeBlockBuilder.build();
-
-		MethodSpec method = MethodSpec.methodBuilder("getWriters").addAnnotations(annotations)
-				.addModifiers(Modifier.PUBLIC)
-				.returns(ParameterizedTypeName.get(ClassName.get(Map.class), ClassName.get(String.class),
-						CodeGenTypeUtil.SERIALIZATION_WRITER_TYPE_NAME))
-				.addParameters(parameters).addCode(codeBlock).build();
-
-		return method;
 	}
 
 	private void generateIndex(EntityMetadata entity, EntityIndexMetadata index, Filer filer) throws IOException {
