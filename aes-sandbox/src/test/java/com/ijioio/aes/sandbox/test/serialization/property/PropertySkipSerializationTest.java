@@ -1,5 +1,7 @@
 package com.ijioio.aes.sandbox.test.serialization.property;
 
+import java.io.ByteArrayInputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -18,7 +20,6 @@ import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
-import com.ijioio.aes.core.serialization.xml.XmlUtil;
 import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
 import com.ijioio.test.model.PropertySkipSerialization;
 
@@ -64,7 +65,9 @@ public class PropertySkipSerializationTest extends BaseSerializationTest {
 		Path path = Paths.get(getClass().getClassLoader()
 				.getResource(String.format("serialization/entity/property/%s", getXmlFileName())).toURI());
 
-		PropertySkipSerialization actualEntity = XmlUtil.read(handler, getEntityClass(), readString(path));
+		ByteArrayInputStream is = new ByteArrayInputStream(Files.readAllBytes(path));
+
+		PropertySkipSerialization actualEntity = handler.read(is);
 		PropertySkipSerialization expectedEntity = entity;
 
 		check(expectedEntity, actualEntity);

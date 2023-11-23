@@ -24,7 +24,7 @@ public class XmlSerializationManager implements SerializationManager {
 
 		ByteArrayInputStream bais = new ByteArrayInputStream(data);
 
-		E object = XmlUtil.read(handler, type, bais);
+		E object = handler.read(bais);
 
 		return object;
 	}
@@ -34,7 +34,7 @@ public class XmlSerializationManager implements SerializationManager {
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-		XmlUtil.write(handler, object, baos);
+		handler.write(object, baos);
 
 		return baos.toByteArray();
 	}
