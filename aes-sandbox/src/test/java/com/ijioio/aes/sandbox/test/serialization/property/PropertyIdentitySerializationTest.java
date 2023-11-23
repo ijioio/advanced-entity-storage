@@ -1,5 +1,7 @@
 package com.ijioio.aes.sandbox.test.serialization.property;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,7 +22,6 @@ import com.ijioio.aes.core.IntrospectionException;
 import com.ijioio.aes.core.Property;
 import com.ijioio.aes.core.TypeReference;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
-import com.ijioio.aes.core.serialization.xml.XmlUtil;
 import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
 import com.ijioio.test.model.PropertyIdentitySerialization;
 
@@ -110,7 +111,11 @@ public class PropertyIdentitySerializationTest extends BaseSerializationTest {
 		Path path = Paths.get(getClass().getClassLoader()
 				.getResource(String.format("serialization/entity/property/%s", getXmlFileName())).toURI());
 
-		String actualXml = XmlUtil.write(handler, entity);
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+		handler.write(entity, os);
+
+		String actualXml = new String(os.toByteArray(), StandardCharsets.UTF_8);
 		String expectedXml = readString(path);
 
 		Files.write(Paths.get("c:/deleteme/entity.xml"), actualXml.getBytes(StandardCharsets.UTF_8));
@@ -124,7 +129,9 @@ public class PropertyIdentitySerializationTest extends BaseSerializationTest {
 		Path path = Paths.get(getClass().getClassLoader()
 				.getResource(String.format("serialization/entity/property/%s", getXmlFileName())).toURI());
 
-		PropertyIdentitySerialization actualEntity = XmlUtil.read(handler, getEntityClass(), readString(path));
+		ByteArrayInputStream is = new ByteArrayInputStream(Files.readAllBytes(path));
+
+		PropertyIdentitySerialization actualEntity = handler.read(is);
 		PropertyIdentitySerialization expectedEntity = entity;
 
 		check(expectedEntity, actualEntity);

@@ -1,5 +1,7 @@
 package com.ijioio.aes.sandbox.test.serialization.property;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,7 +14,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.core.Entity;
-import com.ijioio.aes.core.serialization.xml.XmlUtil;
 
 public abstract class BasePropertyMapSerializationTest<E extends Entity, V extends Map<I, I>, I>
 		extends BasePropertySerializationTest<E, V> {
@@ -54,7 +55,11 @@ public abstract class BasePropertyMapSerializationTest<E extends Entity, V exten
 
 		setPropertyValue(entity, createEmptyPropertyValue());
 
-		String actualXml = XmlUtil.write(handler, entity);
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+		handler.write(entity, os);
+
+		String actualXml = new String(os.toByteArray(), StandardCharsets.UTF_8);
 		String expectedXml = readString(path);
 
 		Files.write(Paths.get("c:/deleteme/entity.xml"), actualXml.getBytes(StandardCharsets.UTF_8));
@@ -70,7 +75,11 @@ public abstract class BasePropertyMapSerializationTest<E extends Entity, V exten
 
 		setPropertyValue(entity, createAllNullPropertyValue());
 
-		String actualXml = XmlUtil.write(handler, entity);
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+		handler.write(entity, os);
+
+		String actualXml = new String(os.toByteArray(), StandardCharsets.UTF_8);
 		String expectedXml = readString(path);
 
 		Files.write(Paths.get("c:/deleteme/entity.xml"), actualXml.getBytes(StandardCharsets.UTF_8));
@@ -86,7 +95,9 @@ public abstract class BasePropertyMapSerializationTest<E extends Entity, V exten
 
 		setPropertyValue(entity, createEmptyPropertyValue());
 
-		E actualEntity = XmlUtil.read(handler, getEntityClass(), readString(path));
+		ByteArrayInputStream is = new ByteArrayInputStream(Files.readAllBytes(path));
+
+		E actualEntity = handler.read(is);
 		E expectedEntity = entity;
 
 		check(expectedEntity, actualEntity);
@@ -100,7 +111,9 @@ public abstract class BasePropertyMapSerializationTest<E extends Entity, V exten
 
 		setPropertyValue(entity, createAllNullPropertyValue());
 
-		E actualEntity = XmlUtil.read(handler, getEntityClass(), readString(path));
+		ByteArrayInputStream is = new ByteArrayInputStream(Files.readAllBytes(path));
+
+		E actualEntity = handler.read(is);
 		E expectedEntity = entity;
 
 		check(expectedEntity, actualEntity);
