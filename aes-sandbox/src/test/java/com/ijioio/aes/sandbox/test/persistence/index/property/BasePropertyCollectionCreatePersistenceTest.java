@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.core.EntityIndex;
-import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceContext;
 
 public abstract class BasePropertyCollectionCreatePersistenceTest<I extends EntityIndex<?>, V extends Collection<E>, E>
 		extends BasePropertyCreatePersistenceTest<I, V> {
@@ -20,7 +19,7 @@ public abstract class BasePropertyCollectionCreatePersistenceTest<I extends Enti
 
 		setPropertyValue(index, createEmptyPropertyValue());
 
-		handler.create(JdbcPersistenceContext.of(connection), index);
+		handler.create(index);
 
 		try (PreparedStatement statement = connection
 				.prepareStatement(String.format("select * from %s", getTableName()))) {

@@ -19,7 +19,6 @@ import com.ijioio.aes.core.Property;
 import com.ijioio.aes.core.SearchQuery;
 import com.ijioio.aes.core.SearchQuery.SearchQueryBuilder;
 import com.ijioio.aes.core.persistence.PersistenceException;
-import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceContext;
 import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandler;
 import com.ijioio.aes.sandbox.test.persistence.BasePersistenceTest;
 
@@ -102,7 +101,7 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 	@BeforeEach
 	public void before() throws Exception {
 
-		handler = new JdbcPersistenceHandler();
+		handler = new JdbcPersistenceHandler(dataSource);
 
 		executeSql(connection, Paths.get(getClass().getClassLoader()
 				.getResource(String.format("persistence/index/property/%s", getSqlScriptFileName())).toURI()));
@@ -115,59 +114,59 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 	public void testDelete() throws Exception {
 
 		for (I index : indexes) {
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> deleteQuery = SearchQueryBuilder.of(getIndexClass()) //
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
 				.build();
 
-		handler.delete(JdbcPersistenceContext.of(connection), deleteQuery);
+		handler.delete(deleteQuery);
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
 				.build();
 
 		List<I> expectedIndexes = Collections.emptyList();
-		List<I> actualIndexes = handler.search(JdbcPersistenceContext.of(connection), query);
+		List<I> actualIndexes = handler.search(query);
 
 		check(expectedIndexes, actualIndexes);
 	}
 
 	@EnabledIf("isNullPropertyValueAllowed")
 	@Test
-	public void testSearchNull() throws Exception {
+	public void testDeleteNull() throws Exception {
 
 		for (I index : indexes) {
 
 			setPropertyValue(index, null);
 
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> deleteQuery = SearchQueryBuilder.of(getIndexClass()) //
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
 				.build();
 
-		handler.delete(JdbcPersistenceContext.of(connection), deleteQuery);
+		handler.delete(deleteQuery);
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
 				.build();
 
 		List<I> expectedIndexes = Collections.emptyList();
-		List<I> actualIndexes = handler.search(JdbcPersistenceContext.of(connection), query);
+		List<I> actualIndexes = handler.search(query);
 
 		check(expectedIndexes, actualIndexes);
 	}
 
 	@Test
-	public void testSearchEquals() throws Exception {
+	public void testDeleteEquals() throws Exception {
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
 		for (I index : indexes) {
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> deleteQuery = SearchQueryBuilder.of(getIndexClass()) //
@@ -175,7 +174,7 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
 				.build();
 
-		handler.delete(JdbcPersistenceContext.of(connection), deleteQuery);
+		handler.delete(deleteQuery);
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
@@ -184,14 +183,14 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 		List<I> expectedIndexes = indexes.stream()
 				.filter(item -> comparePropertyValue(getPropertyValue(item), getPropertyValue(selectedIndex)) != 0)
 				.collect(Collectors.toList());
-		List<I> actualIndexes = handler.search(JdbcPersistenceContext.of(connection), query);
+		List<I> actualIndexes = handler.search(query);
 
 		check(expectedIndexes, actualIndexes);
 	}
 
 	@EnabledIf("isNullPropertyValueAllowed")
 	@Test
-	public void testSearchEqualsNull() throws Exception {
+	public void testDeleteEqualsNull() throws Exception {
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
@@ -201,7 +200,7 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 				setPropertyValue(index, null);
 			}
 
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> deleteQuery = SearchQueryBuilder.of(getIndexClass()) //
@@ -209,7 +208,7 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
 				.build();
 
-		handler.delete(JdbcPersistenceContext.of(connection), deleteQuery);
+		handler.delete(deleteQuery);
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
@@ -218,18 +217,18 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 		List<I> expectedIndexes = indexes.stream()
 				.filter(item -> comparePropertyValue(getPropertyValue(item), getPropertyValue(selectedIndex)) != 0)
 				.collect(Collectors.toList());
-		List<I> actualIndexes = handler.search(JdbcPersistenceContext.of(connection), query);
+		List<I> actualIndexes = handler.search(query);
 
 		check(expectedIndexes, actualIndexes);
 	}
 
 	@Test
-	public void testSearchNotEquals() throws Exception {
+	public void testDeleteNotEquals() throws Exception {
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
 		for (I index : indexes) {
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> deleteQuery = SearchQueryBuilder.of(getIndexClass()) //
@@ -237,7 +236,7 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
 				.build();
 
-		handler.delete(JdbcPersistenceContext.of(connection), deleteQuery);
+		handler.delete(deleteQuery);
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
@@ -246,14 +245,14 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 		List<I> expectedIndexes = indexes.stream()
 				.filter(item -> comparePropertyValue(getPropertyValue(item), getPropertyValue(selectedIndex)) == 0)
 				.collect(Collectors.toList());
-		List<I> actualIndexes = handler.search(JdbcPersistenceContext.of(connection), query);
+		List<I> actualIndexes = handler.search(query);
 
 		check(expectedIndexes, actualIndexes);
 	}
 
 	@EnabledIf("isNullPropertyValueAllowed")
 	@Test
-	public void testSearchNotEqualsNull() throws Exception {
+	public void testDeleteNotEqualsNull() throws Exception {
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
@@ -263,7 +262,7 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 				setPropertyValue(index, null);
 			}
 
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> deleteQuery = SearchQueryBuilder.of(getIndexClass()) //
@@ -271,7 +270,7 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
 				.build();
 
-		handler.delete(JdbcPersistenceContext.of(connection), deleteQuery);
+		handler.delete(deleteQuery);
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
@@ -280,18 +279,18 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 		List<I> expectedIndexes = indexes.stream()
 				.filter(item -> comparePropertyValue(getPropertyValue(item), getPropertyValue(selectedIndex)) == 0)
 				.collect(Collectors.toList());
-		List<I> actualIndexes = handler.search(JdbcPersistenceContext.of(connection), query);
+		List<I> actualIndexes = handler.search(query);
 
 		check(expectedIndexes, actualIndexes);
 	}
 
 	@Test
-	public void testSearchGreater() throws Exception {
+	public void testDeleteGreater() throws Exception {
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
 		for (I index : indexes) {
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> deleteQuery = SearchQueryBuilder.of(getIndexClass()) //
@@ -299,7 +298,7 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
 				.build();
 
-		handler.delete(JdbcPersistenceContext.of(connection), deleteQuery);
+		handler.delete(deleteQuery);
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
@@ -308,14 +307,14 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 		List<I> expectedIndexes = indexes.stream()
 				.filter(item -> comparePropertyValue(getPropertyValue(item), getPropertyValue(selectedIndex)) <= 0)
 				.collect(Collectors.toList());
-		List<I> actualIndexes = handler.search(JdbcPersistenceContext.of(connection), query);
+		List<I> actualIndexes = handler.search(query);
 
 		check(expectedIndexes, actualIndexes);
 	}
 
 	@EnabledIf("isNullPropertyValueAllowed")
 	@Test
-	public void testSearchGreaterNull() throws Exception {
+	public void testDeleteGreaterNull() throws Exception {
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
@@ -325,7 +324,7 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 				setPropertyValue(index, null);
 			}
 
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> deleteQuery = SearchQueryBuilder.of(getIndexClass()) //
@@ -334,18 +333,18 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 				.build();
 
 		PersistenceException exception = Assertions.assertThrows(PersistenceException.class,
-				() -> handler.delete(JdbcPersistenceContext.of(connection), deleteQuery));
+				() -> handler.delete(deleteQuery));
 
 		Assertions.assertEquals("operation GREATER for value null is not supported", exception.getMessage());
 	}
 
 	@Test
-	public void testSearchGreaterOrEquals() throws Exception {
+	public void testDeleteGreaterOrEquals() throws Exception {
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
 		for (I index : indexes) {
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> deleteQuery = SearchQueryBuilder.of(getIndexClass()) //
@@ -353,7 +352,7 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
 				.build();
 
-		handler.delete(JdbcPersistenceContext.of(connection), deleteQuery);
+		handler.delete(deleteQuery);
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
@@ -362,14 +361,14 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 		List<I> expectedIndexes = indexes.stream()
 				.filter(item -> comparePropertyValue(getPropertyValue(item), getPropertyValue(selectedIndex)) < 0)
 				.collect(Collectors.toList());
-		List<I> actualIndexes = handler.search(JdbcPersistenceContext.of(connection), query);
+		List<I> actualIndexes = handler.search(query);
 
 		check(expectedIndexes, actualIndexes);
 	}
 
 	@EnabledIf("isNullPropertyValueAllowed")
 	@Test
-	public void testSearchGreaterOrEqualsNull() throws Exception {
+	public void testDeleteGreaterOrEqualsNull() throws Exception {
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
@@ -379,7 +378,7 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 				setPropertyValue(index, null);
 			}
 
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> deleteQuery = SearchQueryBuilder.of(getIndexClass()) //
@@ -388,18 +387,18 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 				.build();
 
 		PersistenceException exception = Assertions.assertThrows(PersistenceException.class,
-				() -> handler.delete(JdbcPersistenceContext.of(connection), deleteQuery));
+				() -> handler.delete(deleteQuery));
 
 		Assertions.assertEquals("operation GREATER_OR_EQUALS for value null is not supported", exception.getMessage());
 	}
 
 	@Test
-	public void testSearchLower() throws Exception {
+	public void testDeleteLower() throws Exception {
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
 		for (I index : indexes) {
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> deleteQuery = SearchQueryBuilder.of(getIndexClass()) //
@@ -407,7 +406,7 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
 				.build();
 
-		handler.delete(JdbcPersistenceContext.of(connection), deleteQuery);
+		handler.delete(deleteQuery);
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
@@ -416,14 +415,14 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 		List<I> expectedIndexes = indexes.stream()
 				.filter(item -> comparePropertyValue(getPropertyValue(item), getPropertyValue(selectedIndex)) >= 0)
 				.collect(Collectors.toList());
-		List<I> actualIndexes = handler.search(JdbcPersistenceContext.of(connection), query);
+		List<I> actualIndexes = handler.search(query);
 
 		check(expectedIndexes, actualIndexes);
 	}
 
 	@EnabledIf("isNullPropertyValueAllowed")
 	@Test
-	public void testSearchLowerNull() throws Exception {
+	public void testDeleteLowerNull() throws Exception {
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
@@ -433,7 +432,7 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 				setPropertyValue(index, null);
 			}
 
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> deleteQuery = SearchQueryBuilder.of(getIndexClass()) //
@@ -442,18 +441,18 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 				.build();
 
 		PersistenceException exception = Assertions.assertThrows(PersistenceException.class,
-				() -> handler.delete(JdbcPersistenceContext.of(connection), deleteQuery));
+				() -> handler.delete(deleteQuery));
 
 		Assertions.assertEquals("operation LOWER for value null is not supported", exception.getMessage());
 	}
 
 	@Test
-	public void testSearchLowerOrEquals() throws Exception {
+	public void testDeleteLowerOrEquals() throws Exception {
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
 		for (I index : indexes) {
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> deleteQuery = SearchQueryBuilder.of(getIndexClass()) //
@@ -461,7 +460,7 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
 				.build();
 
-		handler.delete(JdbcPersistenceContext.of(connection), deleteQuery);
+		handler.delete(deleteQuery);
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
@@ -470,14 +469,14 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 		List<I> expectedIndexes = indexes.stream()
 				.filter(item -> comparePropertyValue(getPropertyValue(item), getPropertyValue(selectedIndex)) > 0)
 				.collect(Collectors.toList());
-		List<I> actualIndexes = handler.search(JdbcPersistenceContext.of(connection), query);
+		List<I> actualIndexes = handler.search(query);
 
 		check(expectedIndexes, actualIndexes);
 	}
 
 	@EnabledIf("isNullPropertyValueAllowed")
 	@Test
-	public void testSearchLowerOrEqualsNull() throws Exception {
+	public void testDeleteLowerOrEqualsNull() throws Exception {
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
@@ -487,7 +486,7 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 				setPropertyValue(index, null);
 			}
 
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> deleteQuery = SearchQueryBuilder.of(getIndexClass()) //
@@ -496,7 +495,7 @@ public abstract class BasePropertyDeletePersistenceTest<I extends EntityIndex<?>
 				.build();
 
 		PersistenceException exception = Assertions.assertThrows(PersistenceException.class,
-				() -> handler.delete(JdbcPersistenceContext.of(connection), deleteQuery));
+				() -> handler.delete(deleteQuery));
 
 		Assertions.assertEquals("operation LOWER_OR_EQUALS for value null is not supported", exception.getMessage());
 	}
