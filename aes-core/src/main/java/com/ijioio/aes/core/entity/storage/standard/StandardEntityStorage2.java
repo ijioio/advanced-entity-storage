@@ -19,11 +19,11 @@ public class StandardEntityStorage2 implements EntityStorage {
 
 	private final DataSource dataSource;
 
-	private final PersistenceHandler<?> persistenceHandler;
+	private final PersistenceHandler persistenceHandler;
 
 	private final SerializationHandler serializationHandler;
 
-	public StandardEntityStorage2(DataSource dataSource, PersistenceHandler<?> persistenceHandler,
+	public StandardEntityStorage2(DataSource dataSource, PersistenceHandler persistenceHandler,
 			SerializationHandler serializationHandler) {
 
 		this.dataSource = dataSource;
