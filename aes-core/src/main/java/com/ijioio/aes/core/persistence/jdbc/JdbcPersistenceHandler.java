@@ -128,7 +128,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler {
 
 			Connection connection = transaction.getConnection();
 
-			JdbcPersistenceContext context = JdbcPersistenceContext.of(connection);
+			JdbcPersistenceContext context = new JdbcPersistenceContext();
 
 			Collection<Property<?>> properties = index.getProperties();
 
@@ -186,7 +186,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler {
 
 			Connection connection = transaction.getConnection();
 
-			JdbcPersistenceContext context = JdbcPersistenceContext.of(connection);
+			JdbcPersistenceContext context = new JdbcPersistenceContext();
 
 			List<Pair<TypeReference<?>, Supplier<?>>> readers = new ArrayList<>();
 
@@ -235,7 +235,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler {
 
 			Connection connection = transaction.getConnection();
 
-			JdbcPersistenceContext context = JdbcPersistenceContext.of(connection);
+			JdbcPersistenceContext context = new JdbcPersistenceContext();
 
 			List<Pair<TypeReference<?>, Supplier<?>>> readers = new ArrayList<>();
 
