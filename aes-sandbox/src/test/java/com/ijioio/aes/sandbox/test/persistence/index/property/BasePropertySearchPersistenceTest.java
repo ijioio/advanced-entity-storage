@@ -18,7 +18,6 @@ import com.ijioio.aes.core.Property;
 import com.ijioio.aes.core.SearchQuery;
 import com.ijioio.aes.core.SearchQuery.SearchQueryBuilder;
 import com.ijioio.aes.core.persistence.PersistenceException;
-import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceContext;
 import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandler;
 import com.ijioio.aes.sandbox.test.persistence.BasePersistenceTest;
 
@@ -101,7 +100,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 	@BeforeEach
 	public void before() throws Exception {
 
-		handler = new JdbcPersistenceHandler();
+		handler = new JdbcPersistenceHandler(dataSource);
 
 		executeSql(connection, Paths.get(getClass().getClassLoader()
 				.getResource(String.format("persistence/index/property/%s", getSqlScriptFileName())).toURI()));
@@ -114,7 +113,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 	public void testSearch() throws Exception {
 
 		for (I index : indexes) {
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
@@ -122,7 +121,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 				.build();
 
 		List<I> expectedIndexes = indexes;
-		List<I> actualIndexes = handler.search(JdbcPersistenceContext.of(connection), query);
+		List<I> actualIndexes = handler.search(query);
 
 		check(expectedIndexes, actualIndexes);
 	}
@@ -135,7 +134,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 
 			setPropertyValue(index, null);
 
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
@@ -143,7 +142,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 				.build();
 
 		List<I> expectedIndexes = indexes;
-		List<I> actualIndexes = handler.search(JdbcPersistenceContext.of(connection), query);
+		List<I> actualIndexes = handler.search(query);
 
 		check(expectedIndexes, actualIndexes);
 	}
@@ -154,7 +153,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
 		for (I index : indexes) {
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
@@ -165,7 +164,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		List<I> expectedIndexes = indexes.stream()
 				.filter(item -> comparePropertyValue(getPropertyValue(item), getPropertyValue(selectedIndex)) == 0)
 				.collect(Collectors.toList());
-		List<I> actualIndexes = handler.search(JdbcPersistenceContext.of(connection), query);
+		List<I> actualIndexes = handler.search(query);
 
 		check(expectedIndexes, actualIndexes);
 	}
@@ -182,7 +181,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 				setPropertyValue(index, null);
 			}
 
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
@@ -193,7 +192,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		List<I> expectedIndexes = indexes.stream()
 				.filter(item -> comparePropertyValue(getPropertyValue(item), getPropertyValue(selectedIndex)) == 0)
 				.collect(Collectors.toList());
-		List<I> actualIndexes = handler.search(JdbcPersistenceContext.of(connection), query);
+		List<I> actualIndexes = handler.search(query);
 
 		check(expectedIndexes, actualIndexes);
 	}
@@ -204,7 +203,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
 		for (I index : indexes) {
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
@@ -215,7 +214,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		List<I> expectedIndexes = indexes.stream()
 				.filter(item -> comparePropertyValue(getPropertyValue(item), getPropertyValue(selectedIndex)) != 0)
 				.collect(Collectors.toList());
-		List<I> actualIndexes = handler.search(JdbcPersistenceContext.of(connection), query);
+		List<I> actualIndexes = handler.search(query);
 
 		check(expectedIndexes, actualIndexes);
 	}
@@ -232,7 +231,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 				setPropertyValue(index, null);
 			}
 
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
@@ -243,7 +242,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		List<I> expectedIndexes = indexes.stream()
 				.filter(item -> comparePropertyValue(getPropertyValue(item), getPropertyValue(selectedIndex)) != 0)
 				.collect(Collectors.toList());
-		List<I> actualIndexes = handler.search(JdbcPersistenceContext.of(connection), query);
+		List<I> actualIndexes = handler.search(query);
 
 		check(expectedIndexes, actualIndexes);
 	}
@@ -254,7 +253,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
 		for (I index : indexes) {
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
@@ -265,7 +264,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		List<I> expectedIndexes = indexes.stream()
 				.filter(item -> comparePropertyValue(getPropertyValue(item), getPropertyValue(selectedIndex)) > 0)
 				.collect(Collectors.toList());
-		List<I> actualIndexes = handler.search(JdbcPersistenceContext.of(connection), query);
+		List<I> actualIndexes = handler.search(query);
 
 		check(expectedIndexes, actualIndexes);
 	}
@@ -282,7 +281,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 				setPropertyValue(index, null);
 			}
 
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
@@ -291,7 +290,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 				.build();
 
 		PersistenceException exception = Assertions.assertThrows(PersistenceException.class,
-				() -> handler.search(JdbcPersistenceContext.of(connection), query));
+				() -> handler.search(query));
 
 		Assertions.assertEquals("operation GREATER for value null is not supported", exception.getMessage());
 	}
@@ -302,7 +301,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
 		for (I index : indexes) {
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
@@ -313,7 +312,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		List<I> expectedIndexes = indexes.stream()
 				.filter(item -> comparePropertyValue(getPropertyValue(item), getPropertyValue(selectedIndex)) >= 0)
 				.collect(Collectors.toList());
-		List<I> actualIndexes = handler.search(JdbcPersistenceContext.of(connection), query);
+		List<I> actualIndexes = handler.search(query);
 
 		check(expectedIndexes, actualIndexes);
 	}
@@ -330,7 +329,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 				setPropertyValue(index, null);
 			}
 
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
@@ -339,7 +338,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 				.build();
 
 		PersistenceException exception = Assertions.assertThrows(PersistenceException.class,
-				() -> handler.search(JdbcPersistenceContext.of(connection), query));
+				() -> handler.search(query));
 
 		Assertions.assertEquals("operation GREATER_OR_EQUALS for value null is not supported", exception.getMessage());
 	}
@@ -350,7 +349,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
 		for (I index : indexes) {
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
@@ -361,7 +360,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		List<I> expectedIndexes = indexes.stream()
 				.filter(item -> comparePropertyValue(getPropertyValue(item), getPropertyValue(selectedIndex)) < 0)
 				.collect(Collectors.toList());
-		List<I> actualIndexes = handler.search(JdbcPersistenceContext.of(connection), query);
+		List<I> actualIndexes = handler.search(query);
 
 		check(expectedIndexes, actualIndexes);
 	}
@@ -378,7 +377,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 				setPropertyValue(index, null);
 			}
 
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
@@ -387,7 +386,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 				.build();
 
 		PersistenceException exception = Assertions.assertThrows(PersistenceException.class,
-				() -> handler.search(JdbcPersistenceContext.of(connection), query));
+				() -> handler.search(query));
 
 		Assertions.assertEquals("operation LOWER for value null is not supported", exception.getMessage());
 	}
@@ -398,7 +397,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
 		for (I index : indexes) {
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
@@ -409,7 +408,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		List<I> expectedIndexes = indexes.stream()
 				.filter(item -> comparePropertyValue(getPropertyValue(item), getPropertyValue(selectedIndex)) <= 0)
 				.collect(Collectors.toList());
-		List<I> actualIndexes = handler.search(JdbcPersistenceContext.of(connection), query);
+		List<I> actualIndexes = handler.search(query);
 
 		check(expectedIndexes, actualIndexes);
 	}
@@ -426,7 +425,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 				setPropertyValue(index, null);
 			}
 
-			handler.create(JdbcPersistenceContext.of(connection), index);
+			handler.create(index);
 		}
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
@@ -435,7 +434,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 				.build();
 
 		PersistenceException exception = Assertions.assertThrows(PersistenceException.class,
-				() -> handler.search(JdbcPersistenceContext.of(connection), query));
+				() -> handler.search(query));
 
 		Assertions.assertEquals("operation LOWER_OR_EQUALS for value null is not supported", exception.getMessage());
 	}
