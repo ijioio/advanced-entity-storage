@@ -105,7 +105,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 			XMLPrettyPrintStreamWriter writer = XMLPrettyPrintStreamWriter
 					.of(XMLOutputFactory.newInstance().createXMLStreamWriter(os));
 
-			XmlSerializationContext context = XmlSerializationContext.of(writer);
+			XmlSerializationContext context = new XmlSerializationContext(writer);
 
 			try {
 				((XmlSerializationValueHandler) getValueHandler(entity.getClass())).write(context, this, "object",
@@ -127,7 +127,7 @@ public class XmlSerializationHandler implements SerializationHandler {
 
 			XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(is);
 
-			XmlSerializationContext context = XmlSerializationContext.of(reader);
+			XmlSerializationContext context = new XmlSerializationContext(reader);
 
 			try {
 

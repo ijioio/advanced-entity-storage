@@ -11,23 +11,21 @@ import com.ijioio.aes.core.serialization.SerializationContext;
 
 public class XmlSerializationContext implements SerializationContext {
 
-	public static XmlSerializationContext of(XMLStreamWriter writer) {
-		return new XmlSerializationContext(writer, null);
-	}
-
-	public static XmlSerializationContext of(XMLStreamReader reader) {
-		return new XmlSerializationContext(null, reader);
-	}
-
 	private final XMLStreamWriter writer;
 
 	private final XMLStreamReader reader;
 
 	private final Map<String, Identity> identities = new HashMap<>();
 
-	private XmlSerializationContext(XMLStreamWriter writer, XMLStreamReader reader) {
+	public XmlSerializationContext(XMLStreamWriter writer) {
 
 		this.writer = writer;
+		this.reader = null;
+	}
+
+	public XmlSerializationContext(XMLStreamReader reader) {
+
+		this.writer = null;
 		this.reader = reader;
 	}
 
