@@ -4,11 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -53,7 +53,7 @@ import com.ijioio.aes.core.util.TupleUtil.Pair;
 public class JdbcPersistenceHandler implements PersistenceHandler {
 
 	protected final ThreadLocal<Deque<JdbcPersistenceTransaction>> transactions = ThreadLocal
-			.withInitial(() -> new ArrayDeque<>());
+			.withInitial(() -> new LinkedList<>());
 
 	protected final DataSource dataSource;
 
