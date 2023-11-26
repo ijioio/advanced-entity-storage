@@ -4,14 +4,18 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import javax.sql.DataSource;
 
 import com.ijioio.aes.core.EntityIndex;
 import com.ijioio.aes.core.IntrospectionException;
@@ -46,11 +50,18 @@ import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcShortPersistenceVa
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcStringPersistenceValueHandler;
 import com.ijioio.aes.core.util.TupleUtil.Pair;
 
-public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenceContext> {
+public class JdbcPersistenceHandler implements PersistenceHandler {
 
-	private final Map<String, JdbcPersistenceValueHandler<?>> handlers = new HashMap<>();
+	protected final ThreadLocal<Deque<JdbcPersistenceTransaction>> transactions = ThreadLocal
+			.withInitial(() -> new ArrayDeque<>());
 
-	public JdbcPersistenceHandler() {
+	protected final DataSource dataSource;
+
+	protected final Map<String, JdbcPersistenceValueHandler<?>> handlers = new HashMap<>();
+
+	public JdbcPersistenceHandler(DataSource dataSource) {
+
+		this.dataSource = dataSource;
 
 		registerValueHandler(new JdbcBooleanPersistenceValueHandler());
 		registerValueHandler(new JdbcCharacterPersistenceValueHandler());
@@ -96,13 +107,28 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 		throw new PersistenceException(String.format("type %s is not supported", type));
 	}
 
+	@Override
+	public JdbcPersistenceTransaction createTransaction() throws PersistenceException {
+		return new JdbcPersistenceTransaction(this);
+	}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public void create(JdbcPersistenceContext context, EntityIndex<?> index) throws PersistenceException {
+	public void create(EntityIndex<?> index) throws PersistenceException {
+
+		JdbcPersistenceTransaction transaction = transactions.get().peekLast();
+
+		if (transaction == null) {
+			transaction = createTransaction();
+		}
 
 		try {
 
-			Connection connection = context.getConnection();
+			transaction.begin();
+
+			Connection connection = transaction.getConnection();
+
+			JdbcPersistenceContext context = JdbcPersistenceContext.of(connection);
 
 			Collection<Property<?>> properties = index.getProperties();
 
@@ -134,19 +160,33 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 				statement.executeUpdate();
 			}
 
+			transaction.commit();
+
 		} catch (SQLException | IntrospectionException e) {
+
+			transaction.rollback();
+
 			throw new PersistenceException(e);
 		}
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public <I extends EntityIndex<?>> void delete(JdbcPersistenceContext context, SearchQuery<I> query)
-			throws PersistenceException {
+	public <I extends EntityIndex<?>> void delete(SearchQuery<I> query) throws PersistenceException {
+
+		JdbcPersistenceTransaction transaction = transactions.get().peekLast();
+
+		if (transaction == null) {
+			transaction = createTransaction();
+		}
 
 		try {
 
-			Connection connection = context.getConnection();
+			transaction.begin();
+
+			Connection connection = transaction.getConnection();
+
+			JdbcPersistenceContext context = JdbcPersistenceContext.of(connection);
 
 			List<Pair<TypeReference<?>, Supplier<?>>> readers = new ArrayList<>();
 
@@ -169,19 +209,33 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 				statement.executeUpdate();
 			}
 
+			transaction.commit();
+
 		} catch (SQLException e) {
+
+			transaction.rollback();
+
 			throw new PersistenceException(e);
 		}
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public <I extends EntityIndex<?>> List<I> search(JdbcPersistenceContext context, SearchQuery<I> query)
-			throws PersistenceException {
+	public <I extends EntityIndex<?>> List<I> search(SearchQuery<I> query) throws PersistenceException {
+
+		JdbcPersistenceTransaction transaction = transactions.get().peekLast();
+
+		if (transaction == null) {
+			transaction = createTransaction();
+		}
 
 		try {
 
-			Connection connection = context.getConnection();
+			transaction.begin();
+
+			Connection connection = transaction.getConnection();
+
+			JdbcPersistenceContext context = JdbcPersistenceContext.of(connection);
 
 			List<Pair<TypeReference<?>, Supplier<?>>> readers = new ArrayList<>();
 
@@ -225,11 +279,16 @@ public class JdbcPersistenceHandler implements PersistenceHandler<JdbcPersistenc
 						indexes.add(index);
 					}
 
+					transaction.commit();
+
 					return indexes;
 				}
 			}
 
 		} catch (SQLException | IntrospectionException e) {
+
+			transaction.rollback();
+
 			throw new PersistenceException(e);
 		}
 	}
