@@ -32,7 +32,7 @@ public class EntityStorageTest extends BaseEntityStorageTest {
 	@BeforeEach
 	public void before() throws Exception {
 
-		PersistenceHandler<?> persistenceHandler = new JdbcPersistenceHandler();
+		PersistenceHandler persistenceHandler = new JdbcPersistenceHandler(dataSource);
 		SerializationHandler serializationHandler = new XmlSerializationHandler();
 
 		entityStorage = new StandardEntityStorage2(dataSource, persistenceHandler, serializationHandler);
