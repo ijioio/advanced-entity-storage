@@ -34,6 +34,7 @@ public abstract class BaseEntityIndex<E extends Entity> extends BaseIdentity imp
 		return source;
 	}
 
+	@Override
 	public void setSource(EntityReference<E> source) {
 		this.source = source;
 	}

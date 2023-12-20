@@ -24,6 +24,26 @@ public class EntityContainer<E extends Entity> extends BaseEntity {
 		return container;
 	}
 
+	/**
+	 * Creates entity container having indicated {@code id} and holding indicated
+	 * {@code entity}.
+	 *
+	 * @param id     of the container
+	 * @param entity to be place to the container
+	 * @return entity container holding entity
+	 */
+	@SuppressWarnings("unchecked")
+	public static final <E extends Entity> EntityContainer<E> of(String id, E entity) {
+
+		EntityContainer<E> container = new EntityContainer<>();
+
+		container.setId(id);
+		container.setEntityType((Class<E>) entity.getClass());
+		container.setEntity(entity);
+
+		return container;
+	}
+
 	private Class<E> entityType;
 
 	private E entity;

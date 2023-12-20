@@ -1,10 +1,12 @@
 package com.ijioio.aes.core.entity.storage;
 
-public class EntityData {
+import com.ijioio.aes.core.Entity;
+
+public class EntityData<E extends Entity> {
 
 	private String id;
 
-	private String entityType;
+	private Class<E> entityType;
 
 	private byte[] data;
 
@@ -16,11 +18,11 @@ public class EntityData {
 		this.id = id;
 	}
 
-	public String getEntityType() {
+	public Class<E> getEntityType() {
 		return entityType;
 	}
 
-	public void setEntityType(String entityType) {
+	public void setEntityType(Class<E> entityType) {
 		this.entityType = entityType;
 	}
 
