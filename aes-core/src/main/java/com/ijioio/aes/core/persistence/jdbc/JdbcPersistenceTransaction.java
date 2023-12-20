@@ -3,7 +3,6 @@ package com.ijioio.aes.core.persistence.jdbc;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import com.ijioio.aes.core.entity.storage.StorageException;
 import com.ijioio.aes.core.persistence.PersistenceException;
 import com.ijioio.aes.core.persistence.PersistenceTransaction;
 
@@ -39,7 +38,7 @@ public class JdbcPersistenceTransaction implements PersistenceTransaction {
 			count++;
 
 		} catch (SQLException e) {
-			throw new StorageException("begin failed", e);
+			throw new PersistenceException("begin failed", e);
 		}
 	}
 
@@ -59,7 +58,7 @@ public class JdbcPersistenceTransaction implements PersistenceTransaction {
 			}
 
 		} catch (SQLException e) {
-			throw new StorageException("commit failed", e);
+			throw new PersistenceException("commit failed", e);
 		}
 	}
 
@@ -79,7 +78,7 @@ public class JdbcPersistenceTransaction implements PersistenceTransaction {
 			}
 
 		} catch (SQLException e) {
-			throw new StorageException("rollback failed", e);
+			throw new PersistenceException("rollback failed", e);
 		}
 	}
 }
