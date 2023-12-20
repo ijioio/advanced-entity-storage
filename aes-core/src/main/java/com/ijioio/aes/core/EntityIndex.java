@@ -7,4 +7,6 @@ package com.ijioio.aes.core;
 public interface EntityIndex<E extends Entity> extends Identity, Introspectable {
 
 	public EntityReference<E> getSource();
+
+	public void setSource(EntityReference<E> entityReference);
 }

@@ -17,7 +17,9 @@ import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
+import com.ijioio.aes.core.Entity;
 import com.ijioio.aes.core.EntityIndex;
+import com.ijioio.aes.core.EntityReference;
 import com.ijioio.aes.core.IntrospectionException;
 import com.ijioio.aes.core.Operation;
 import com.ijioio.aes.core.Order;
@@ -29,9 +31,11 @@ import com.ijioio.aes.core.SearchCriterion.OrSearchCriterion;
 import com.ijioio.aes.core.SearchCriterion.SimpleSearchCriterion;
 import com.ijioio.aes.core.SearchQuery;
 import com.ijioio.aes.core.TypeReference;
+import com.ijioio.aes.core.entity.storage.EntityData;
 import com.ijioio.aes.core.persistence.PersistenceException;
 import com.ijioio.aes.core.persistence.PersistenceHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcBooleanPersistenceValueHandler;
+import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcByteArrayPersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcBytePersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcCharacterPersistenceValueHandler;
 import com.ijioio.aes.core.persistence.jdbc.value.handler.JdbcClassPersistenceValueHandler;
@@ -71,6 +75,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler {
 		registerValueHandler(new JdbcLongPersistenceValueHandler());
 		registerValueHandler(new JdbcFloatPersistenceValueHandler());
 		registerValueHandler(new JdbcDoublePersistenceValueHandler());
+		registerValueHandler(new JdbcByteArrayPersistenceValueHandler());
 		registerValueHandler(new JdbcStringPersistenceValueHandler());
 		registerValueHandler(new JdbcInstantPersistenceValueHandler());
 		registerValueHandler(new JdbcLocalDatePersistenceValueHandler());
@@ -112,15 +117,243 @@ public class JdbcPersistenceHandler implements PersistenceHandler {
 		return new JdbcPersistenceTransaction(this);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public void create(EntityIndex<?> index) throws PersistenceException {
+	public JdbcPersistenceTransaction obtainTransaction() throws PersistenceException {
 
 		JdbcPersistenceTransaction transaction = transactions.get().peekLast();
 
 		if (transaction == null) {
 			transaction = createTransaction();
 		}
+
+		return transaction;
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public <E extends Entity> void create(EntityData<E> data) throws PersistenceException {
+
+		JdbcPersistenceTransaction transaction = obtainTransaction();
+
+		try {
+
+			transaction.begin();
+
+			Connection connection = transaction.getConnection();
+
+			JdbcPersistenceContext context = new JdbcPersistenceContext();
+
+			List<String> columns = new ArrayList<>();
+
+			columns.add("id");
+			columns.add("entityType");
+			columns.add("data");
+
+			String sql = String.format("insert into %s (%s) values (%s)", EntityData.class.getSimpleName(),
+					columns.stream().collect(Collectors.joining(", ")),
+					columns.stream().map(item -> "?").collect(Collectors.joining(", ")));
+
+			System.out.println(sql);
+
+			try (PreparedStatement statement = connection.prepareStatement(sql)) {
+
+				context.setStatement(statement);
+				context.resetIndex();
+
+				TypeReference<String> idType = TypeReference.of(String.class);
+				TypeReference<Class> entityTypeType = TypeReference.of(Class.class);
+				TypeReference<byte[]> dataType = TypeReference.of(byte[].class);
+
+				getValueHandler(String.class).write(context, this, idType, data.getId(), false);
+				getValueHandler(Class.class).write(context, this, entityTypeType, data.getEntityType(), false);
+				getValueHandler(byte[].class).write(context, this, dataType, data.getData(), false);
+
+				System.out.println(statement);
+
+				statement.executeUpdate();
+			}
+
+			transaction.commit();
+
+		} catch (SQLException e) {
+
+			transaction.rollback();
+
+			throw new PersistenceException(e);
+		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public <E extends Entity> void update(EntityData<E> data) throws PersistenceException {
+
+		JdbcPersistenceTransaction transaction = obtainTransaction();
+
+		try {
+
+			transaction.begin();
+
+			Connection connection = transaction.getConnection();
+
+			JdbcPersistenceContext context = new JdbcPersistenceContext();
+
+			List<String> columns = new ArrayList<>();
+
+			columns.add("id");
+			columns.add("entityType");
+			columns.add("data");
+
+			String sql = String.format("update %s set %s where id = ?", EntityData.class.getSimpleName(),
+					columns.stream().map(item -> String.format("%s = ?", item)).collect(Collectors.joining(", ")));
+
+			System.out.println(sql);
+
+			try (PreparedStatement statement = connection.prepareStatement(sql)) {
+
+				context.setStatement(statement);
+				context.resetIndex();
+
+				TypeReference<String> idType = TypeReference.of(String.class);
+				TypeReference<Class> entityTypeType = TypeReference.of(Class.class);
+				TypeReference<byte[]> dataType = TypeReference.of(byte[].class);
+
+				getValueHandler(String.class).write(context, this, idType, data.getId(), false);
+				getValueHandler(Class.class).write(context, this, entityTypeType, data.getEntityType(), false);
+				getValueHandler(byte[].class).write(context, this, dataType, data.getData(), false);
+				getValueHandler(String.class).write(context, this, idType, data.getId(), true);
+
+				System.out.println(statement);
+
+				statement.executeUpdate();
+			}
+
+			transaction.commit();
+
+		} catch (SQLException e) {
+
+			transaction.rollback();
+
+			throw new PersistenceException(e);
+		}
+	}
+
+	@Override
+	public <E extends Entity> void delete(EntityData<E> data) throws PersistenceException {
+
+		JdbcPersistenceTransaction transaction = obtainTransaction();
+
+		try {
+
+			transaction.begin();
+
+			Connection connection = transaction.getConnection();
+
+			JdbcPersistenceContext context = new JdbcPersistenceContext();
+
+			String sql = String.format("delete from %s where id = ?", EntityData.class.getSimpleName());
+
+			System.out.println(sql);
+
+			try (PreparedStatement statement = connection.prepareStatement(sql)) {
+
+				context.setStatement(statement);
+				context.resetIndex();
+
+				TypeReference<String> idType = TypeReference.of(String.class);
+
+				getValueHandler(String.class).write(context, this, idType, data.getId(), true);
+
+				System.out.println(statement);
+
+				statement.executeUpdate();
+			}
+
+			transaction.commit();
+
+		} catch (SQLException e) {
+
+			transaction.rollback();
+
+			throw new PersistenceException(e);
+		}
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public <E extends Entity> EntityData<E> load(EntityReference<E> reference) throws PersistenceException {
+
+		JdbcPersistenceTransaction transaction = obtainTransaction();
+
+		try {
+
+			transaction.begin();
+
+			Connection connection = transaction.getConnection();
+
+			JdbcPersistenceContext context = new JdbcPersistenceContext();
+
+			List<String> columns = new ArrayList<>();
+
+			columns.add("id");
+			columns.add("entityType");
+			columns.add("data");
+
+			String sql = String.format("select %s from %s where id = ?",
+					columns.stream().collect(Collectors.joining(", ")), EntityData.class.getSimpleName());
+
+			System.out.println(sql);
+
+			EntityData<E> entityData = null;
+
+			try (PreparedStatement statement = connection.prepareStatement(sql)) {
+
+				context.setStatement(statement);
+				context.resetIndex();
+
+				TypeReference<String> idType = TypeReference.of(String.class);
+				TypeReference<Class> entityTypeType = TypeReference.of(Class.class);
+				TypeReference<byte[]> dataType = TypeReference.of(byte[].class);
+
+				getValueHandler(String.class).write(context, this, idType, reference.getId(), true);
+
+				try (ResultSet resultSet = statement.executeQuery()) {
+
+					context.setResultSet(resultSet);
+
+					while (resultSet.next()) {
+
+						context.resetIndex();
+
+						entityData = new EntityData<>();
+
+						entityData.setId(getValueHandler(String.class).read(context, this, idType, entityData.getId()));
+						entityData.setEntityType(getValueHandler(Class.class).read(context, this, entityTypeType,
+								entityData.getEntityType()));
+						entityData.setData(
+								getValueHandler(byte[].class).read(context, this, dataType, entityData.getData()));
+
+						break;
+					}
+				}
+			}
+
+			transaction.commit();
+
+			return entityData;
+
+		} catch (SQLException e) {
+
+			transaction.rollback();
+
+			throw new PersistenceException(e);
+		}
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public void create(EntityIndex<?> index) throws PersistenceException {
+
+		JdbcPersistenceTransaction transaction = obtainTransaction();
 
 		try {
 
@@ -174,12 +407,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler {
 	@Override
 	public <I extends EntityIndex<?>> void delete(SearchQuery<I> query) throws PersistenceException {
 
-		JdbcPersistenceTransaction transaction = transactions.get().peekLast();
-
-		if (transaction == null) {
-			transaction = createTransaction();
-		}
-
+		JdbcPersistenceTransaction transaction = obtainTransaction();
 		try {
 
 			transaction.begin();
@@ -223,11 +451,7 @@ public class JdbcPersistenceHandler implements PersistenceHandler {
 	@Override
 	public <I extends EntityIndex<?>> List<I> search(SearchQuery<I> query) throws PersistenceException {
 
-		JdbcPersistenceTransaction transaction = transactions.get().peekLast();
-
-		if (transaction == null) {
-			transaction = createTransaction();
-		}
+		JdbcPersistenceTransaction transaction = obtainTransaction();
 
 		try {
 

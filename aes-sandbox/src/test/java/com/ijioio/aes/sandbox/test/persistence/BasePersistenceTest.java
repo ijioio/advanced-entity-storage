@@ -3,6 +3,7 @@ package com.ijioio.aes.sandbox.test.persistence;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.Array;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -30,6 +31,9 @@ public class BasePersistenceTest extends BaseTest {
 
 		HikariConfig config = new HikariConfig();
 
+//		config.setJdbcUrl(System.getProperty("db"));
+//		config.setUsername(System.getProperty("user"));
+//		config.setPassword(System.getProperty("password"));
 		config.setJdbcUrl("jdbc:h2:~/test");
 		config.setUsername("su");
 		config.setPassword("");
@@ -96,6 +100,20 @@ public class BasePersistenceTest extends BaseTest {
 		return null;
 	}
 
+	protected byte[] getBytes(Blob blob) {
+
+		if (blob != null) {
+
+			try {
+				return blob.getBytes(1, (int) blob.length());
+			} catch (SQLException e) {
+				new RuntimeException(e);
+			}
+		}
+
+		return null;
+	}
+
 	protected <C extends Comparable<C>> int compare(C o1, C o2) {
 
 		if (o1 == null && o2 == null) {
@@ -140,5 +158,64 @@ public class BasePersistenceTest extends BaseTest {
 		}
 
 		return Integer.compare(o1.size(), o2.size());
+	}
+
+	public static class ByteArray implements Comparable<ByteArray> {
+
+		public static ByteArray of(byte[] data) {
+			return new ByteArray(data);
+		}
+
+		private final byte[] data;
+
+		private ByteArray(byte[] data) {
+			this.data = data;
+		}
+
+		@Override
+		public int hashCode() {
+
+			final int prime = 31;
+
+			int result = 1;
+
+			result = prime * result + Arrays.hashCode(data);
+
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+
+			if (this == obj) {
+				return true;
+			}
+
+			if (obj == null) {
+				return false;
+			}
+
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+
+			ByteArray other = (ByteArray) obj;
+
+			return Arrays.equals(data, other.data);
+		}
+
+		@Override
+		public int compareTo(ByteArray o) {
+
+			if (this == o) {
+				return 0;
+			}
+
+			if (o == null) {
+				return 1;
+			}
+
+			return Arrays.compare(data, o.data);
+		}
 	}
 }
