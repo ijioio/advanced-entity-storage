@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(8)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation project(':aes-core')
+	implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
+	testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.10.0'
+	testImplementation group: 'com.zaxxer', name: 'HikariCP', version: '5.0.1'
+}
