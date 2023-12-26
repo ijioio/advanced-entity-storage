@@ -2,5 +2,6 @@ rootProject.name = 'advanced-entity-storage'
 include('aes-annotation')
 include('aes-core')
 include('aes-persistence-h2')
+include('aes-persistence-postgresql')
 include('aes-processor')
 include('aes-sandbox')
