@@ -1,7 +1,5 @@
 package com.ijioio.aes.persistence.jdbc.postgresql.value.handler;
 
-import java.sql.Array;
-import java.sql.Blob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -51,14 +49,14 @@ public class PgByteArrayPersistenceValueHandler extends BaseJdbcPersistenceValue
 
 				LargeObjectManager manager = statement.getConnection().unwrap(PGConnection.class).getLargeObjectAPI();
 
-				Long oid = manager.createLO(LargeObjectManager.READ | LargeObjectManager.WRITE);
+				Long oidValue = manager.createLO(LargeObjectManager.READ | LargeObjectManager.WRITE);
 
-				try (LargeObject blob = manager.open(oid, LargeObjectManager.WRITE)) {
+				try (LargeObject blob = manager.open(oidValue, LargeObjectManager.WRITE)) {
 					blob.write(value);
 				}
 
 				handler.getValueHandler(oidType.getRawType()).write(context, handler, oidType,
-						value != null ? oid : null, search);
+						value != null ? oidValue : null, search);
 
 			} else {
 
@@ -90,13 +88,13 @@ public class PgByteArrayPersistenceValueHandler extends BaseJdbcPersistenceValue
 						LargeObjectManager manager = statement.getConnection().unwrap(PGConnection.class)
 								.getLargeObjectAPI();
 
-						Long oid = manager.createLO(LargeObjectManager.READ | LargeObjectManager.WRITE);
+						Long oidValue = manager.createLO(LargeObjectManager.READ | LargeObjectManager.WRITE);
 
-						try (LargeObject blob = manager.open(oid, LargeObjectManager.WRITE)) {
+						try (LargeObject blob = manager.open(oidValue, LargeObjectManager.WRITE)) {
 							blob.write(value);
 						}
 
-						oidValues.add(oid);
+						oidValues.add(oidValue);
 
 					} else {
 
@@ -125,11 +123,16 @@ public class PgByteArrayPersistenceValueHandler extends BaseJdbcPersistenceValue
 
 		try {
 
-			Blob blob = resultSet.getObject(context.getNextIndex(), Blob.class);
+			Long oidValue = handler.getValueHandler(oidType.getRawType()).read(context, handler, oidType, null);
 
-			if (blob != null) {
+			if (oidValue != null) {
 
-				return blob.getBytes(1, (int) blob.length());
+				LargeObjectManager manager = resultSet.getStatement().getConnection().unwrap(PGConnection.class)
+						.getLargeObjectAPI();
+
+				try (LargeObject blob = manager.open(oidValue, LargeObjectManager.READ)) {
+					return blob.read(blob.size());
+				}
 
 			} else {
 
@@ -153,16 +156,30 @@ public class PgByteArrayPersistenceValueHandler extends BaseJdbcPersistenceValue
 
 		try {
 
-			Array array = resultSet.getObject(context.getNextIndex(), Array.class);
+			List<Long> oidValues = handler.getValueHandler(oidListType.getRawType()).read(context, handler, oidListType,
+					null);
 
-			if (array != null) {
+			if (oidValues != null) {
 
 				Collection<byte[]> collection = getCollection(type, values);
 
 				collection.clear();
 
-				for (Object object : (Object[]) array.getArray()) {
-					collection.add(((Blob) object).getBytes(1, (int) ((Blob) object).length()));
+				for (Long oidValue : oidValues) {
+
+					if (oidValue != null) {
+
+						LargeObjectManager manager = resultSet.getStatement().getConnection().unwrap(PGConnection.class)
+								.getLargeObjectAPI();
+
+						try (LargeObject blob = manager.open(oidValue, LargeObjectManager.READ)) {
+							collection.add(blob.read(blob.size()));
+						}
+
+					} else {
+
+						collection.add(null);
+					}
 				}
 
 				return collection;
