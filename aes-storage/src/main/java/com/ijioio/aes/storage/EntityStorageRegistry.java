@@ -1,4 +1,4 @@
-package com.ijioio.aes.core.entity.storage;
+package com.ijioio.aes.storage;
 
 import java.util.ArrayList;
 import java.util.Collection;

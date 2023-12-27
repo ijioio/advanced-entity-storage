@@ -1,4 +1,4 @@
-package com.ijioio.aes.core.entity.storage;
+package com.ijioio.aes.storage;
 
 public class StorageException extends RuntimeException {
 

@@ -1,4 +1,4 @@
-package com.ijioio.aes.core.entity.storage.standard;
+package com.ijioio.aes.storage.standard;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -13,20 +13,20 @@ import javax.sql.DataSource;
 import com.ijioio.aes.core.BaseEntityIndex;
 import com.ijioio.aes.core.Entity;
 import com.ijioio.aes.core.EntityContainer;
+import com.ijioio.aes.core.EntityData;
 import com.ijioio.aes.core.EntityIndex;
 import com.ijioio.aes.core.EntityIndexHandler;
 import com.ijioio.aes.core.EntityReference;
 import com.ijioio.aes.core.SearchQuery;
 import com.ijioio.aes.core.SearchQuery.SearchQueryBuilder;
-import com.ijioio.aes.core.entity.storage.EntityData;
-import com.ijioio.aes.core.entity.storage.EntityStorage;
-import com.ijioio.aes.core.entity.storage.EntityStorageRegistry;
-import com.ijioio.aes.core.entity.storage.StorageException;
-import com.ijioio.aes.core.entity.storage.Transaction;
-import com.ijioio.aes.core.persistence.PersistenceException;
-import com.ijioio.aes.core.persistence.PersistenceHandler;
-import com.ijioio.aes.core.persistence.PersistenceTransaction;
 import com.ijioio.aes.core.serialization.SerializationHandler;
+import com.ijioio.aes.persistence.PersistenceException;
+import com.ijioio.aes.persistence.PersistenceHandler;
+import com.ijioio.aes.persistence.PersistenceTransaction;
+import com.ijioio.aes.storage.EntityStorage;
+import com.ijioio.aes.storage.EntityStorageRegistry;
+import com.ijioio.aes.storage.StorageException;
+import com.ijioio.aes.storage.Transaction;
 
 public class StandardEntityStorage implements EntityStorage {
 
