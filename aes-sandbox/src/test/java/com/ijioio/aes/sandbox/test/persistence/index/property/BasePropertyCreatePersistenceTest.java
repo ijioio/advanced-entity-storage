@@ -13,7 +13,7 @@ import org.junit.jupiter.api.condition.EnabledIf;
 
 import com.ijioio.aes.core.BaseEntity;
 import com.ijioio.aes.core.EntityIndex;
-import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandler;
+import com.ijioio.aes.persistence.jdbc.JdbcPersistenceHandler;
 import com.ijioio.aes.sandbox.test.persistence.BasePersistenceTest;
 
 public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>, V> extends BasePersistenceTest {

@@ -18,12 +18,12 @@ import com.ijioio.aes.core.EntityIndex;
 import com.ijioio.aes.core.EntityIndexHandler;
 import com.ijioio.aes.core.Order;
 import com.ijioio.aes.core.SearchQuery.SearchQueryBuilder;
-import com.ijioio.aes.core.entity.storage.EntityStorage;
-import com.ijioio.aes.core.entity.storage.EntityStorageRegistry;
-import com.ijioio.aes.core.entity.storage.standard.StandardEntityStorage;
-import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandler;
 import com.ijioio.aes.core.serialization.SerializationHandler;
 import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
+import com.ijioio.aes.persistence.jdbc.JdbcPersistenceHandler;
+import com.ijioio.aes.storage.EntityStorage;
+import com.ijioio.aes.storage.EntityStorageRegistry;
+import com.ijioio.aes.storage.standard.StandardEntityStorage;
 
 public abstract class BaseDeleteEntityStorageTest<E extends Entity, I extends EntityIndex<E>>
 		extends BaseEntityStorageTest {

@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 
 import com.ijioio.aes.core.BaseEntity;
 import com.ijioio.aes.core.Entity;
-import com.ijioio.aes.core.entity.storage.EntityData;
-import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandler;
+import com.ijioio.aes.core.EntityData;
+import com.ijioio.aes.persistence.jdbc.JdbcPersistenceHandler;
 import com.ijioio.aes.sandbox.test.persistence.BasePersistenceTest;
 
 public abstract class BaseEntityDataCreatePersistenceTest<E extends Entity> extends BasePersistenceTest {

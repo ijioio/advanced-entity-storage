@@ -17,8 +17,8 @@ import com.ijioio.aes.core.Order;
 import com.ijioio.aes.core.Property;
 import com.ijioio.aes.core.SearchQuery;
 import com.ijioio.aes.core.SearchQuery.SearchQueryBuilder;
-import com.ijioio.aes.core.persistence.PersistenceException;
-import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandler;
+import com.ijioio.aes.persistence.PersistenceException;
+import com.ijioio.aes.persistence.jdbc.JdbcPersistenceHandler;
 import com.ijioio.aes.sandbox.test.persistence.BasePersistenceTest;
 
 public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>, V> extends BasePersistenceTest {
