@@ -2,7 +2,7 @@ package com.ijioio.aes.persistence.jdbc.h2;
 
 import javax.sql.DataSource;
 
-import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandler;
+import com.ijioio.aes.persistence.jdbc.JdbcPersistenceHandler;
 
 public class H2PersistenceHandler extends JdbcPersistenceHandler {
 
