@@ -1,6 +1,4 @@
-package com.ijioio.aes.core.entity.storage;
-
-import com.ijioio.aes.core.Entity;
+package com.ijioio.aes.core;
 
 public class EntityData<E extends Entity> {
 
