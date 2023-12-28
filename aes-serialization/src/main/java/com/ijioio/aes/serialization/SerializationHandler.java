@@ -1,4 +1,4 @@
-package com.ijioio.aes.core.serialization;
+package com.ijioio.aes.serialization;
 
 import java.io.InputStream;
 import java.io.OutputStream;

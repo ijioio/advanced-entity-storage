@@ -1,4 +1,4 @@
-package com.ijioio.aes.core.serialization;
+package com.ijioio.aes.serialization;
 
 public class SerializationException extends Exception {
 
