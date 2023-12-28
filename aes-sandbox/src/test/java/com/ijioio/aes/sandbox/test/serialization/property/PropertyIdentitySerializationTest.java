@@ -21,8 +21,8 @@ import com.ijioio.aes.core.Introspectable;
 import com.ijioio.aes.core.IntrospectionException;
 import com.ijioio.aes.core.Property;
 import com.ijioio.aes.core.TypeReference;
-import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
+import com.ijioio.aes.serialization.xml.XmlSerializationHandler;
 import com.ijioio.test.model.PropertyIdentitySerialization;
 
 public class PropertyIdentitySerializationTest extends BaseSerializationTest {
