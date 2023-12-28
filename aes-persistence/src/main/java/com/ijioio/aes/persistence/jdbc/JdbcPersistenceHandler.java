@@ -54,7 +54,7 @@ import com.ijioio.aes.persistence.jdbc.value.handler.JdbcLongPersistenceValueHan
 import com.ijioio.aes.persistence.jdbc.value.handler.JdbcShortPersistenceValueHandler;
 import com.ijioio.aes.persistence.jdbc.value.handler.JdbcStringPersistenceValueHandler;
 
-public class JdbcPersistenceHandler implements PersistenceHandler {
+public abstract class JdbcPersistenceHandler implements PersistenceHandler {
 
 	protected final ThreadLocal<Deque<JdbcPersistenceTransaction>> transactions = ThreadLocal
 			.withInitial(() -> new LinkedList<>());
