@@ -1,0 +1,17 @@
+<object id="property-string-map-serialization" class="com.ijioio.test.model.PropertyStringMapSerialization">
+    <id>property-string-map-serialization</id>
+    <valueStringMap class="java.util.LinkedHashMap">
+        <entry>
+            <key class="java.lang.String">key1</key>
+            <value class="java.lang.String">value1</value>
+        </entry>
+        <entry>
+            <key class="java.lang.String">key2</key>
+            <value class="java.lang.String">value2</value>
+        </entry>
+        <entry>
+            <key class="java.lang.String">key3</key>
+            <value class="java.lang.String">value3</value>
+        </entry>
+    </valueStringMap>
+</object>
