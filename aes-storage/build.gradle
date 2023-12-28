@@ -14,5 +14,6 @@ repositories {
 
 dependencies {
 	api project(':aes-core')
+	api project(':aes-serialization')
 	api project(':aes-persistence')
 }
