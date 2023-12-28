@@ -2,8 +2,8 @@ package com.ijioio.aes.persistence.jdbc.postgresql;
 
 import javax.sql.DataSource;
 
-import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandler;
-import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandlerProvider;
+import com.ijioio.aes.persistence.jdbc.JdbcPersistenceHandler;
+import com.ijioio.aes.persistence.jdbc.JdbcPersistenceHandlerProvider;
 
 public class PgPersistenceHanderProvider implements JdbcPersistenceHandlerProvider {
 

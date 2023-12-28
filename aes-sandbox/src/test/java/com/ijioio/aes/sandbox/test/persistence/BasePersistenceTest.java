@@ -29,19 +29,22 @@ public class BasePersistenceTest extends BaseTest {
 	@BeforeEach
 	public void setup() throws Exception {
 
-		HikariConfig config = new HikariConfig();
+//		HikariConfig config = new HikariConfig();
+//
+////		config.setJdbcUrl(System.getProperty("db"));
+////		config.setUsername(System.getProperty("user"));
+////		config.setPassword(System.getProperty("password"));
+//		config.setJdbcUrl("jdbc:h2:~/test");
+//		config.setUsername("su");
+//		config.setPassword("");
+//		config.addDataSourceProperty("cachePrepStmts", "true");
+//		config.addDataSourceProperty("prepStmtCacheSize", "250");
+//		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+//
+//		dataSource = new HikariDataSource(config);
 
-//		config.setJdbcUrl(System.getProperty("db"));
-//		config.setUsername(System.getProperty("user"));
-//		config.setPassword(System.getProperty("password"));
-		config.setJdbcUrl("jdbc:h2:~/test");
-		config.setUsername("su");
-		config.setPassword("");
-		config.addDataSourceProperty("cachePrepStmts", "true");
-		config.addDataSourceProperty("prepStmtCacheSize", "250");
-		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+		dataSource = createDataSource();
 
-		dataSource = new HikariDataSource(config);
 		connection = dataSource.getConnection();
 	}
 
@@ -55,6 +58,23 @@ public class BasePersistenceTest extends BaseTest {
 		if (dataSource != null) {
 			dataSource.close();
 		}
+	}
+
+	protected HikariDataSource createDataSource() throws Exception {
+
+		HikariConfig config = new HikariConfig();
+
+//		config.setJdbcUrl(System.getProperty("db"));
+//		config.setUsername(System.getProperty("user"));
+//		config.setPassword(System.getProperty("password"));
+		config.setJdbcUrl("jdbc:h2:~/test");
+		config.setUsername("su");
+		config.setPassword("");
+		config.addDataSourceProperty("cachePrepStmts", "true");
+		config.addDataSourceProperty("prepStmtCacheSize", "250");
+		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+
+		return new HikariDataSource(config);
 	}
 
 	protected void executeSql(Connection connection, Path path) throws IOException, SQLException {
@@ -93,7 +113,7 @@ public class BasePersistenceTest extends BaseTest {
 			try {
 				return Arrays.asList((Object[]) array.getArray());
 			} catch (SQLException e) {
-				new RuntimeException(e);
+				throw new RuntimeException(e);
 			}
 		}
 
@@ -107,7 +127,7 @@ public class BasePersistenceTest extends BaseTest {
 			try {
 				return blob.getBytes(1, (int) blob.length());
 			} catch (SQLException e) {
-				new RuntimeException(e);
+				throw new RuntimeException(e);
 			}
 		}
 

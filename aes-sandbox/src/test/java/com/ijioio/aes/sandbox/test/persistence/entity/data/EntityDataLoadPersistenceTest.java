@@ -2,7 +2,7 @@ package com.ijioio.aes.sandbox.test.persistence.entity.data;
 
 import java.nio.charset.StandardCharsets;
 
-import com.ijioio.aes.core.entity.storage.EntityData;
+import com.ijioio.aes.core.EntityData;
 import com.ijioio.aes.sandbox.test.persistence.entity.data.BaseEntityDataLoadPersistenceTest.Some;
 
 public class EntityDataLoadPersistenceTest extends BaseEntityDataLoadPersistenceTest<Some> {

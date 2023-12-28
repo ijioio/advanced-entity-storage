@@ -14,10 +14,10 @@ import org.postgresql.largeobject.LargeObject;
 import org.postgresql.largeobject.LargeObjectManager;
 
 import com.ijioio.aes.core.TypeReference;
-import com.ijioio.aes.core.persistence.PersistenceException;
-import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceContext;
-import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandler;
-import com.ijioio.aes.core.persistence.jdbc.value.handler.BaseJdbcPersistenceValueHandler;
+import com.ijioio.aes.persistence.PersistenceException;
+import com.ijioio.aes.persistence.jdbc.JdbcPersistenceContext;
+import com.ijioio.aes.persistence.jdbc.JdbcPersistenceHandler;
+import com.ijioio.aes.persistence.jdbc.value.handler.BaseJdbcPersistenceValueHandler;
 
 public class PgByteArrayPersistenceValueHandler extends BaseJdbcPersistenceValueHandler<byte[]> {
 

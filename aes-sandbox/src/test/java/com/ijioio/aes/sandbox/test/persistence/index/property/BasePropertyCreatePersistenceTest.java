@@ -13,7 +13,8 @@ import org.junit.jupiter.api.condition.EnabledIf;
 
 import com.ijioio.aes.core.BaseEntity;
 import com.ijioio.aes.core.EntityIndex;
-import com.ijioio.aes.core.persistence.jdbc.JdbcPersistenceHandler;
+import com.ijioio.aes.persistence.jdbc.JdbcPersistenceHandler;
+import com.ijioio.aes.persistence.jdbc.h2.H2PersistenceHandler;
 import com.ijioio.aes.sandbox.test.persistence.BasePersistenceTest;
 
 public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>, V> extends BasePersistenceTest {
@@ -95,7 +96,7 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 	@BeforeEach
 	public void before() throws Exception {
 
-		handler = new JdbcPersistenceHandler(dataSource);
+		handler = new H2PersistenceHandler(dataSource);
 
 		executeSql(connection, Paths.get(getClass().getClassLoader()
 				.getResource(String.format("persistence/index/property/%s", getSqlScriptFileName())).toURI()));

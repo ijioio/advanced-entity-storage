@@ -41,6 +41,7 @@ test-splits/
 *.classpath
 *.project
 *.settings
+*.factorypath
 /bin
 /bin
 /*/bin
@@ -50,6 +51,8 @@ test-splits/
 /subprojects/*/bin
 atlassian-ide-plugin.xml
 .metadata/
+.apt_generated/
+.apt_generated_tests/
 
 # NetBeans
 # --------

@@ -19,8 +19,8 @@ import com.ijioio.aes.annotation.Entity;
 import com.ijioio.aes.annotation.EntityProperty;
 import com.ijioio.aes.annotation.Parameter;
 import com.ijioio.aes.annotation.Type;
-import com.ijioio.aes.core.serialization.xml.XmlSerializationHandler;
 import com.ijioio.aes.sandbox.test.serialization.BaseSerializationTest;
+import com.ijioio.aes.serialization.xml.XmlSerializationHandler;
 import com.ijioio.test.model.PropertySkipSerialization;
 
 public class PropertySkipSerializationTest extends BaseSerializationTest {

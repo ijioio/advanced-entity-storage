@@ -15,7 +15,7 @@ import com.ijioio.aes.core.EntityIndex;
 import com.ijioio.aes.core.Order;
 import com.ijioio.aes.core.SearchQuery;
 import com.ijioio.aes.core.SearchQuery.SearchQueryBuilder;
-import com.ijioio.aes.core.persistence.PersistenceException;
+import com.ijioio.aes.persistence.PersistenceException;
 
 public abstract class BasePropertyCollectionSearchPersistenceTest<I extends EntityIndex<?>, V extends Collection<E>, E>
 		extends BasePropertySearchPersistenceTest<I, V> {

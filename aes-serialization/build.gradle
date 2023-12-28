@@ -1,0 +1,24 @@
+plugins {
+    id 'java-library'
+    id 'java-test-fixtures'
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(8)
+	}
+}
+
+repositories {
+	mavenCentral()
+	flatDir {
+		dirs "${project(':aes-processor').projectDir}/build/libs"
+	}
+}
+
+dependencies {
+	annotationProcessor group: 'com.ijioio', name: 'aes-processor', version: '1.0.0'
+	api project(':aes-core')
+	testFixturesImplementation project(':aes-annotation')
+	testFixturesImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.10.0'
+}
