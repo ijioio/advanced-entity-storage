@@ -1,7 +1,5 @@
 package com.ijioio.aes.persistence.jdbc.postgresql.test.index.property;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.ResultSet;
 
 import org.junit.jupiter.api.Assertions;
@@ -15,9 +13,8 @@ public class PgPropertyByteArrayCreatePersistenceTest extends BasePropertyByteAr
 		implements PgDataSourceProvider, PgHandlerProvider {
 
 	@Override
-	protected Path getSqlScriptPath() throws Exception {
-		return Paths.get(getClass().getClassLoader()
-				.getResource("persistence/index/property/property-byte-array-create-persistence.sql").toURI());
+	protected String getSqlScriptPath() throws Exception {
+		return "persistence/index/property/property-byte-array-create-persistence.sql";
 	}
 
 	@Override

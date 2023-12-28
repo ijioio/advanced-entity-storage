@@ -1,6 +1,6 @@
 package com.ijioio.aes.persistence.test.fixture.jdbc.index.property;
 
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -93,7 +93,8 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 	@BeforeEach
 	public void before() throws Exception {
 
-		PersistenceTestUtil.execute(dataSource, readString(getSqlScriptPath()));
+		PersistenceTestUtil.execute(dataSource,
+				readString(Paths.get(getClass().getClassLoader().getResource(getSqlScriptPath()).toURI())));
 
 		index = createIndex();
 	}
@@ -153,7 +154,7 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 		});
 	}
 
-	protected abstract Path getSqlScriptPath() throws Exception;
+	protected abstract String getSqlScriptPath() throws Exception;
 
 	protected abstract Class<I> getIndexClass();
 

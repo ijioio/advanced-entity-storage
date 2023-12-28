@@ -7,5 +7,4 @@ import com.ijioio.aes.persistence.jdbc.JdbcPersistenceHandler;
 public interface HandlerProvider {
 
 	public JdbcPersistenceHandler createHandler(DataSource dataSource) throws Exception;
-
 }
