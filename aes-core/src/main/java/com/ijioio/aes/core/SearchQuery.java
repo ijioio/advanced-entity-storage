@@ -84,17 +84,11 @@ public class SearchQuery<I extends EntityIndex<?>> {
 				+ offset + ", limit=" + limit + "]";
 	}
 
-	private static interface SearchQueryBaseBuilder<P> {
-
-		public P end();
-	}
-
 	/**
 	 * Builder class for {@link SearchQuery} creation utilizing builder pattern.
 	 * Used by {@link SearchQueryBuilder} to delegate group building routine.
 	 */
-	public static class SearchQueryGroupBuilder<P extends SearchQueryBaseBuilder<?>>
-			implements SearchQueryBaseBuilder<P> {
+	public static class SearchQueryGroupBuilder<P extends SearchQueryGroupBuilder<?>> {
 
 		/**
 		 * Creates {@link SearchQueryGroupBuilder} for search query of given
@@ -104,16 +98,16 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		 * @param parent builder
 		 * @return search query group builder
 		 */
-		public static <P extends SearchQueryBaseBuilder<?>> SearchQueryGroupBuilder<P> of(P parent,
+		public static <P extends SearchQueryGroupBuilder<?>> SearchQueryGroupBuilder<P> of(P parent,
 				Consumer<List<SearchCriterion>> consumer) {
 			return new SearchQueryGroupBuilder<>(parent, consumer);
 		}
 
-		private final List<SearchCriterion> criterions = new ArrayList<>();
+		protected final List<SearchCriterion> criterions = new ArrayList<>();
 
-		private final P parent;
+		protected final P parent;
 
-		private final Consumer<List<SearchCriterion>> consumer;
+		protected final Consumer<List<SearchCriterion>> consumer;
 
 		private SearchQueryGroupBuilder(P parent, Consumer<List<SearchCriterion>> consumer) {
 
@@ -408,7 +402,7 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		 *
 		 * @return builder object for chaining
 		 */
-		public SearchQueryGroupBuilder<SearchQueryGroupBuilder<P>> not() {
+		public SearchQueryGroupBuilder<? extends SearchQueryGroupBuilder<P>> not() {
 			return SearchQueryGroupBuilder.of(this, items -> criterions.add(NotSearchCriterion.of(items)));
 		}
 
@@ -434,7 +428,7 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		 *
 		 * @return builder object for chaining
 		 */
-		public SearchQueryGroupBuilder<SearchQueryGroupBuilder<P>> and() {
+		public SearchQueryGroupBuilder<? extends SearchQueryGroupBuilder<P>> and() {
 			return SearchQueryGroupBuilder.of(this, items -> criterions.add(AndSearchCriterion.of(items)));
 		}
 
@@ -459,11 +453,10 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		 *
 		 * @return builder object for chaining
 		 */
-		public SearchQueryGroupBuilder<SearchQueryGroupBuilder<P>> or() {
+		public SearchQueryGroupBuilder<? extends SearchQueryGroupBuilder<P>> or() {
 			return SearchQueryGroupBuilder.of(this, items -> criterions.add(OrSearchCriterion.of(items)));
 		}
 
-		@Override
 		public P end() {
 
 			consumer.accept(criterions);
@@ -484,7 +477,8 @@ public class SearchQuery<I extends EntityIndex<?>> {
 	 * 		.build();
 	 * </pre>
 	 */
-	public static class SearchQueryBuilder<I extends EntityIndex<?>> implements SearchQueryBaseBuilder<Void> {
+	public static class SearchQueryBuilder<I extends EntityIndex<?>>
+			extends SearchQueryGroupBuilder<SearchQueryGroupBuilder<?>> {
 
 		/**
 		 * Creates {@link SearchQueryBuilder} for search query of given {@code type}.
@@ -539,8 +533,6 @@ public class SearchQuery<I extends EntityIndex<?>> {
 
 		private final Class<I> type;
 
-		private final List<SearchCriterion> criterions = new ArrayList<>();
-
 		private final Map<Property<?>, Order> sortings = new LinkedHashMap<>();
 
 		private Long offset;
@@ -549,6 +541,8 @@ public class SearchQuery<I extends EntityIndex<?>> {
 
 		private SearchQueryBuilder(Class<I> type, List<SearchCriterion> criterions, Map<Property<?>, Order> sortings,
 				Long offset, Long limit) {
+
+			super(null, null);
 
 			this.type = type;
 
@@ -562,346 +556,148 @@ public class SearchQuery<I extends EntityIndex<?>> {
 			this.limit = limit;
 		}
 
-		/**
-		 * Adds equals search criterion. It allows to check if value of indicated index
-		 * {@code property} is equals to indicated {@code value}.
-		 *
-		 * @param property to check
-		 * @param value to compare
-		 * @return this builder object for chaining
-		 */
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T> SearchQueryBuilder<I> eq(Property<T> property, T value) {
-
-			this.criterions.add(SimpleSearchCriterion.eq(property, value));
-			return this;
+			return (SearchQueryBuilder<I>) super.eq(property, value);
 		}
 
-		/**
-		 * Adds not equals search criterion. It allows to check if value of indicated
-		 * index {@code property} is not equals to indicated {@code value}.
-		 *
-		 * @param property to check
-		 * @param value to compare
-		 * @return this builder object for chaining
-		 */
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T> SearchQueryBuilder<I> ne(Property<T> property, T value) {
-
-			this.criterions.add(SimpleSearchCriterion.ne(property, value));
-			return this;
+			return (SearchQueryBuilder<I>) super.ne(property, value);
 		}
 
-		/**
-		 * Adds lower search criterion. It allows to check if value of indicated index
-		 * {@code property} is lower than indicated {@code value}.
-		 *
-		 * @param property to check
-		 * @param value to compare
-		 * @return this builder object for chaining
-		 */
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T> SearchQueryBuilder<I> lt(Property<T> property, T value) {
-
-			this.criterions.add(SimpleSearchCriterion.lt(property, value));
-			return this;
+			return (SearchQueryBuilder<I>) super.lt(property, value);
 		}
 
-		/**
-		 * Adds lower or equals search criterion. It allows to check if value of
-		 * indicated index {@code property} is lower or equals to indicated
-		 * {@code value}.
-		 *
-		 * @param property to check
-		 * @param value to compare
-		 * @return this builder object for chaining
-		 */
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T> SearchQueryBuilder<I> le(Property<T> property, T value) {
-
-			this.criterions.add(SimpleSearchCriterion.le(property, value));
-			return this;
+			return (SearchQueryBuilder<I>) super.le(property, value);
 		}
 
-		/**
-		 * Adds greater search criterion. It allows to check if value of indicated index
-		 * {@code property} is greater than indicated {@code value}.
-		 *
-		 * @param property to check
-		 * @param value to compare
-		 * @return this builder object for chaining
-		 */
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T> SearchQueryBuilder<I> gt(Property<T> property, T value) {
-
-			this.criterions.add(SimpleSearchCriterion.gt(property, value));
-			return this;
+			return (SearchQueryBuilder<I>) super.gt(property, value);
 		}
 
-		/**
-		 * Adds greater or equals search criterion. It allows to check if value of
-		 * indicated index {@code property} is greater or equals to indicated
-		 * {@code value}.
-		 *
-		 * @param property to check
-		 * @param value to compare
-		 * @return this builder object for chaining
-		 */
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T> SearchQueryBuilder<I> ge(Property<T> property, T value) {
-
-			this.criterions.add(SimpleSearchCriterion.ge(property, value));
-			return this;
+			return (SearchQueryBuilder<I>) super.ge(property, value);
 		}
 
-		/**
-		 * Adds any equals search criterion. It allows to check if any value of
-		 * indicated collection index {@code property} is equals to indicated
-		 * {@code value}.
-		 *
-		 * @param property to check
-		 * @param value to compare
-		 * @return this builder object for chaining
-		 */
+		@SuppressWarnings("unchecked")
+		@Override
 		public <C extends Collection<T>, T> SearchQueryBuilder<I> anyeq(Property<C> property, T value) {
-
-			this.criterions.add(SimpleSearchCriterion.anyeq(property, value));
-			return this;
+			return (SearchQueryBuilder<I>) super.anyeq(property, value);
 		}
 
-		/**
-		 * Adds any not equals search criterion. It allows to check if any value of
-		 * indicated collection index {@code property} is not equals to indicated
-		 * {@code value}.
-		 *
-		 * @param property to check
-		 * @param value to compare
-		 * @return this builder object for chaining
-		 */
+		@SuppressWarnings("unchecked")
+		@Override
 		public <C extends Collection<T>, T> SearchQueryBuilder<I> anyne(Property<C> property, T value) {
-
-			this.criterions.add(SimpleSearchCriterion.anyne(property, value));
-			return this;
+			return (SearchQueryBuilder<I>) super.anyne(property, value);
 		}
 
-		/**
-		 * Adds any lower search criterion. It allows to check if any value of indicated
-		 * collection index {@code property} is lower than indicated {@code value}.
-		 *
-		 * @param property to check
-		 * @param value to compare
-		 * @return this builder object for chaining
-		 */
+		@SuppressWarnings("unchecked")
+		@Override
 		public <C extends Collection<T>, T> SearchQueryBuilder<I> anylt(Property<C> property, T value) {
-
-			this.criterions.add(SimpleSearchCriterion.anylt(property, value));
-			return this;
+			return (SearchQueryBuilder<I>) super.anylt(property, value);
 		}
 
-		/**
-		 * Adds any lower or equals search criterion. It allows to check if any value of
-		 * indicated collection index {@code property} is lower or equals to indicated
-		 * {@code value}.
-		 *
-		 * @param property to check
-		 * @param value to compare
-		 * @return this builder object for chaining
-		 */
+		@SuppressWarnings("unchecked")
+		@Override
 		public <C extends Collection<T>, T> SearchQueryBuilder<I> anyle(Property<C> property, T value) {
-
-			this.criterions.add(SimpleSearchCriterion.anyle(property, value));
-			return this;
+			return (SearchQueryBuilder<I>) super.anyle(property, value);
 		}
 
-		/**
-		 * Adds any greater search criterion. It allows to check if any value of
-		 * indicated collection index {@code property} is greater than indicated
-		 * {@code value}.
-		 *
-		 * @param property to check
-		 * @param value to compare
-		 * @return this builder object for chaining
-		 */
+		@SuppressWarnings("unchecked")
+		@Override
 		public <C extends Collection<T>, T> SearchQueryBuilder<I> anygt(Property<C> property, T value) {
-
-			this.criterions.add(SimpleSearchCriterion.anygt(property, value));
-			return this;
+			return (SearchQueryBuilder<I>) super.anygt(property, value);
 		}
 
-		/**
-		 * Adds any greater or equals search criterion. It allows to check if any value
-		 * of indicated collection index {@code property} is greater or equals to
-		 * indicated {@code value}.
-		 *
-		 * @param property to check
-		 * @param value to compare
-		 * @return this builder object for chaining
-		 */
+		@SuppressWarnings("unchecked")
+		@Override
 		public <C extends Collection<T>, T> SearchQueryBuilder<I> anyge(Property<C> property, T value) {
-
-			this.criterions.add(SimpleSearchCriterion.anyge(property, value));
-			return this;
+			return (SearchQueryBuilder<I>) super.anyge(property, value);
 		}
 
-		/**
-		 * Adds all equals search criterion. It allows to check if all values of
-		 * indicated collection index {@code property} are equals to indicated
-		 * {@code value}.
-		 *
-		 * @param property to check
-		 * @param value to compare
-		 * @return this builder object for chaining
-		 */
+		@SuppressWarnings("unchecked")
+		@Override
 		public <C extends Collection<T>, T> SearchQueryBuilder<I> alleq(Property<C> property, T value) {
-
-			this.criterions.add(SimpleSearchCriterion.alleq(property, value));
-			return this;
+			return (SearchQueryBuilder<I>) super.alleq(property, value);
 		}
 
-		/**
-		 * Adds all not equals search criterion. It allows to check if all values of
-		 * indicated collection index {@code property} are not equals to indicated
-		 * {@code value}.
-		 *
-		 * @param property to check
-		 * @param value to compare
-		 * @return this builder object for chaining
-		 */
+		@SuppressWarnings("unchecked")
+		@Override
 		public <C extends Collection<T>, T> SearchQueryBuilder<I> allne(Property<C> property, T value) {
-
-			this.criterions.add(SimpleSearchCriterion.allne(property, value));
-			return this;
+			return (SearchQueryBuilder<I>) super.allne(property, value);
 		}
 
-		/**
-		 * Adds all lower search criterion. It allows to check if all values of
-		 * indicated collection index {@code property} are lower than indicated
-		 * {@code value}.
-		 *
-		 * @param property to check
-		 * @param value to compare
-		 * @return this builder object for chaining
-		 */
+		@SuppressWarnings("unchecked")
+		@Override
 		public <C extends Collection<T>, T> SearchQueryBuilder<I> alllt(Property<C> property, T value) {
-
-			this.criterions.add(SimpleSearchCriterion.alllt(property, value));
-			return this;
+			return (SearchQueryBuilder<I>) super.alllt(property, value);
 		}
 
-		/**
-		 * Adds all lower or equals search criterion. It allows to check if all values
-		 * of indicated collection index {@code property} are lower or equals to
-		 * indicated {@code value}.
-		 *
-		 * @param property to check
-		 * @param value to compare
-		 * @return this builder object for chaining
-		 */
+		@SuppressWarnings("unchecked")
+		@Override
 		public <C extends Collection<T>, T> SearchQueryBuilder<I> allle(Property<C> property, T value) {
-
-			this.criterions.add(SimpleSearchCriterion.allle(property, value));
-			return this;
+			return (SearchQueryBuilder<I>) super.allle(property, value);
 		}
 
-		/**
-		 * Adds all greater search criterion. It allows to check if all values of
-		 * indicated collection index {@code property} are greater than indicated
-		 * {@code value}.
-		 *
-		 * @param property to check
-		 * @param value to compare
-		 * @return this builder object for chaining
-		 */
+		@SuppressWarnings("unchecked")
+		@Override
 		public <C extends Collection<T>, T> SearchQueryBuilder<I> allgt(Property<C> property, T value) {
-
-			this.criterions.add(SimpleSearchCriterion.allgt(property, value));
-			return this;
+			return (SearchQueryBuilder<I>) super.allgt(property, value);
 		}
 
-		/**
-		 * Adds all greater or equals search criterion. It allows to check if all values
-		 * of indicated collection index {@code property} are greater or equals to
-		 * indicated {@code value}.
-		 *
-		 * @param property to check
-		 * @param value to compare
-		 * @return this builder object for chaining
-		 */
+		@SuppressWarnings("unchecked")
+		@Override
 		public <C extends Collection<T>, T> SearchQueryBuilder<I> allge(Property<C> property, T value) {
-
-			this.criterions.add(SimpleSearchCriterion.allge(property, value));
-			return this;
+			return (SearchQueryBuilder<I>) super.allge(property, value);
 		}
 
-		/**
-		 * Adds {@code NOT} search criterion populated with indicated
-		 * {@code criterions}.
-		 *
-		 * @param criterions to add
-		 * @return builder object for chaining
-		 */
+		@SuppressWarnings("unchecked")
+		@Override
 		public SearchQueryBuilder<I> not(Collection<SearchCriterion> criterions) {
-
-			this.criterions.add(NotSearchCriterion.of(criterions));
-			return this;
+			return (SearchQueryBuilder<I>) super.not(criterions);
 		}
 
-		/**
-		 * Adds {@code NOT} search criterion.
-		 *
-		 * <p>
-		 * Note that new group builder would be returned to build the complex search
-		 * criterion. To return back to original builder call {@code end()} method
-		 *
-		 * @return builder object for chaining
-		 */
+		@SuppressWarnings("unchecked")
+		@Override
 		public SearchQueryGroupBuilder<SearchQueryBuilder<I>> not() {
-			return SearchQueryGroupBuilder.of(this, items -> criterions.add(NotSearchCriterion.of(items)));
+			return (SearchQueryGroupBuilder<SearchQueryBuilder<I>>) super.not();
 		}
 
-		/**
-		 * Adds {@code AND} search criterion populated with indicated
-		 * {@code criterions}.
-		 *
-		 * @param criterions to add
-		 * @return builder object for chaining
-		 */
+		@SuppressWarnings("unchecked")
+		@Override
 		public SearchQueryBuilder<I> and(Collection<SearchCriterion> criterions) {
-
-			this.criterions.add(AndSearchCriterion.of(criterions));
-			return this;
+			return (SearchQueryBuilder<I>) super.and(criterions);
 		}
 
-		/**
-		 * Adds {@code AND} search criterion.
-		 *
-		 * <p>
-		 * Note that new group builder would be returned to build the complex search
-		 * criterion. To return back to original builder call {@code end()} method
-		 *
-		 * @return builder object for chaining
-		 */
+		@SuppressWarnings("unchecked")
+		@Override
 		public SearchQueryGroupBuilder<SearchQueryBuilder<I>> and() {
-			return SearchQueryGroupBuilder.of(this, items -> criterions.add(AndSearchCriterion.of(items)));
+			return (SearchQueryGroupBuilder<SearchQueryBuilder<I>>) super.and();
 		}
 
-		/**
-		 * Adds {@code OR} search criterion populated with indicated {@code criterions}.
-		 *
-		 * @param criterions to add
-		 * @return builder object for chaining
-		 */
+		@SuppressWarnings("unchecked")
+		@Override
 		public SearchQueryBuilder<I> or(Collection<SearchCriterion> criterions) {
-
-			this.criterions.add(OrSearchCriterion.of(criterions));
-			return this;
+			return (SearchQueryBuilder<I>) super.or(criterions);
 		}
 
-		/**
-		 * Adds {@code OR} search criterion.
-		 *
-		 * <p>
-		 * Note that new group builder would be returned to build the complex search
-		 * criterion. To return back to original builder call {@code end()} method
-		 *
-		 * @return builder object for chaining
-		 */
+		@SuppressWarnings("unchecked")
+		@Override
 		public SearchQueryGroupBuilder<SearchQueryBuilder<I>> or() {
-			return SearchQueryGroupBuilder.of(this, items -> criterions.add(OrSearchCriterion.of(items)));
+			return (SearchQueryGroupBuilder<SearchQueryBuilder<I>>) super.or();
 		}
 
 		/**
@@ -942,7 +738,7 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		}
 
 		@Override
-		public Void end() {
+		public SearchQueryGroupBuilder<?> end() {
 			throw new UnsupportedOperationException();
 		}
 
