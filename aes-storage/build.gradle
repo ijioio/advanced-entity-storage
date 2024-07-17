@@ -1,0 +1,19 @@
+plugins {
+    id 'java-library'
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(8)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	api project(':aes-core')
+	api project(':aes-serialization')
+	api project(':aes-persistence')
+}

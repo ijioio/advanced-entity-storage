@@ -36,11 +36,8 @@ public class BaseEntityStorageTest extends BaseTest {
 		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 
 		dataSource = new HikariDataSource(config);
+
 		connection = dataSource.getConnection();
-
-		String productName = connection.getMetaData().getDatabaseProductName();
-
-		System.out.println(productName);
 	}
 
 	@AfterEach
