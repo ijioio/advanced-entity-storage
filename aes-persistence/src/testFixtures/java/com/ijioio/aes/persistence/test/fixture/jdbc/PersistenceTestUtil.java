@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -84,6 +86,35 @@ public final class PersistenceTestUtil {
 		}
 
 		return o1.compareTo(o2);
+	}
+
+	public static <C extends Comparable<C>> int compare(Collection<C> o1, Collection<C> o2) {
+
+		if (o1 == null && o2 == null) {
+			return 0;
+		}
+
+		if (o1 == null) {
+			return -1;
+		}
+
+		if (o2 == null) {
+			return 1;
+		}
+
+		Iterator<C> i1 = o1.iterator();
+		Iterator<C> i2 = o2.iterator();
+
+		while (i1.hasNext() && i2.hasNext()) {
+
+			int result = compare(i1.next(), i2.next());
+
+			if (result != 0) {
+				return result;
+			}
+		}
+
+		return Integer.compare(o1.size(), o2.size());
 	}
 
 	public static List<?> getList(ResultSet resultSet, String name) {
