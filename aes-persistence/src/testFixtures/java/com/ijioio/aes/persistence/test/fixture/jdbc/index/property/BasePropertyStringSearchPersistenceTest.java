@@ -22,13 +22,15 @@ public abstract class BasePropertyStringSearchPersistenceTest
 	@Entity( //
 			name = PropertyStringSearchPersistencePrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueString", type = Type.STRING) //
+					@EntityProperty(name = "valueString", type = Type.STRING), //
+					@EntityProperty(name = "otherValueString", type = Type.STRING) //
 			}, //
 			indexes = { //
 					@EntityIndex( //
 							name = PropertyStringSearchPersistencePrototype.INDEX_NAME, //
 							properties = { //
-									@EntityIndexProperty(name = "valueString", type = Type.STRING) //
+									@EntityIndexProperty(name = "valueString", type = Type.STRING), //
+									@EntityIndexProperty(name = "otherValueString", type = Type.STRING) //
 							} //
 					) //
 			} //
@@ -68,13 +70,18 @@ public abstract class BasePropertyStringSearchPersistenceTest
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
+	}
+
+	@Override
 	protected Property<String> getProperty() {
 		return PropertyStringSearchPersistenceIndex.Properties.valueString;
 	}
 
 	@Override
-	protected boolean isNullPropertyValueAllowed() {
-		return true;
+	protected Property<String> getOtherProperty() {
+		return PropertyStringSearchPersistenceIndex.Properties.otherValueString;
 	}
 
 	@Override
@@ -83,8 +90,18 @@ public abstract class BasePropertyStringSearchPersistenceTest
 	}
 
 	@Override
+	protected String getOtherPropertyValue(PropertyStringSearchPersistenceIndex index) {
+		return index.getOtherValueString();
+	}
+
+	@Override
 	protected void setPropertyValue(PropertyStringSearchPersistenceIndex index, String value) {
 		index.setValueString(value);
+	}
+
+	@Override
+	protected void setOtherPropertyValue(PropertyStringSearchPersistenceIndex index, String value) {
+		index.setOtherValueString(value);
 	}
 
 	@Override

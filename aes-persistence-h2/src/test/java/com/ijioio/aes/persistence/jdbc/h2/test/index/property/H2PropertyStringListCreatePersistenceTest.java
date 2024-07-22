@@ -8,7 +8,7 @@ public class H2PropertyStringListCreatePersistenceTest extends BasePropertyStrin
 		implements H2DataSourceProvider, H2HandlerProvider {
 
 	@Override
-	protected String getSqlScriptPath() throws Exception {
+	protected String getSqlScriptPath() {
 		return "persistence/index/property/property-string-list-create-persistence.sql";
 	}
 }

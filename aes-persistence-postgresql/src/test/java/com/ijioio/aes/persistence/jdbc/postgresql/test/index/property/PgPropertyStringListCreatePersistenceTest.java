@@ -8,7 +8,7 @@ public class PgPropertyStringListCreatePersistenceTest extends BasePropertyStrin
 		implements PgDataSourceProvider, PgHandlerProvider {
 
 	@Override
-	protected String getSqlScriptPath() throws Exception {
+	protected String getSqlScriptPath() {
 		return "persistence/index/property/property-string-list-create-persistence.sql";
 	}
 }
