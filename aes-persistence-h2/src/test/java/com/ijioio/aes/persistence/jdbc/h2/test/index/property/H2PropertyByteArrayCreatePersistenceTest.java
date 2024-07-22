@@ -8,7 +8,7 @@ public class H2PropertyByteArrayCreatePersistenceTest extends BasePropertyByteAr
 		implements H2DataSourceProvider, H2HandlerProvider {
 
 	@Override
-	protected String getSqlScriptPath() throws Exception {
+	protected String getSqlScriptPath() {
 		return "persistence/index/property/property-byte-array-create-persistence.sql";
 	}
 }

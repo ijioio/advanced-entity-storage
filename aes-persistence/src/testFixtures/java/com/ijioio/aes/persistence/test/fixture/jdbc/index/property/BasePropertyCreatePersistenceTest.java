@@ -154,7 +154,8 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 		});
 	}
 
-	protected abstract String getSqlScriptPath() throws Exception;
+	// TODO: are we need exception?
+	protected abstract String getSqlScriptPath();
 
 	protected abstract Class<I> getIndexClass();
 
