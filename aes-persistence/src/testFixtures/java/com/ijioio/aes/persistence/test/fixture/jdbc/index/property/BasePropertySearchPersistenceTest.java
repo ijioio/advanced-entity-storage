@@ -144,7 +144,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 	}
 
 	@Test
-	public void testSearchEquals() throws Exception {
+	public void testSearchPlainEquals() throws Exception {
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
@@ -167,7 +167,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 
 	@EnabledIf("isNullPropertyValueAllowed")
 	@Test
-	public void testSearchEqualsNull() throws Exception {
+	public void testSearchPlainEqualsNull() throws Exception {
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
@@ -194,7 +194,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 	}
 
 	@Test
-	public void testSearchNotEquals() throws Exception {
+	public void testSearchPlainNotEquals() throws Exception {
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
@@ -217,7 +217,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 
 	@EnabledIf("isNullPropertyValueAllowed")
 	@Test
-	public void testSearchNotEqualsNull() throws Exception {
+	public void testSearchPlainNotEqualsNull() throws Exception {
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
@@ -244,103 +244,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 	}
 
 	@Test
-	public void testSearchGreater() throws Exception {
-
-		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
-
-		for (I index : indexes) {
-			handler.create(index);
-		}
-
-		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
-				.gt(getProperty(), getPropertyValue(selectedIndex)) //
-				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
-				.build();
-
-		List<I> expectedIndexes = indexes.stream()
-				.filter(item -> comparePropertyValue(getPropertyValue(item), getPropertyValue(selectedIndex)) > 0)
-				.collect(Collectors.toList());
-		List<I> actualIndexes = handler.search(query);
-
-		check(expectedIndexes, actualIndexes);
-	}
-
-	@EnabledIf("isNullPropertyValueAllowed")
-	@Test
-	public void testSearchGreaterNull() throws Exception {
-
-		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
-
-		for (I index : indexes) {
-
-			if (index == selectedIndex) {
-				setPropertyValue(index, null);
-			}
-
-			handler.create(index);
-		}
-
-		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
-				.gt(getProperty(), getPropertyValue(selectedIndex)) //
-				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
-				.build();
-
-		PersistenceException exception = Assertions.assertThrows(PersistenceException.class,
-				() -> handler.search(query));
-
-		Assertions.assertEquals("operation GREATER for value null is not supported", exception.getMessage());
-	}
-
-	@Test
-	public void testSearchGreaterOrEquals() throws Exception {
-
-		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
-
-		for (I index : indexes) {
-			handler.create(index);
-		}
-
-		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
-				.ge(getProperty(), getPropertyValue(selectedIndex)) //
-				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
-				.build();
-
-		List<I> expectedIndexes = indexes.stream()
-				.filter(item -> comparePropertyValue(getPropertyValue(item), getPropertyValue(selectedIndex)) >= 0)
-				.collect(Collectors.toList());
-		List<I> actualIndexes = handler.search(query);
-
-		check(expectedIndexes, actualIndexes);
-	}
-
-	@EnabledIf("isNullPropertyValueAllowed")
-	@Test
-	public void testSearchGreaterOrEqualsNull() throws Exception {
-
-		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
-
-		for (I index : indexes) {
-
-			if (index == selectedIndex) {
-				setPropertyValue(index, null);
-			}
-
-			handler.create(index);
-		}
-
-		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
-				.ge(getProperty(), getPropertyValue(selectedIndex)) //
-				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
-				.build();
-
-		PersistenceException exception = Assertions.assertThrows(PersistenceException.class,
-				() -> handler.search(query));
-
-		Assertions.assertEquals("operation GREATER_OR_EQUALS for value null is not supported", exception.getMessage());
-	}
-
-	@Test
-	public void testSearchLower() throws Exception {
+	public void testSearchPlainLower() throws Exception {
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
@@ -363,7 +267,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 
 	@EnabledIf("isNullPropertyValueAllowed")
 	@Test
-	public void testSearchLowerNull() throws Exception {
+	public void testSearchPlainLowerNull() throws Exception {
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
@@ -388,7 +292,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 	}
 
 	@Test
-	public void testSearchLowerOrEquals() throws Exception {
+	public void testSearchPlainLowerOrEquals() throws Exception {
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
@@ -411,7 +315,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 
 	@EnabledIf("isNullPropertyValueAllowed")
 	@Test
-	public void testSearchLowerOrEqualsNull() throws Exception {
+	public void testSearchPlainLowerOrEqualsNull() throws Exception {
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
@@ -435,7 +339,270 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		Assertions.assertEquals("operation LOWER_OR_EQUALS for value null is not supported", exception.getMessage());
 	}
 
-	private void check(List<I> expectedIndexes, List<I> actualIndexes) {
+	@Test
+	public void testSearchPLainGreater() throws Exception {
+
+		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
+
+		for (I index : indexes) {
+			handler.create(index);
+		}
+
+		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
+				.gt(getProperty(), getPropertyValue(selectedIndex)) //
+				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
+				.build();
+
+		List<I> expectedIndexes = indexes.stream()
+				.filter(item -> comparePropertyValue(getPropertyValue(item), getPropertyValue(selectedIndex)) > 0)
+				.collect(Collectors.toList());
+		List<I> actualIndexes = handler.search(query);
+
+		check(expectedIndexes, actualIndexes);
+	}
+
+	@EnabledIf("isNullPropertyValueAllowed")
+	@Test
+	public void testSearchPlainGreaterNull() throws Exception {
+
+		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
+
+		for (I index : indexes) {
+
+			if (index == selectedIndex) {
+				setPropertyValue(index, null);
+			}
+
+			handler.create(index);
+		}
+
+		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
+				.gt(getProperty(), getPropertyValue(selectedIndex)) //
+				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
+				.build();
+
+		PersistenceException exception = Assertions.assertThrows(PersistenceException.class,
+				() -> handler.search(query));
+
+		Assertions.assertEquals("operation GREATER for value null is not supported", exception.getMessage());
+	}
+
+	@Test
+	public void testSearchPlainGreaterOrEquals() throws Exception {
+
+		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
+
+		for (I index : indexes) {
+			handler.create(index);
+		}
+
+		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
+				.ge(getProperty(), getPropertyValue(selectedIndex)) //
+				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
+				.build();
+
+		List<I> expectedIndexes = indexes.stream()
+				.filter(item -> comparePropertyValue(getPropertyValue(item), getPropertyValue(selectedIndex)) >= 0)
+				.collect(Collectors.toList());
+		List<I> actualIndexes = handler.search(query);
+
+		check(expectedIndexes, actualIndexes);
+	}
+
+	@EnabledIf("isNullPropertyValueAllowed")
+	@Test
+	public void testSearchPlainGreaterOrEqualsNull() throws Exception {
+
+		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
+
+		for (I index : indexes) {
+
+			if (index == selectedIndex) {
+				setPropertyValue(index, null);
+			}
+
+			handler.create(index);
+		}
+
+		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
+				.ge(getProperty(), getPropertyValue(selectedIndex)) //
+				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
+				.build();
+
+		PersistenceException exception = Assertions.assertThrows(PersistenceException.class,
+				() -> handler.search(query));
+
+		Assertions.assertEquals("operation GREATER_OR_EQUALS for value null is not supported", exception.getMessage());
+	}
+
+	@Test
+	public void testSearchReferenceEquals() throws Exception {
+
+		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
+
+		for (I index : indexes) {
+
+			setOtherPropertyValue(index, getPropertyValue(selectedIndex));
+
+			handler.create(index);
+		}
+
+		String alias = random.nextBoolean() ? "t" : null;
+
+		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), alias) //
+				.eq(getProperty(), getOtherProperty(), alias) //
+				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
+				.build();
+
+		List<I> expectedIndexes = indexes.stream()
+				.filter(item -> comparePropertyValue(getPropertyValue(item), getOtherPropertyValue(item)) == 0)
+				.collect(Collectors.toList());
+		List<I> actualIndexes = handler.search(query);
+
+		check(expectedIndexes, actualIndexes);
+	}
+
+	@Test
+	public void testSearchReferenceNotEquals() throws Exception {
+
+		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
+
+		for (I index : indexes) {
+
+			setOtherPropertyValue(index, getPropertyValue(selectedIndex));
+
+			handler.create(index);
+		}
+
+		String alias = random.nextBoolean() ? "t" : null;
+
+		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), alias) //
+				.ne(getProperty(), getOtherProperty(), alias) //
+				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
+				.build();
+
+		List<I> expectedIndexes = indexes.stream()
+				.filter(item -> comparePropertyValue(getPropertyValue(item), getOtherPropertyValue(item)) != 0)
+				.collect(Collectors.toList());
+		List<I> actualIndexes = handler.search(query);
+
+		check(expectedIndexes, actualIndexes);
+	}
+
+	@Test
+	public void testSearchReferenceLower() throws Exception {
+
+		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
+
+		for (I index : indexes) {
+
+			setOtherPropertyValue(index, getPropertyValue(selectedIndex));
+
+			handler.create(index);
+		}
+
+		String alias = random.nextBoolean() ? "t" : null;
+
+		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), alias) //
+				.lt(getProperty(), getOtherProperty(), alias) //
+				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
+				.build();
+
+		List<I> expectedIndexes = indexes.stream()
+				.filter(item -> comparePropertyValue(getPropertyValue(item), getOtherPropertyValue(item)) < 0)
+				.collect(Collectors.toList());
+		List<I> actualIndexes = handler.search(query);
+
+		check(expectedIndexes, actualIndexes);
+	}
+
+	@Test
+	public void testSearchReferenceLowerOrEquals() throws Exception {
+
+		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
+
+		for (I index : indexes) {
+
+			setOtherPropertyValue(index, getPropertyValue(selectedIndex));
+
+			handler.create(index);
+		}
+
+		String alias = random.nextBoolean() ? "t" : null;
+
+		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), alias) //
+				.le(getProperty(), getOtherProperty(), alias) //
+				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
+				.build();
+
+		List<I> expectedIndexes = indexes.stream()
+				.filter(item -> comparePropertyValue(getPropertyValue(item), getOtherPropertyValue(item)) <= 0)
+				.collect(Collectors.toList());
+		List<I> actualIndexes = handler.search(query);
+
+		check(expectedIndexes, actualIndexes);
+	}
+
+	@Test
+	public void testSearchReferenceGreater() throws Exception {
+
+		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
+
+		for (I index : indexes) {
+
+			setOtherPropertyValue(index, getPropertyValue(selectedIndex));
+
+			handler.create(index);
+		}
+
+		String alias = random.nextBoolean() ? "t" : null;
+
+		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), alias) //
+				.gt(getProperty(), getOtherProperty(), alias) //
+				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
+				.build();
+
+		List<I> expectedIndexes = indexes.stream()
+				.filter(item -> comparePropertyValue(getPropertyValue(item), getOtherPropertyValue(item)) > 0)
+				.collect(Collectors.toList());
+		List<I> actualIndexes = handler.search(query);
+
+		check(expectedIndexes, actualIndexes);
+	}
+
+	@Test
+	public void testSearchReferenceGreaterOrEquals() throws Exception {
+
+		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
+
+		for (I index : indexes) {
+
+			setOtherPropertyValue(index, getPropertyValue(selectedIndex));
+
+			handler.create(index);
+		}
+
+		String alias = random.nextBoolean() ? "t" : null;
+
+		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), alias) //
+				.ge(getProperty(), getOtherProperty(), alias) //
+				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
+				.build();
+
+		List<I> expectedIndexes = indexes.stream()
+				.filter(item -> comparePropertyValue(getPropertyValue(item), getOtherPropertyValue(item)) >= 0)
+				.collect(Collectors.toList());
+		List<I> actualIndexes = handler.search(query);
+
+		check(expectedIndexes, actualIndexes);
+	}
+
+	protected void check(List<I> expectedIndexes, List<I> actualIndexes) {
+
+		System.out.println("expected -> " + expectedIndexes.stream().map(item -> String.format("\n\t%s", item.getId()))
+				.collect(Collectors.joining()));
+		System.out.println("actual -> " + expectedIndexes.stream().map(item -> String.format("\n\t%s", item.getId()))
+				.collect(Collectors.joining()));
 
 		Assertions.assertEquals(expectedIndexes.size(), actualIndexes.size());
 
@@ -459,13 +626,19 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 
 	protected abstract List<I> createIndexes();
 
+	protected abstract boolean isNullPropertyValueAllowed();
+
 	protected abstract Property<V> getProperty();
 
-	protected abstract boolean isNullPropertyValueAllowed();
+	protected abstract Property<V> getOtherProperty();
 
 	protected abstract V getPropertyValue(I index);
 
+	protected abstract V getOtherPropertyValue(I index);
+
 	protected abstract void setPropertyValue(I index, V value);
+
+	protected abstract void setOtherPropertyValue(I index, V value);
 
 	protected abstract int comparePropertyValue(V value1, V value2);
 
