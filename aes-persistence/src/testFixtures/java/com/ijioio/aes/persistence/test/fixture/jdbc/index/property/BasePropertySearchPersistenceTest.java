@@ -15,6 +15,7 @@ import com.ijioio.aes.core.BaseEntityIndex;
 import com.ijioio.aes.core.EntityIndex;
 import com.ijioio.aes.core.Order;
 import com.ijioio.aes.core.Property;
+import com.ijioio.aes.core.PropertyReference;
 import com.ijioio.aes.core.SearchQuery;
 import com.ijioio.aes.core.SearchQuery.SearchQueryBuilder;
 import com.ijioio.aes.persistence.PersistenceException;
@@ -447,10 +448,10 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 			handler.create(index);
 		}
 
-		String alias = random.nextBoolean() ? "t" : null;
+		String namespace = random.nextBoolean() ? "t" : null;
 
-		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), alias) //
-				.eq(getProperty(), getOtherProperty(), alias) //
+		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), namespace) //
+				.eq(getProperty(), PropertyReference.of(namespace, getOtherProperty())) //
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
 				.build();
 
@@ -474,10 +475,10 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 			handler.create(index);
 		}
 
-		String alias = random.nextBoolean() ? "t" : null;
+		String namespace = random.nextBoolean() ? "t" : null;
 
-		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), alias) //
-				.ne(getProperty(), getOtherProperty(), alias) //
+		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), namespace) //
+				.ne(getProperty(), PropertyReference.of(namespace, getOtherProperty())) //
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
 				.build();
 
@@ -501,10 +502,10 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 			handler.create(index);
 		}
 
-		String alias = random.nextBoolean() ? "t" : null;
+		String namespace = random.nextBoolean() ? "t" : null;
 
-		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), alias) //
-				.lt(getProperty(), getOtherProperty(), alias) //
+		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), namespace) //
+				.lt(getProperty(), PropertyReference.of(namespace, getOtherProperty())) //
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
 				.build();
 
@@ -528,10 +529,10 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 			handler.create(index);
 		}
 
-		String alias = random.nextBoolean() ? "t" : null;
+		String namespace = random.nextBoolean() ? "t" : null;
 
-		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), alias) //
-				.le(getProperty(), getOtherProperty(), alias) //
+		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), namespace) //
+				.le(getProperty(), PropertyReference.of(namespace, getOtherProperty())) //
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
 				.build();
 
@@ -555,10 +556,10 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 			handler.create(index);
 		}
 
-		String alias = random.nextBoolean() ? "t" : null;
+		String namespace = random.nextBoolean() ? "t" : null;
 
-		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), alias) //
-				.gt(getProperty(), getOtherProperty(), alias) //
+		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), namespace) //
+				.gt(getProperty(), PropertyReference.of(namespace, getOtherProperty())) //
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
 				.build();
 
@@ -582,10 +583,10 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 			handler.create(index);
 		}
 
-		String alias = random.nextBoolean() ? "t" : null;
+		String namespace = random.nextBoolean() ? "t" : null;
 
-		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), alias) //
-				.ge(getProperty(), getOtherProperty(), alias) //
+		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), namespace) //
+				.ge(getProperty(), PropertyReference.of(namespace, getOtherProperty())) //
 				.sorting(BaseEntityIndex.Properties.id, Order.ASC) //
 				.build();
 
