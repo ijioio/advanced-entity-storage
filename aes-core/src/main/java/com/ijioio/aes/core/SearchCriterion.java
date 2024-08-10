@@ -32,14 +32,9 @@ public class SearchCriterion {
 			return new SimpleSearchCriterion<>(property, Operation.EQUALS, property.getType(), PlainValue.of(value));
 		}
 
-		public static <T> SimpleSearchCriterion<T, T> eq(Property<T> property, Property<T> reference) {
+		public static <T> SimpleSearchCriterion<T, T> eq(Property<T> property, PropertyReference<T> value) {
 			return new SimpleSearchCriterion<>(property, Operation.EQUALS, property.getType(),
-					ReferenceValue.of(reference));
-		}
-
-		public static <T> SimpleSearchCriterion<T, T> eq(Property<T> property, Property<T> reference, String alias) {
-			return new SimpleSearchCriterion<>(property, Operation.EQUALS, property.getType(),
-					ReferenceValue.of(reference, alias));
+					ReferenceValue.of(value));
 		}
 
 		public static <T> SimpleSearchCriterion<T, T> ne(Property<T> property, T value) {
@@ -47,28 +42,17 @@ public class SearchCriterion {
 					PlainValue.of(value));
 		}
 
-		public static <T> SimpleSearchCriterion<T, T> ne(Property<T> property, Property<T> reference) {
+		public static <T> SimpleSearchCriterion<T, T> ne(Property<T> property, PropertyReference<T> value) {
 			return new SimpleSearchCriterion<>(property, Operation.NOT_EQUALS, property.getType(),
-					ReferenceValue.of(reference));
-		}
-
-		public static <T> SimpleSearchCriterion<T, T> ne(Property<T> property, Property<T> reference, String alias) {
-			return new SimpleSearchCriterion<>(property, Operation.NOT_EQUALS, property.getType(),
-					ReferenceValue.of(reference, alias));
+					ReferenceValue.of(value));
 		}
 
 		public static <T> SimpleSearchCriterion<T, T> lt(Property<T> property, T value) {
 			return new SimpleSearchCriterion<>(property, Operation.LOWER, property.getType(), PlainValue.of(value));
 		}
 
-		public static <T> SimpleSearchCriterion<T, T> lt(Property<T> property, Property<T> reference) {
-			return new SimpleSearchCriterion<>(property, Operation.LOWER, property.getType(),
-					ReferenceValue.of(reference));
-		}
-
-		public static <T> SimpleSearchCriterion<T, T> lt(Property<T> property, Property<T> reference, String alias) {
-			return new SimpleSearchCriterion<>(property, Operation.LOWER, property.getType(),
-					ReferenceValue.of(reference, alias));
+		public static <T> SimpleSearchCriterion<T, T> lt(Property<T> property, PropertyReference<T> value) {
+			return new SimpleSearchCriterion<>(property, Operation.LOWER, property.getType(), ReferenceValue.of(value));
 		}
 
 		public static <T> SimpleSearchCriterion<T, T> le(Property<T> property, T value) {
@@ -76,28 +60,18 @@ public class SearchCriterion {
 					PlainValue.of(value));
 		}
 
-		public static <T> SimpleSearchCriterion<T, T> le(Property<T> property, Property<T> reference) {
+		public static <T> SimpleSearchCriterion<T, T> le(Property<T> property, PropertyReference<T> value) {
 			return new SimpleSearchCriterion<>(property, Operation.LOWER_OR_EQUALS, property.getType(),
-					ReferenceValue.of(reference));
-		}
-
-		public static <T> SimpleSearchCriterion<T, T> le(Property<T> property, Property<T> reference, String alias) {
-			return new SimpleSearchCriterion<>(property, Operation.LOWER_OR_EQUALS, property.getType(),
-					ReferenceValue.of(reference, alias));
+					ReferenceValue.of(value));
 		}
 
 		public static <T> SimpleSearchCriterion<T, T> gt(Property<T> property, T value) {
 			return new SimpleSearchCriterion<>(property, Operation.GREATER, property.getType(), PlainValue.of(value));
 		}
 
-		public static <T> SimpleSearchCriterion<T, T> gt(Property<T> property, Property<T> reference) {
+		public static <T> SimpleSearchCriterion<T, T> gt(Property<T> property, PropertyReference<T> value) {
 			return new SimpleSearchCriterion<>(property, Operation.GREATER, property.getType(),
-					ReferenceValue.of(reference));
-		}
-
-		public static <T> SimpleSearchCriterion<T, T> gt(Property<T> property, Property<T> reference, String alias) {
-			return new SimpleSearchCriterion<>(property, Operation.GREATER, property.getType(),
-					ReferenceValue.of(reference, alias));
+					ReferenceValue.of(value));
 		}
 
 		public static <T> SimpleSearchCriterion<T, T> ge(Property<T> property, T value) {
@@ -105,14 +79,9 @@ public class SearchCriterion {
 					PlainValue.of(value));
 		}
 
-		public static <T> SimpleSearchCriterion<T, T> ge(Property<T> property, Property<T> reference) {
+		public static <T> SimpleSearchCriterion<T, T> ge(Property<T> property, PropertyReference<T> value) {
 			return new SimpleSearchCriterion<>(property, Operation.GREATER_OR_EQUALS, property.getType(),
-					ReferenceValue.of(reference));
-		}
-
-		public static <T> SimpleSearchCriterion<T, T> ge(Property<T> property, Property<T> reference, String alias) {
-			return new SimpleSearchCriterion<>(property, Operation.GREATER_OR_EQUALS, property.getType(),
-					ReferenceValue.of(reference, alias));
+					ReferenceValue.of(value));
 		}
 
 		@SuppressWarnings("unchecked")
@@ -213,35 +182,23 @@ public class SearchCriterion {
 
 			public static class ReferenceValue<T> extends Value<T> {
 
-				public static <T> ReferenceValue<T> of(Property<T> value) {
-					return new ReferenceValue<>(value, null);
+				public static <T> ReferenceValue<T> of(PropertyReference<T> value) {
+					return new ReferenceValue<>(value);
 				}
 
-				public static <T> ReferenceValue<T> of(Property<T> value, String alias) {
-					return new ReferenceValue<>(value, alias);
-				}
+				private final PropertyReference<T> value;
 
-				private final Property<T> value;
-
-				private final String alias;
-
-				private ReferenceValue(Property<T> value, String alias) {
-
+				private ReferenceValue(PropertyReference<T> value) {
 					this.value = value;
-					this.alias = alias;
 				}
 
-				public Property<T> getValue() {
+				public PropertyReference<T> getValue() {
 					return value;
-				}
-
-				public String getAlias() {
-					return alias;
 				}
 
 				@Override
 				public String toString() {
-					return "ReferenceValue [value=" + value + ", alias=" + alias + "]";
+					return "ReferenceValue [value=" + value + "]";
 				}
 			}
 		}
@@ -292,21 +249,21 @@ public class SearchCriterion {
 	 */
 	public static class ExistsSearchCriterion<I extends EntityIndex<?>> extends SearchCriterion {
 
-		public static <I extends EntityIndex<?>> ExistsSearchCriterion<I> of(Class<I> type, String alias,
+		public static <I extends EntityIndex<?>> ExistsSearchCriterion<I> of(Class<I> type, String namespace,
 				Collection<SearchCriterion> criterions) {
-			return new ExistsSearchCriterion<>(type, alias, criterions);
+			return new ExistsSearchCriterion<>(type, namespace, criterions);
 		}
 
 		private final Class<I> type;
 
-		private final String alias;
+		private final String namespace;
 
 		private final List<SearchCriterion> criterions = new ArrayList<>();
 
-		private ExistsSearchCriterion(Class<I> type, String alias, Collection<SearchCriterion> criterions) {
+		private ExistsSearchCriterion(Class<I> type, String namespace, Collection<SearchCriterion> criterions) {
 
 			this.type = type;
-			this.alias = alias;
+			this.namespace = namespace;
 
 			this.criterions.clear();
 			this.criterions.addAll(criterions);
@@ -316,8 +273,8 @@ public class SearchCriterion {
 			return type;
 		}
 
-		public String getAlias() {
-			return alias;
+		public String getNamespace() {
+			return namespace;
 		}
 
 		public List<SearchCriterion> getCriterions() {
@@ -326,7 +283,8 @@ public class SearchCriterion {
 
 		@Override
 		public String toString() {
-			return "ExistsSearchCriterion [type=" + type + ", alias=" + alias + ", criterions=" + criterions + "]";
+			return "ExistsSearchCriterion [type=" + type + ", namespace=" + namespace + ", criterions=" + criterions
+					+ "]";
 		}
 	}
 
