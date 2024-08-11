@@ -668,22 +668,26 @@ public abstract class JdbcPersistenceHandler implements PersistenceHandler {
 			String operation = getOperation(criterion.getOperation(), referenceValue);
 
 			if (criterion.getOperation().name().startsWith("ANY")) {
-				return columns.stream()
+				return IntStream.range(0, Math.min(columns.size(), referenceColumns.size()))
+						.mapToObj(item -> Pair.of(columns.get(item), referenceColumns.get(item)))
 						.map(item -> String.format("%s%s %s any (%s%s)",
 								!TextUtil.isBlank(referenceValue.getNamespace())
 										? String.format("%s.", referenceValue.getNamespace())
 										: "",
-								operation, !TextUtil.isBlank(namespace) ? String.format("%s.", namespace) : "", item))
+								item.getSecond(), operation,
+								!TextUtil.isBlank(namespace) ? String.format("%s.", namespace) : "", item.getFirst()))
 						.collect(Collectors.joining(" and "));
 			}
 
 			if (criterion.getOperation().name().startsWith("ALL")) {
-				return columns.stream()
+				return IntStream.range(0, Math.min(columns.size(), referenceColumns.size()))
+						.mapToObj(item -> Pair.of(columns.get(item), referenceColumns.get(item)))
 						.map(item -> String.format("%s%s %s all (%s%s)",
 								!TextUtil.isBlank(referenceValue.getNamespace())
 										? String.format("%s.", referenceValue.getNamespace())
 										: "",
-								operation, !TextUtil.isBlank(namespace) ? String.format("%s.", namespace) : "", item))
+								item.getSecond(), operation,
+								!TextUtil.isBlank(namespace) ? String.format("%s.", namespace) : "", item.getFirst()))
 						.collect(Collectors.joining(" and "));
 			}
 
