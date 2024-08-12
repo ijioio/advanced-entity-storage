@@ -4,5 +4,6 @@ create table PropertyStringListSearchPersistenceIndex(
 	sourceId varchar(256) not null,
 	sourceType varchar(256) not null,
 	valueStringList varchar(512) array,
-	otherValueStringList varchar(512) array
+	otherValueStringList varchar(512) array,
+	otherValueStringSingle varchar(512)
 );
