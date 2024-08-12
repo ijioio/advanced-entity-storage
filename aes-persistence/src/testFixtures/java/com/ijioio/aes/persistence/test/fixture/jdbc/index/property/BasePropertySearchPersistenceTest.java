@@ -92,6 +92,8 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 		types.add(Some9.class);
 	}
 
+	protected static final String NAMESPACE = "t";
+
 	protected static int INDEX_MAX_COUNT = 9;
 
 	protected List<I> indexes = new ArrayList<>();
@@ -172,12 +174,9 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
+		setPropertyValue(selectedIndex, null);
+
 		for (I index : indexes) {
-
-			if (index == selectedIndex) {
-				setPropertyValue(index, null);
-			}
-
 			handler.create(index);
 		}
 
@@ -222,12 +221,9 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
+		setPropertyValue(selectedIndex, null);
+
 		for (I index : indexes) {
-
-			if (index == selectedIndex) {
-				setPropertyValue(index, null);
-			}
-
 			handler.create(index);
 		}
 
@@ -272,12 +268,9 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
+		setPropertyValue(selectedIndex, null);
+
 		for (I index : indexes) {
-
-			if (index == selectedIndex) {
-				setPropertyValue(index, null);
-			}
-
 			handler.create(index);
 		}
 
@@ -320,12 +313,9 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
+		setPropertyValue(selectedIndex, null);
+
 		for (I index : indexes) {
-
-			if (index == selectedIndex) {
-				setPropertyValue(index, null);
-			}
-
 			handler.create(index);
 		}
 
@@ -368,12 +358,9 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
+		setPropertyValue(selectedIndex, null);
+
 		for (I index : indexes) {
-
-			if (index == selectedIndex) {
-				setPropertyValue(index, null);
-			}
-
 			handler.create(index);
 		}
 
@@ -416,12 +403,9 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 
 		I selectedIndex = indexes.get(random.nextInt(indexes.size()));
 
+		setPropertyValue(selectedIndex, null);
+
 		for (I index : indexes) {
-
-			if (index == selectedIndex) {
-				setPropertyValue(index, null);
-			}
-
 			handler.create(index);
 		}
 
@@ -448,7 +432,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 			handler.create(index);
 		}
 
-		String namespace = random.nextBoolean() ? "t" : null;
+		String namespace = random.nextBoolean() ? NAMESPACE : null;
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), namespace) //
 				.eq(getProperty(), PropertyReference.of(namespace, getOtherProperty())) //
@@ -475,7 +459,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 			handler.create(index);
 		}
 
-		String namespace = random.nextBoolean() ? "t" : null;
+		String namespace = random.nextBoolean() ? NAMESPACE : null;
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), namespace) //
 				.ne(getProperty(), PropertyReference.of(namespace, getOtherProperty())) //
@@ -502,7 +486,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 			handler.create(index);
 		}
 
-		String namespace = random.nextBoolean() ? "t" : null;
+		String namespace = random.nextBoolean() ? NAMESPACE : null;
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), namespace) //
 				.lt(getProperty(), PropertyReference.of(namespace, getOtherProperty())) //
@@ -529,7 +513,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 			handler.create(index);
 		}
 
-		String namespace = random.nextBoolean() ? "t" : null;
+		String namespace = random.nextBoolean() ? NAMESPACE : null;
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), namespace) //
 				.le(getProperty(), PropertyReference.of(namespace, getOtherProperty())) //
@@ -556,7 +540,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 			handler.create(index);
 		}
 
-		String namespace = random.nextBoolean() ? "t" : null;
+		String namespace = random.nextBoolean() ? NAMESPACE : null;
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), namespace) //
 				.gt(getProperty(), PropertyReference.of(namespace, getOtherProperty())) //
@@ -583,7 +567,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 			handler.create(index);
 		}
 
-		String namespace = random.nextBoolean() ? "t" : null;
+		String namespace = random.nextBoolean() ? NAMESPACE : null;
 
 		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), namespace) //
 				.ge(getProperty(), PropertyReference.of(namespace, getOtherProperty())) //
