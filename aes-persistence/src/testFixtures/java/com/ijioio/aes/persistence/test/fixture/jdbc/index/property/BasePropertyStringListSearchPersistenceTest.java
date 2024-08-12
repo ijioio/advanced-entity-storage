@@ -28,14 +28,16 @@ public abstract class BasePropertyStringListSearchPersistenceTest extends
 			}, //
 			properties = { //
 					@EntityProperty(name = "valueStringList", type = "List<String>"), //
-					@EntityProperty(name = "otherValueStringList", type = "List<String>") //
+					@EntityProperty(name = "otherValueStringList", type = "List<String>"), //
+					@EntityProperty(name = "otherValueStringSingle", type = Type.STRING) //
 			}, //
 			indexes = { //
 					@EntityIndex( //
 							name = PropertyStringListSearchPersistencePrototype.INDEX_NAME, //
 							properties = { //
 									@EntityIndexProperty(name = "valueStringList", type = "List<String>"), //
-									@EntityIndexProperty(name = "otherValueStringList", type = "List<String>") //
+									@EntityIndexProperty(name = "otherValueStringList", type = "List<String>"), //
+									@EntityIndexProperty(name = "otherValueStringSingle", type = Type.STRING) //
 							} //
 					) //
 			} //
@@ -70,7 +72,7 @@ public abstract class BasePropertyStringListSearchPersistenceTest extends
 			List<String> value = new ArrayList<>();
 
 			for (int j = 0; j < VALUE_MAX_COUNT; j++) {
-				value.add(String.format("value-%s", j + 1));
+				value.add(String.format("value%s%s", i + 1, j + 1));
 			}
 
 			index.setValueStringList(value);
@@ -126,6 +128,11 @@ public abstract class BasePropertyStringListSearchPersistenceTest extends
 	}
 
 	@Override
+	protected Property<String> getOtherSingleProperty() {
+		return PropertyStringListSearchPersistenceIndex.Properties.otherValueStringSingle;
+	}
+
+	@Override
 	protected List<String> getPropertyValue(PropertyStringListSearchPersistenceIndex index) {
 		return index.getValueStringList();
 	}
@@ -136,6 +143,11 @@ public abstract class BasePropertyStringListSearchPersistenceTest extends
 	}
 
 	@Override
+	protected String getOtherSinglePropertyValue(PropertyStringListSearchPersistenceIndex index) {
+		return index.getOtherValueStringSingle();
+	}
+
+	@Override
 	protected void setPropertyValue(PropertyStringListSearchPersistenceIndex index, List<String> value) {
 		index.setValueStringList(value);
 	}
@@ -143,6 +155,11 @@ public abstract class BasePropertyStringListSearchPersistenceTest extends
 	@Override
 	protected void setOtherPropertyValue(PropertyStringListSearchPersistenceIndex index, List<String> value) {
 		index.setOtherValueStringList(value);
+	}
+
+	@Override
+	protected void setOtherSinglePropertyValue(PropertyStringListSearchPersistenceIndex index, String value) {
+		index.setOtherValueStringSingle(value);
 	}
 
 	@Override
