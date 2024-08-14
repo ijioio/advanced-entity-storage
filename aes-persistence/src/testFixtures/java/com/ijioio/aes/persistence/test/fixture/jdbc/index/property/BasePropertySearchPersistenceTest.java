@@ -895,7 +895,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 
 		String namespace = random.nextBoolean() ? NAMESPACE : null;
 
-		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), namespace) //
+		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
 				.exists(getIndexClass(), namespace) //
 				.eq(getProperty(), PropertyReference.of(namespace, getOtherProperty())) //
 				.end() //
@@ -924,7 +924,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 
 		String namespace = random.nextBoolean() ? NAMESPACE : null;
 
-		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), namespace) //
+		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
 				.exists(getIndexClass(), namespace) //
 				.ne(getProperty(), PropertyReference.of(namespace, getOtherProperty())) //
 				.end() //
@@ -953,7 +953,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 
 		String namespace = random.nextBoolean() ? NAMESPACE : null;
 
-		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), namespace) //
+		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
 				.exists(getIndexClass(), namespace) //
 				.lt(getProperty(), PropertyReference.of(namespace, getOtherProperty())) //
 				.end() //
@@ -982,7 +982,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 
 		String namespace = random.nextBoolean() ? NAMESPACE : null;
 
-		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), namespace) //
+		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
 				.exists(getIndexClass(), namespace) //
 				.le(getProperty(), PropertyReference.of(namespace, getOtherProperty())) //
 				.end() //
@@ -1011,7 +1011,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 
 		String namespace = random.nextBoolean() ? NAMESPACE : null;
 
-		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), namespace) //
+		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
 				.exists(getIndexClass(), namespace) //
 				.gt(getProperty(), PropertyReference.of(namespace, getOtherProperty())) //
 				.end() //
@@ -1040,7 +1040,7 @@ public abstract class BasePropertySearchPersistenceTest<I extends EntityIndex<?>
 
 		String namespace = random.nextBoolean() ? NAMESPACE : null;
 
-		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass(), namespace) //
+		SearchQuery<I> query = SearchQueryBuilder.of(getIndexClass()) //
 				.exists(getIndexClass(), namespace) //
 				.ge(getProperty(), PropertyReference.of(namespace, getOtherProperty())) //
 				.end() //
