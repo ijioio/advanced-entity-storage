@@ -154,7 +154,7 @@ public abstract class BasePropertyCreatePersistenceTest<I extends EntityIndex<?>
 		});
 	}
 
-	protected abstract String getSqlScriptPath() throws Exception;
+	protected abstract String getSqlScriptPath();
 
 	protected abstract Class<I> getIndexClass();
 

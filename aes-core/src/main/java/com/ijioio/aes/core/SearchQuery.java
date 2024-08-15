@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import com.ijioio.aes.core.SearchCriterion.AndSearchCriterion;
+import com.ijioio.aes.core.SearchCriterion.ExistsSearchCriterion;
 import com.ijioio.aes.core.SearchCriterion.NotSearchCriterion;
 import com.ijioio.aes.core.SearchCriterion.OrSearchCriterion;
 import com.ijioio.aes.core.SearchCriterion.SimpleSearchCriterion;
@@ -26,19 +27,35 @@ import com.ijioio.aes.core.SearchCriterion.SimpleSearchCriterion;
 public class SearchQuery<I extends EntityIndex<?>> {
 
 	public static <I extends EntityIndex<?>> SearchQuery<I> of(Class<I> type) {
-		return new SearchQuery<>(type, Collections.emptyList(), Collections.emptyMap(), null, null);
+		return new SearchQuery<>(type, null, Collections.emptyList(), Collections.emptyMap(), null, null);
+	}
+
+	public static <I extends EntityIndex<?>> SearchQuery<I> of(Class<I> type, String namespace) {
+		return new SearchQuery<>(type, namespace, Collections.emptyList(), Collections.emptyMap(), null, null);
 	}
 
 	public static <I extends EntityIndex<?>> SearchQuery<I> of(Class<I> type, List<SearchCriterion> criterions) {
-		return new SearchQuery<>(type, criterions, Collections.emptyMap(), null, null);
+		return new SearchQuery<>(type, null, criterions, Collections.emptyMap(), null, null);
+	}
+
+	public static <I extends EntityIndex<?>> SearchQuery<I> of(Class<I> type, String namespace,
+			List<SearchCriterion> criterions) {
+		return new SearchQuery<>(type, namespace, criterions, Collections.emptyMap(), null, null);
 	}
 
 	public static <I extends EntityIndex<?>> SearchQuery<I> of(Class<I> type, List<SearchCriterion> criterions,
 			Map<Property<?>, Order> sortings, Long offset, Long limit) {
-		return new SearchQuery<>(type, criterions, sortings, offset, limit);
+		return new SearchQuery<>(type, null, criterions, sortings, offset, limit);
+	}
+
+	public static <I extends EntityIndex<?>> SearchQuery<I> of(Class<I> type, String namespace,
+			List<SearchCriterion> criterions, Map<Property<?>, Order> sortings, Long offset, Long limit) {
+		return new SearchQuery<>(type, namespace, criterions, sortings, offset, limit);
 	}
 
 	private final Class<I> type;
+
+	private final String namespace;
 
 	private final List<SearchCriterion> criterions;
 
@@ -48,10 +65,11 @@ public class SearchQuery<I extends EntityIndex<?>> {
 
 	private final Long limit;
 
-	private SearchQuery(Class<I> type, List<SearchCriterion> criterions, Map<Property<?>, Order> sortings, Long offset,
-			Long limit) {
+	private SearchQuery(Class<I> type, String namespace, List<SearchCriterion> criterions,
+			Map<Property<?>, Order> sortings, Long offset, Long limit) {
 
 		this.type = type;
+		this.namespace = namespace;
 		this.criterions = List.copyOf(criterions);
 		this.sortings = Map.copyOf(sortings);
 		this.offset = offset;
@@ -60,6 +78,10 @@ public class SearchQuery<I extends EntityIndex<?>> {
 
 	public Class<I> getType() {
 		return type;
+	}
+
+	public String getNamespace() {
+		return namespace;
 	}
 
 	public List<SearchCriterion> getCriterions() {
@@ -80,8 +102,8 @@ public class SearchQuery<I extends EntityIndex<?>> {
 
 	@Override
 	public String toString() {
-		return "SearchQuery [type=" + type + ", criterions=" + criterions + ", sortings=" + sortings + ", offset="
-				+ offset + ", limit=" + limit + "]";
+		return "SearchQuery [type=" + type + ", namespace=" + namespace + ", criterions=" + criterions + ", sortings="
+				+ sortings + ", offset=" + offset + ", limit=" + limit + "]";
 	}
 
 	/**
@@ -130,6 +152,20 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		}
 
 		/**
+		 * Adds equals search criterion. It allows to check if value of indicated index
+		 * {@code property} is equals to indicated {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <T> SearchQueryGroupBuilder<P> eq(Property<T> property, PropertyReference<T> value) {
+
+			this.criterions.add(SimpleSearchCriterion.eq(property, value));
+			return this;
+		}
+
+		/**
 		 * Adds not equals search criterion. It allows to check if value of indicated
 		 * index {@code property} is not equals to indicated {@code value}.
 		 *
@@ -144,6 +180,20 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		}
 
 		/**
+		 * Adds not equals search criterion. It allows to check if value of indicated
+		 * index {@code property} is not equals to indicated {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <T> SearchQueryGroupBuilder<P> ne(Property<T> property, PropertyReference<T> value) {
+
+			this.criterions.add(SimpleSearchCriterion.ne(property, value));
+			return this;
+		}
+
+		/**
 		 * Adds lower search criterion. It allows to check if value of indicated index
 		 * {@code property} is lower than indicated {@code value}.
 		 *
@@ -152,6 +202,20 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		 * @return this builder object for chaining
 		 */
 		public <T> SearchQueryGroupBuilder<P> lt(Property<T> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.lt(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds lower search criterion. It allows to check if value of indicated index
+		 * {@code property} is lower than indicated {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <T> SearchQueryGroupBuilder<P> lt(Property<T> property, PropertyReference<T> value) {
 
 			this.criterions.add(SimpleSearchCriterion.lt(property, value));
 			return this;
@@ -173,6 +237,21 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		}
 
 		/**
+		 * Adds lower or equals search criterion. It allows to check if value of
+		 * indicated index {@code property} is lower or equals to indicated
+		 * {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <T> SearchQueryGroupBuilder<P> le(Property<T> property, PropertyReference<T> value) {
+
+			this.criterions.add(SimpleSearchCriterion.le(property, value));
+			return this;
+		}
+
+		/**
 		 * Adds greater search criterion. It allows to check if value of indicated index
 		 * {@code property} is greater than indicated {@code value}.
 		 *
@@ -181,6 +260,20 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		 * @return this builder object for chaining
 		 */
 		public <T> SearchQueryGroupBuilder<P> gt(Property<T> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.gt(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds greater search criterion. It allows to check if value of indicated index
+		 * {@code property} is greater than indicated {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <T> SearchQueryGroupBuilder<P> gt(Property<T> property, PropertyReference<T> value) {
 
 			this.criterions.add(SimpleSearchCriterion.gt(property, value));
 			return this;
@@ -202,6 +295,21 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		}
 
 		/**
+		 * Adds greater or equals search criterion. It allows to check if value of
+		 * indicated index {@code property} is greater or equals to indicated
+		 * {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <T> SearchQueryGroupBuilder<P> ge(Property<T> property, PropertyReference<T> value) {
+
+			this.criterions.add(SimpleSearchCriterion.ge(property, value));
+			return this;
+		}
+
+		/**
 		 * Adds any equals search criterion. It allows to check if any value of
 		 * indicated collection index {@code property} is equals to indicated
 		 * {@code value}.
@@ -211,6 +319,22 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		 * @return this builder object for chaining
 		 */
 		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> anyeq(Property<C> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.anyeq(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds any equals search criterion. It allows to check if any value of
+		 * indicated collection index {@code property} is equals to indicated
+		 * {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> anyeq(Property<C> property,
+				PropertyReference<T> value) {
 
 			this.criterions.add(SimpleSearchCriterion.anyeq(property, value));
 			return this;
@@ -232,6 +356,22 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		}
 
 		/**
+		 * Adds any not equals search criterion. It allows to check if all values of
+		 * indicated collection index {@code property} is not equals to indicated
+		 * {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> anyne(Property<C> property,
+				PropertyReference<T> value) {
+
+			this.criterions.add(SimpleSearchCriterion.anyne(property, value));
+			return this;
+		}
+
+		/**
 		 * Adds any lower search criterion. It allows to check if any value of indicated
 		 * collection index {@code property} is lower than indicated {@code value}.
 		 *
@@ -240,6 +380,21 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		 * @return this builder object for chaining
 		 */
 		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> anylt(Property<C> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.anylt(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds any lower search criterion. It allows to check if any value of indicated
+		 * collection index {@code property} is lower than indicated {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> anylt(Property<C> property,
+				PropertyReference<T> value) {
 
 			this.criterions.add(SimpleSearchCriterion.anylt(property, value));
 			return this;
@@ -261,6 +416,22 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		}
 
 		/**
+		 * Adds any lower or equals search criterion. It allows to check if any value of
+		 * indicated collection index {@code property} is lower or equals to indicated
+		 * {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> anyle(Property<C> property,
+				PropertyReference<T> value) {
+
+			this.criterions.add(SimpleSearchCriterion.anyle(property, value));
+			return this;
+		}
+
+		/**
 		 * Adds any greater search criterion. It allows to check if any value of
 		 * indicated collection index {@code property} is greater than indicated
 		 * {@code value}.
@@ -270,6 +441,22 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		 * @return this builder object for chaining
 		 */
 		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> anygt(Property<C> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.anygt(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds any greater search criterion. It allows to check if any value of
+		 * indicated collection index {@code property} is greater than indicated
+		 * {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> anygt(Property<C> property,
+				PropertyReference<T> value) {
 
 			this.criterions.add(SimpleSearchCriterion.anygt(property, value));
 			return this;
@@ -291,6 +478,22 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		}
 
 		/**
+		 * Adds any greater or equals search criterion. It allows to check if any value
+		 * of indicated collection index {@code property} is greater or equals to
+		 * indicated {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> anyge(Property<C> property,
+				PropertyReference<T> value) {
+
+			this.criterions.add(SimpleSearchCriterion.anyge(property, value));
+			return this;
+		}
+
+		/**
 		 * Adds all equals search criterion. It allows to check if all values of
 		 * indicated collection index {@code property} are equals to indicated
 		 * {@code value}.
@@ -300,6 +503,22 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		 * @return this builder object for chaining
 		 */
 		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> alleq(Property<C> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.alleq(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds all equals search criterion. It allows to check if all values of
+		 * indicated collection index {@code property} are equals to indicated
+		 * {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> alleq(Property<C> property,
+				PropertyReference<T> value) {
 
 			this.criterions.add(SimpleSearchCriterion.alleq(property, value));
 			return this;
@@ -321,6 +540,22 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		}
 
 		/**
+		 * Adds all not equals search criterion. It allows to check if all values of
+		 * indicated collection index {@code property} are not equals to indicated
+		 * {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> allne(Property<C> property,
+				PropertyReference<T> value) {
+
+			this.criterions.add(SimpleSearchCriterion.allne(property, value));
+			return this;
+		}
+
+		/**
 		 * Adds all lower search criterion. It allows to check if all values of
 		 * indicated collection index {@code property} are lower than indicated
 		 * {@code value}.
@@ -330,6 +565,22 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		 * @return this builder object for chaining
 		 */
 		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> alllt(Property<C> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.alllt(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds all lower search criterion. It allows to check if all values of
+		 * indicated collection index {@code property} are lower than indicated
+		 * {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> alllt(Property<C> property,
+				PropertyReference<T> value) {
 
 			this.criterions.add(SimpleSearchCriterion.alllt(property, value));
 			return this;
@@ -351,6 +602,22 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		}
 
 		/**
+		 * Adds all lower or equals search criterion. It allows to check if all values
+		 * of indicated collection index {@code property} are lower or equals to
+		 * indicated {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> allle(Property<C> property,
+				PropertyReference<T> value) {
+
+			this.criterions.add(SimpleSearchCriterion.allle(property, value));
+			return this;
+		}
+
+		/**
 		 * Adds all greater search criterion. It allows to check if all values of
 		 * indicated collection index {@code property} are greater than indicated
 		 * {@code value}.
@@ -360,6 +627,22 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		 * @return this builder object for chaining
 		 */
 		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> allgt(Property<C> property, T value) {
+
+			this.criterions.add(SimpleSearchCriterion.allgt(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds all greater search criterion. It allows to check if all values of
+		 * indicated collection index {@code property} are greater than indicated
+		 * {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> allgt(Property<C> property,
+				PropertyReference<T> value) {
 
 			this.criterions.add(SimpleSearchCriterion.allgt(property, value));
 			return this;
@@ -378,6 +661,49 @@ public class SearchQuery<I extends EntityIndex<?>> {
 
 			this.criterions.add(SimpleSearchCriterion.allge(property, value));
 			return this;
+		}
+
+		/**
+		 * Adds all greater or equals search criterion. It allows to check if all values
+		 * of indicated collection index {@code property} are greater or equals to
+		 * indicated {@code value}.
+		 *
+		 * @param property to check
+		 * @param value to compare
+		 * @return this builder object for chaining
+		 */
+		public <C extends Collection<T>, T> SearchQueryGroupBuilder<P> allge(Property<C> property,
+				PropertyReference<T> value) {
+
+			this.criterions.add(SimpleSearchCriterion.allge(property, value));
+			return this;
+		}
+
+		/**
+		 * Adds exists search criterion. It allows to check if search subquery has non
+		 * empty results.
+		 *
+		 * @param type of the search subquery
+		 * @return this builder object for chaining
+		 */
+		public <I extends EntityIndex<?>> SearchQueryGroupBuilder<? extends SearchQueryGroupBuilder<P>> exists(
+				Class<I> type) {
+			return SearchQueryGroupBuilder.of(this,
+					items -> criterions.add(ExistsSearchCriterion.of(type, null, items)));
+		}
+
+		/**
+		 * Adds exists search criterion. It allows to check if search subquery has non
+		 * empty results.
+		 *
+		 * @param type of the search subquery
+		 * @param namespace of the type scope
+		 * @return this builder object for chaining
+		 */
+		public <I extends EntityIndex<?>> SearchQueryGroupBuilder<? extends SearchQueryGroupBuilder<P>> exists(
+				Class<I> type, String namespace) {
+			return SearchQueryGroupBuilder.of(this,
+					items -> criterions.add(ExistsSearchCriterion.of(type, namespace, items)));
 		}
 
 		/**
@@ -472,8 +798,8 @@ public class SearchQuery<I extends EntityIndex<?>> {
 	 *
 	 * <pre>
 	 * SearchQueryBuilder.of(FooIndex.class) //
-	 * 		.simple(Properties.type.name(), Operation.EQUALS, type) //
-	 * 		.simple(Properties.amount.name(), Operation.GREATER, amount) //
+	 * 		.eq(Properties.type, type) //
+	 * 		.gt(Properties.amount, amount) //
 	 * 		.build();
 	 * </pre>
 	 */
@@ -487,7 +813,20 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		 * @return search query builder
 		 */
 		public static <I extends EntityIndex<?>> SearchQueryBuilder<I> of(Class<I> type) {
-			return new SearchQueryBuilder<>(type, Collections.emptyList(), Collections.emptyMap(), null, null);
+			return new SearchQueryBuilder<>(type, null, Collections.emptyList(), Collections.emptyMap(), null, null);
+		}
+
+		/**
+		 * Creates {@link SearchQueryBuilder} for search query of given {@code type}
+		 * with scope qualified by {@code namespace}.
+		 *
+		 * @param type of the search query
+		 * @param namespace of the type scope
+		 * @return search query builder
+		 */
+		public static <I extends EntityIndex<?>> SearchQueryBuilder<I> of(Class<I> type, String namespace) {
+			return new SearchQueryBuilder<>(type, namespace, Collections.emptyList(), Collections.emptyMap(), null,
+					null);
 		}
 
 		/**
@@ -500,7 +839,22 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		 */
 		public static <I extends EntityIndex<?>> SearchQueryBuilder<I> of(Class<I> type,
 				List<SearchCriterion> criterions) {
-			return new SearchQueryBuilder<>(type, criterions, Collections.emptyMap(), null, null);
+			return new SearchQueryBuilder<>(type, null, criterions, Collections.emptyMap(), null, null);
+		}
+
+		/**
+		 * Creates {@link SearchQueryBuilder} for search query of given {@code type}
+		 * with scope qualified by {@code namespace} and initialized with indicated
+		 * {@code criterions}.
+		 *
+		 * @param type of the search query
+		 * @param namespace of the type scope
+		 * @param criterions value
+		 * @return search query builder
+		 */
+		public static <I extends EntityIndex<?>> SearchQueryBuilder<I> of(Class<I> type, String namespace,
+				List<SearchCriterion> criterions) {
+			return new SearchQueryBuilder<>(type, namespace, criterions, Collections.emptyMap(), null, null);
 		}
 
 		/**
@@ -517,7 +871,25 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		 */
 		public static <I extends EntityIndex<?>> SearchQueryBuilder<I> of(Class<I> type,
 				List<SearchCriterion> criterions, Map<Property<?>, Order> sortings, Long offset, Long limit) {
-			return new SearchQueryBuilder<>(type, criterions, sortings, offset, limit);
+			return new SearchQueryBuilder<>(type, null, criterions, sortings, offset, limit);
+		}
+
+		/**
+		 * Creates {@link SearchQueryBuilder} for search query of given {@code type}
+		 * with scope qualified by {@code namespace} and initialized with indicated
+		 * {@code criterions}, {@code sortings}, {@code offset} and {@code limit}.
+		 *
+		 * @param type of the search query
+		 * @param namespace of the type scope
+		 * @param criterions value
+		 * @param sortings value
+		 * @param offset value
+		 * @param limit value
+		 * @return search query builder
+		 */
+		public static <I extends EntityIndex<?>> SearchQueryBuilder<I> of(Class<I> type, String namespace,
+				List<SearchCriterion> criterions, Map<Property<?>, Order> sortings, Long offset, Long limit) {
+			return new SearchQueryBuilder<>(type, namespace, criterions, sortings, offset, limit);
 		}
 
 		/**
@@ -527,11 +899,13 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		 * @return search query builder
 		 */
 		public static <I extends EntityIndex<?>> SearchQueryBuilder<I> of(SearchQuery<I> query) {
-			return new SearchQueryBuilder<>(query.getType(), query.getCriterions(), query.getSortings(),
-					query.getOffset(), query.getLimit());
+			return new SearchQueryBuilder<>(query.getType(), query.getNamespace(), query.getCriterions(),
+					query.getSortings(), query.getOffset(), query.getLimit());
 		}
 
 		private final Class<I> type;
+
+		private final String namespace;
 
 		private final Map<Property<?>, Order> sortings = new LinkedHashMap<>();
 
@@ -539,12 +913,13 @@ public class SearchQuery<I extends EntityIndex<?>> {
 
 		private Long limit;
 
-		private SearchQueryBuilder(Class<I> type, List<SearchCriterion> criterions, Map<Property<?>, Order> sortings,
-				Long offset, Long limit) {
+		private SearchQueryBuilder(Class<I> type, String namespace, List<SearchCriterion> criterions,
+				Map<Property<?>, Order> sortings, Long offset, Long limit) {
 
 			super(null, null);
 
 			this.type = type;
+			this.namespace = namespace;
 
 			this.criterions.clear();
 			this.criterions.addAll(criterions);
@@ -564,13 +939,31 @@ public class SearchQuery<I extends EntityIndex<?>> {
 
 		@SuppressWarnings("unchecked")
 		@Override
+		public <T> SearchQueryBuilder<I> eq(Property<T> property, PropertyReference<T> value) {
+			return (SearchQueryBuilder<I>) super.eq(property, value);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T> SearchQueryBuilder<I> ne(Property<T> property, T value) {
 			return (SearchQueryBuilder<I>) super.ne(property, value);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
+		public <T> SearchQueryBuilder<I> ne(Property<T> property, PropertyReference<T> value) {
+			return (SearchQueryBuilder<I>) super.ne(property, value);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T> SearchQueryBuilder<I> lt(Property<T> property, T value) {
+			return (SearchQueryBuilder<I>) super.lt(property, value);
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public <T> SearchQueryBuilder<I> lt(Property<T> property, PropertyReference<T> value) {
 			return (SearchQueryBuilder<I>) super.lt(property, value);
 		}
 
@@ -582,7 +975,19 @@ public class SearchQuery<I extends EntityIndex<?>> {
 
 		@SuppressWarnings("unchecked")
 		@Override
+		public <T> SearchQueryBuilder<I> le(Property<T> property, PropertyReference<T> value) {
+			return (SearchQueryBuilder<I>) super.le(property, value);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
 		public <T> SearchQueryBuilder<I> gt(Property<T> property, T value) {
+			return (SearchQueryBuilder<I>) super.gt(property, value);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T> SearchQueryBuilder<I> gt(Property<T> property, PropertyReference<T> value) {
 			return (SearchQueryBuilder<I>) super.gt(property, value);
 		}
 
@@ -594,7 +999,20 @@ public class SearchQuery<I extends EntityIndex<?>> {
 
 		@SuppressWarnings("unchecked")
 		@Override
+		public <T> SearchQueryBuilder<I> ge(Property<T> property, PropertyReference<T> value) {
+			return (SearchQueryBuilder<I>) super.ge(property, value);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
 		public <C extends Collection<T>, T> SearchQueryBuilder<I> anyeq(Property<C> property, T value) {
+			return (SearchQueryBuilder<I>) super.anyeq(property, value);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <C extends Collection<T>, T> SearchQueryBuilder<I> anyeq(Property<C> property,
+				PropertyReference<T> value) {
 			return (SearchQueryBuilder<I>) super.anyeq(property, value);
 		}
 
@@ -606,7 +1024,21 @@ public class SearchQuery<I extends EntityIndex<?>> {
 
 		@SuppressWarnings("unchecked")
 		@Override
+		public <C extends Collection<T>, T> SearchQueryBuilder<I> anyne(Property<C> property,
+				PropertyReference<T> value) {
+			return (SearchQueryBuilder<I>) super.anyne(property, value);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
 		public <C extends Collection<T>, T> SearchQueryBuilder<I> anylt(Property<C> property, T value) {
+			return (SearchQueryBuilder<I>) super.anylt(property, value);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <C extends Collection<T>, T> SearchQueryBuilder<I> anylt(Property<C> property,
+				PropertyReference<T> value) {
 			return (SearchQueryBuilder<I>) super.anylt(property, value);
 		}
 
@@ -618,7 +1050,21 @@ public class SearchQuery<I extends EntityIndex<?>> {
 
 		@SuppressWarnings("unchecked")
 		@Override
+		public <C extends Collection<T>, T> SearchQueryBuilder<I> anyle(Property<C> property,
+				PropertyReference<T> value) {
+			return (SearchQueryBuilder<I>) super.anyle(property, value);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
 		public <C extends Collection<T>, T> SearchQueryBuilder<I> anygt(Property<C> property, T value) {
+			return (SearchQueryBuilder<I>) super.anygt(property, value);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <C extends Collection<T>, T> SearchQueryBuilder<I> anygt(Property<C> property,
+				PropertyReference<T> value) {
 			return (SearchQueryBuilder<I>) super.anygt(property, value);
 		}
 
@@ -630,7 +1076,21 @@ public class SearchQuery<I extends EntityIndex<?>> {
 
 		@SuppressWarnings("unchecked")
 		@Override
+		public <C extends Collection<T>, T> SearchQueryBuilder<I> anyge(Property<C> property,
+				PropertyReference<T> value) {
+			return (SearchQueryBuilder<I>) super.anyge(property, value);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
 		public <C extends Collection<T>, T> SearchQueryBuilder<I> alleq(Property<C> property, T value) {
+			return (SearchQueryBuilder<I>) super.alleq(property, value);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <C extends Collection<T>, T> SearchQueryBuilder<I> alleq(Property<C> property,
+				PropertyReference<T> value) {
 			return (SearchQueryBuilder<I>) super.alleq(property, value);
 		}
 
@@ -642,7 +1102,21 @@ public class SearchQuery<I extends EntityIndex<?>> {
 
 		@SuppressWarnings("unchecked")
 		@Override
+		public <C extends Collection<T>, T> SearchQueryBuilder<I> allne(Property<C> property,
+				PropertyReference<T> value) {
+			return (SearchQueryBuilder<I>) super.allne(property, value);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
 		public <C extends Collection<T>, T> SearchQueryBuilder<I> alllt(Property<C> property, T value) {
+			return (SearchQueryBuilder<I>) super.alllt(property, value);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <C extends Collection<T>, T> SearchQueryBuilder<I> alllt(Property<C> property,
+				PropertyReference<T> value) {
 			return (SearchQueryBuilder<I>) super.alllt(property, value);
 		}
 
@@ -654,7 +1128,21 @@ public class SearchQuery<I extends EntityIndex<?>> {
 
 		@SuppressWarnings("unchecked")
 		@Override
+		public <C extends Collection<T>, T> SearchQueryBuilder<I> allle(Property<C> property,
+				PropertyReference<T> value) {
+			return (SearchQueryBuilder<I>) super.allle(property, value);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
 		public <C extends Collection<T>, T> SearchQueryBuilder<I> allgt(Property<C> property, T value) {
+			return (SearchQueryBuilder<I>) super.allgt(property, value);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <C extends Collection<T>, T> SearchQueryBuilder<I> allgt(Property<C> property,
+				PropertyReference<T> value) {
 			return (SearchQueryBuilder<I>) super.allgt(property, value);
 		}
 
@@ -662,6 +1150,26 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		@Override
 		public <C extends Collection<T>, T> SearchQueryBuilder<I> allge(Property<C> property, T value) {
 			return (SearchQueryBuilder<I>) super.allge(property, value);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <C extends Collection<T>, T> SearchQueryBuilder<I> allge(Property<C> property,
+				PropertyReference<T> value) {
+			return (SearchQueryBuilder<I>) super.allge(property, value);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <S extends EntityIndex<?>> SearchQueryGroupBuilder<SearchQueryBuilder<I>> exists(Class<S> type) {
+			return (SearchQueryGroupBuilder<SearchQueryBuilder<I>>) super.exists(type);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <S extends EntityIndex<?>> SearchQueryGroupBuilder<SearchQueryBuilder<I>> exists(Class<S> type,
+				String namespace) {
+			return (SearchQueryGroupBuilder<SearchQueryBuilder<I>>) super.exists(type, namespace);
 		}
 
 		@SuppressWarnings("unchecked")
@@ -748,7 +1256,7 @@ public class SearchQuery<I extends EntityIndex<?>> {
 		 * @return search query
 		 */
 		public SearchQuery<I> build() {
-			return SearchQuery.of(type, criterions, sortings, offset, limit);
+			return SearchQuery.of(type, namespace, criterions, sortings, offset, limit);
 		}
 	}
 }

@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.sql.DataSource;
 
@@ -25,13 +26,19 @@ import com.ijioio.aes.core.IntrospectionException;
 import com.ijioio.aes.core.Operation;
 import com.ijioio.aes.core.Order;
 import com.ijioio.aes.core.Property;
+import com.ijioio.aes.core.PropertyReference;
 import com.ijioio.aes.core.SearchCriterion;
 import com.ijioio.aes.core.SearchCriterion.AndSearchCriterion;
+import com.ijioio.aes.core.SearchCriterion.ExistsSearchCriterion;
 import com.ijioio.aes.core.SearchCriterion.NotSearchCriterion;
 import com.ijioio.aes.core.SearchCriterion.OrSearchCriterion;
 import com.ijioio.aes.core.SearchCriterion.SimpleSearchCriterion;
+import com.ijioio.aes.core.SearchCriterion.SimpleSearchCriterion.Value;
+import com.ijioio.aes.core.SearchCriterion.SimpleSearchCriterion.Value.PlainValue;
+import com.ijioio.aes.core.SearchCriterion.SimpleSearchCriterion.Value.ReferenceValue;
 import com.ijioio.aes.core.SearchQuery;
 import com.ijioio.aes.core.TypeReference;
+import com.ijioio.aes.core.util.TextUtil;
 import com.ijioio.aes.core.util.TupleUtil.Pair;
 import com.ijioio.aes.persistence.PersistenceException;
 import com.ijioio.aes.persistence.PersistenceHandler;
@@ -529,11 +536,16 @@ public abstract class JdbcPersistenceHandler implements PersistenceHandler {
 	private <I extends EntityIndex<?>> String handleDeleteQuery(JdbcPersistenceContext context, SearchQuery<I> query,
 			List<Pair<TypeReference<?>, Supplier<?>>> readers) throws PersistenceException {
 
-		String conditions = handleAndCriterion(context, AndSearchCriterion.of(query.getCriterions()), readers);
+		String conditions = handleAndCriterion(context, AndSearchCriterion.of(query.getCriterions()), readers,
+				query.getNamespace());
 
 		StringBuilder sql = new StringBuilder();
 
 		sql.append(String.format("delete from %s", query.getType().getSimpleName()));
+
+		if (!TextUtil.isBlank(query.getNamespace())) {
+			sql.append(String.format(" as %s", query.getNamespace()));
+		}
 
 		if (conditions != null) {
 			sql.append(String.format(" where %s", conditions));
@@ -557,13 +569,18 @@ public abstract class JdbcPersistenceHandler implements PersistenceHandler {
 					.getColumns(context, this, property.getName(), property.getType(), false));
 		}
 
-		String conditions = handleAndCriterion(context, AndSearchCriterion.of(query.getCriterions()), readers);
+		String conditions = handleAndCriterion(context, AndSearchCriterion.of(query.getCriterions()), readers,
+				query.getNamespace());
 		String sortings = handleSortings(context, query.getSortings());
 
 		StringBuilder sql = new StringBuilder();
 
 		sql.append(String.format("select %s from %s", columns.stream().collect(Collectors.joining(", ")),
 				query.getType().getSimpleName()));
+
+		if (!TextUtil.isBlank(query.getNamespace())) {
+			sql.append(String.format(" as %s", query.getNamespace()));
+		}
 
 		if (conditions != null) {
 			sql.append(String.format(" where %s", conditions));
@@ -585,41 +602,135 @@ public abstract class JdbcPersistenceHandler implements PersistenceHandler {
 	}
 
 	private <P, T> String handleSimpleCriterion(JdbcPersistenceContext context, SimpleSearchCriterion<P, T> criterion,
-			List<Pair<TypeReference<?>, Supplier<?>>> readers) throws PersistenceException {
+			List<Pair<TypeReference<?>, Supplier<?>>> readers, String namespace) throws PersistenceException {
 
 		Property<P> property = criterion.getProperty();
 		TypeReference<T> type = criterion.getType();
-		T value = criterion.getValue();
+		Value<T> value = criterion.getValue();
 
-		boolean skip = value == null
-				&& (criterion.getOperation() == Operation.EQUALS || criterion.getOperation() == Operation.NOT_EQUALS);
+		if (value instanceof PlainValue) {
 
-		if (!skip) {
-			readers.add(Pair.of(type, () -> value));
-		}
+			T plainValue = ((PlainValue<T>) value).getValue();
 
-		List<String> columns = getValueHandler(property.getType().getRawType()).getColumns(context, this,
-				property.getName(), property.getType(), true);
+			boolean skip = plainValue == null && (criterion.getOperation() == Operation.EQUALS
+					|| criterion.getOperation() == Operation.NOT_EQUALS);
 
-		String operation = getOperation(criterion.getOperation(), value);
+			if (!skip) {
+				readers.add(Pair.of(type, () -> plainValue));
+			}
 
-		if (criterion.getOperation().name().startsWith("ANY")) {
-			return columns.stream().map(item -> String.format("? %s any (%s)", operation, item))
+			List<String> columns = getValueHandler(property.getType().getRawType()).getColumns(context, this,
+					property.getName(), property.getType(), true);
+
+			String operation = getOperation(criterion.getOperation(), plainValue);
+
+			if (criterion.getOperation().name().startsWith("ANY")) {
+				return columns.stream()
+						.map(item -> String.format("? %s any (%s%s)", operation,
+								!TextUtil.isBlank(namespace) ? String.format("%s.", namespace) : "", item))
+						.collect(Collectors.joining(" and "));
+			}
+
+			if (criterion.getOperation().name().startsWith("ALL")) {
+				return columns.stream()
+						.map(item -> String.format("? %s all (%s%s)", operation,
+								!TextUtil.isBlank(namespace) ? String.format("%s.", namespace) : "", item))
+						.collect(Collectors.joining(" and "));
+			}
+
+			return columns.stream().map(item -> skip
+					? String.format("%s%s %s", !TextUtil.isBlank(namespace) ? String.format("%s.", namespace) : "",
+							item, operation)
+					: String.format("%s%s %s ?", !TextUtil.isBlank(namespace) ? String.format("%s.", namespace) : "",
+							item, operation))
 					.collect(Collectors.joining(" and "));
-		}
 
-		if (criterion.getOperation().name().startsWith("ALL")) {
-			return columns.stream().map(item -> String.format("? %s all (%s)", operation, item))
+		} else if (value instanceof ReferenceValue) {
+
+			PropertyReference<T> referenceValue = ((ReferenceValue<T>) value).getValue();
+
+			if (referenceValue == null) {
+				throw new PersistenceException("reference value of null is not supported");
+			}
+
+			// TODO: is it really possible? Both properties should be of the same type!
+			List<String> columns = getValueHandler(property.getType().getRawType()).getColumns(context, this,
+					property.getName(), property.getType(), true);
+			List<String> referenceColumns = getValueHandler(referenceValue.getProperty().getType().getRawType())
+					.getColumns(context, this, referenceValue.getProperty().getName(),
+							referenceValue.getProperty().getType(), true);
+
+			if (columns.size() != referenceColumns.size()) {
+				throw new PersistenceException(
+						String.format("property %s and reference value %s are incosistent", property, referenceValue));
+			}
+
+			String operation = getOperation(criterion.getOperation(), referenceValue);
+
+			if (criterion.getOperation().name().startsWith("ANY")) {
+				return IntStream.range(0, Math.min(columns.size(), referenceColumns.size()))
+						.mapToObj(item -> Pair.of(columns.get(item), referenceColumns.get(item)))
+						.map(item -> String.format("%s%s %s any (%s%s)",
+								!TextUtil.isBlank(referenceValue.getNamespace())
+										? String.format("%s.", referenceValue.getNamespace())
+										: "",
+								item.getSecond(), operation,
+								!TextUtil.isBlank(namespace) ? String.format("%s.", namespace) : "", item.getFirst()))
+						.collect(Collectors.joining(" and "));
+			}
+
+			if (criterion.getOperation().name().startsWith("ALL")) {
+				return IntStream.range(0, Math.min(columns.size(), referenceColumns.size()))
+						.mapToObj(item -> Pair.of(columns.get(item), referenceColumns.get(item)))
+						.map(item -> String.format("%s%s %s all (%s%s)",
+								!TextUtil.isBlank(referenceValue.getNamespace())
+										? String.format("%s.", referenceValue.getNamespace())
+										: "",
+								item.getSecond(), operation,
+								!TextUtil.isBlank(namespace) ? String.format("%s.", namespace) : "", item.getFirst()))
+						.collect(Collectors.joining(" and "));
+			}
+
+			return IntStream.range(0, Math.min(columns.size(), referenceColumns.size()))
+					.mapToObj(item -> Pair.of(columns.get(item), referenceColumns.get(item)))
+					.map(item -> String.format("%s%s %s %s%s",
+							!TextUtil.isBlank(namespace) ? String.format("%s.", namespace) : "", item.getFirst(),
+							operation,
+							!TextUtil.isBlank(referenceValue.getNamespace())
+									? String.format("%s.", referenceValue.getNamespace())
+									: "",
+							item.getSecond()))
 					.collect(Collectors.joining(" and "));
+
+		} else {
+			throw new PersistenceException(String.format("value %s is not supported", value));
+		}
+	}
+
+	private <I extends EntityIndex<?>> String handleExistsCriterion(JdbcPersistenceContext context,
+			ExistsSearchCriterion<I> criterion, List<Pair<TypeReference<?>, Supplier<?>>> readers, String namespace)
+			throws PersistenceException {
+
+		String conditions = handleAndCriterion(context, AndSearchCriterion.of(criterion.getCriterions()), readers,
+				criterion.getNamespace());
+
+		StringBuilder sql = new StringBuilder();
+
+		sql.append(String.format("select 1 from %s", criterion.getType().getSimpleName()));
+
+		if (!TextUtil.isBlank(criterion.getNamespace())) {
+			sql.append(String.format(" as %s", criterion.getNamespace()));
 		}
 
-		return columns.stream()
-				.map(item -> skip ? String.format("%s %s", item, operation) : String.format("%s %s ?", item, operation))
-				.collect(Collectors.joining(" and "));
+		if (conditions != null) {
+			sql.append(String.format(" where %s", conditions));
+		}
+
+		return String.format("exists (%s)", sql);
 	}
 
 	private String handleNotCriterion(JdbcPersistenceContext context, NotSearchCriterion groupCriterion,
-			List<Pair<TypeReference<?>, Supplier<?>>> readers) throws PersistenceException {
+			List<Pair<TypeReference<?>, Supplier<?>>> readers, String namespace) throws PersistenceException {
 
 		List<String> sqls = new ArrayList<>();
 
@@ -628,13 +739,15 @@ public abstract class JdbcPersistenceHandler implements PersistenceHandler {
 			String sql = null;
 
 			if (criterion instanceof SimpleSearchCriterion) {
-				sql = handleSimpleCriterion(context, (SimpleSearchCriterion<?, ?>) criterion, readers);
+				sql = handleSimpleCriterion(context, (SimpleSearchCriterion<?, ?>) criterion, readers, namespace);
+			} else if (criterion instanceof ExistsSearchCriterion) {
+				sql = handleExistsCriterion(context, (ExistsSearchCriterion<?>) criterion, readers, namespace);
 			} else if (criterion instanceof NotSearchCriterion) {
-				sql = handleNotCriterion(context, (NotSearchCriterion) criterion, readers);
+				sql = handleNotCriterion(context, (NotSearchCriterion) criterion, readers, namespace);
 			} else if (criterion instanceof AndSearchCriterion) {
-				sql = handleAndCriterion(context, (AndSearchCriterion) criterion, readers);
+				sql = handleAndCriterion(context, (AndSearchCriterion) criterion, readers, namespace);
 			} else if (criterion instanceof OrSearchCriterion) {
-				sql = handleOrCriterion(context, (OrSearchCriterion) criterion, readers);
+				sql = handleOrCriterion(context, (OrSearchCriterion) criterion, readers, namespace);
 			} else {
 				throw new PersistenceException(String.format("criterion %s is not supported", criterion));
 			}
@@ -654,7 +767,7 @@ public abstract class JdbcPersistenceHandler implements PersistenceHandler {
 	}
 
 	private String handleAndCriterion(JdbcPersistenceContext context, AndSearchCriterion groupCriterion,
-			List<Pair<TypeReference<?>, Supplier<?>>> readers) throws PersistenceException {
+			List<Pair<TypeReference<?>, Supplier<?>>> readers, String namespace) throws PersistenceException {
 
 		List<String> sqls = new ArrayList<>();
 
@@ -663,13 +776,15 @@ public abstract class JdbcPersistenceHandler implements PersistenceHandler {
 			String sql = null;
 
 			if (criterion instanceof SimpleSearchCriterion) {
-				sql = handleSimpleCriterion(context, (SimpleSearchCriterion<?, ?>) criterion, readers);
+				sql = handleSimpleCriterion(context, (SimpleSearchCriterion<?, ?>) criterion, readers, namespace);
+			} else if (criterion instanceof ExistsSearchCriterion) {
+				sql = handleExistsCriterion(context, (ExistsSearchCriterion<?>) criterion, readers, namespace);
 			} else if (criterion instanceof NotSearchCriterion) {
-				sql = handleNotCriterion(context, (NotSearchCriterion) criterion, readers);
+				sql = handleNotCriterion(context, (NotSearchCriterion) criterion, readers, namespace);
 			} else if (criterion instanceof AndSearchCriterion) {
-				sql = handleAndCriterion(context, (AndSearchCriterion) criterion, readers);
+				sql = handleAndCriterion(context, (AndSearchCriterion) criterion, readers, namespace);
 			} else if (criterion instanceof OrSearchCriterion) {
-				sql = handleOrCriterion(context, (OrSearchCriterion) criterion, readers);
+				sql = handleOrCriterion(context, (OrSearchCriterion) criterion, readers, namespace);
 			} else {
 				throw new PersistenceException(String.format("criterion %s is not supported", criterion));
 			}
@@ -689,7 +804,7 @@ public abstract class JdbcPersistenceHandler implements PersistenceHandler {
 	}
 
 	private String handleOrCriterion(JdbcPersistenceContext context, OrSearchCriterion groupCriterion,
-			List<Pair<TypeReference<?>, Supplier<?>>> readers) throws PersistenceException {
+			List<Pair<TypeReference<?>, Supplier<?>>> readers, String namespace) throws PersistenceException {
 
 		List<String> sqls = new ArrayList<>();
 
@@ -698,13 +813,15 @@ public abstract class JdbcPersistenceHandler implements PersistenceHandler {
 			String sql = null;
 
 			if (criterion instanceof SimpleSearchCriterion) {
-				sql = handleSimpleCriterion(context, (SimpleSearchCriterion<?, ?>) criterion, readers);
+				sql = handleSimpleCriterion(context, (SimpleSearchCriterion<?, ?>) criterion, readers, namespace);
+			} else if (criterion instanceof ExistsSearchCriterion) {
+				sql = handleExistsCriterion(context, (ExistsSearchCriterion<?>) criterion, readers, namespace);
 			} else if (criterion instanceof NotSearchCriterion) {
-				sql = handleNotCriterion(context, (NotSearchCriterion) criterion, readers);
+				sql = handleNotCriterion(context, (NotSearchCriterion) criterion, readers, namespace);
 			} else if (criterion instanceof AndSearchCriterion) {
-				sql = handleAndCriterion(context, (AndSearchCriterion) criterion, readers);
+				sql = handleAndCriterion(context, (AndSearchCriterion) criterion, readers, namespace);
 			} else if (criterion instanceof OrSearchCriterion) {
-				sql = handleOrCriterion(context, (OrSearchCriterion) criterion, readers);
+				sql = handleOrCriterion(context, (OrSearchCriterion) criterion, readers, namespace);
 			} else {
 				throw new PersistenceException(String.format("criterion %s is not supported", criterion));
 			}

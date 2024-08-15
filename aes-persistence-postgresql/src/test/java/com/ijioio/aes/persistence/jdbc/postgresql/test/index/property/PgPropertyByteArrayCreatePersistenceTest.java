@@ -13,7 +13,7 @@ public class PgPropertyByteArrayCreatePersistenceTest extends BasePropertyByteAr
 		implements PgDataSourceProvider, PgHandlerProvider {
 
 	@Override
-	protected String getSqlScriptPath() throws Exception {
+	protected String getSqlScriptPath() {
 		return "persistence/index/property/property-byte-array-create-persistence.sql";
 	}
 

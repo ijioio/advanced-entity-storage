@@ -23,13 +23,15 @@ public abstract class BasePropertyByteArraySearchPersistenceTest
 	@Entity( //
 			name = PropertyByteArraySearchPersistencePrototype.NAME, //
 			properties = { //
-					@EntityProperty(name = "valueByteArray", type = Type.BYTE_ARRAY) //
+					@EntityProperty(name = "valueByteArray", type = Type.BYTE_ARRAY), //
+					@EntityProperty(name = "otherValueByteArray", type = Type.BYTE_ARRAY) //
 			}, //
 			indexes = { //
 					@EntityIndex( //
 							name = PropertyByteArraySearchPersistencePrototype.INDEX_NAME, //
 							properties = { //
-									@EntityIndexProperty(name = "valueByteArray", type = Type.BYTE_ARRAY) //
+									@EntityIndexProperty(name = "valueByteArray", type = Type.BYTE_ARRAY), //
+									@EntityIndexProperty(name = "otherValueByteArray", type = Type.BYTE_ARRAY) //
 							} //
 					) //
 			} //
@@ -69,13 +71,18 @@ public abstract class BasePropertyByteArraySearchPersistenceTest
 	}
 
 	@Override
+	protected boolean isNullPropertyValueAllowed() {
+		return true;
+	}
+
+	@Override
 	protected Property<byte[]> getProperty() {
 		return PropertyByteArraySearchPersistenceIndex.Properties.valueByteArray;
 	}
 
 	@Override
-	protected boolean isNullPropertyValueAllowed() {
-		return true;
+	protected Property<byte[]> getOtherProperty() {
+		return PropertyByteArraySearchPersistenceIndex.Properties.otherValueByteArray;
 	}
 
 	@Override
@@ -84,8 +91,18 @@ public abstract class BasePropertyByteArraySearchPersistenceTest
 	}
 
 	@Override
+	protected byte[] getOtherPropertyValue(PropertyByteArraySearchPersistenceIndex index) {
+		return index.getOtherValueByteArray();
+	}
+
+	@Override
 	protected void setPropertyValue(PropertyByteArraySearchPersistenceIndex index, byte[] value) {
 		index.setValueByteArray(value);
+	}
+
+	@Override
+	protected void setOtherPropertyValue(PropertyByteArraySearchPersistenceIndex index, byte[] value) {
+		index.setOtherValueByteArray(value);
 	}
 
 	@Override
